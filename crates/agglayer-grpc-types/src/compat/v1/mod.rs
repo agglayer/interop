@@ -16,7 +16,6 @@ mod bytes;
 mod claim;
 mod digest;
 mod error;
-mod error_kinds;
 mod global_index;
 mod imported_bridge_exit;
 mod l1_info_tree_leaf;
