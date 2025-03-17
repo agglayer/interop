@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package agglayer.protocol.types.v1;
+package agglayer.interop.types.v1;
 
-import "agglayer/protocol/types/v1/bridge_exit.proto";
-import "agglayer/protocol/types/v1/bytes.proto";
-import "agglayer/protocol/types/v1/claim.proto";
+import "agglayer/interop/types/v1/bridge_exit.proto";
+import "agglayer/interop/types/v1/bytes.proto";
+import "agglayer/interop/types/v1/claim.proto";
 
 // Represents a token bridge exit originating on another network but claimed on
 // the current network.

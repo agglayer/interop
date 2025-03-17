@@ -1,7 +1,7 @@
 use agglayer_interop_types::TokenInfo;
 
 use super::Error;
-use crate::protocol::types::v1;
+use crate::interop::types::v1;
 
 impl TryFrom<v1::TokenInfo> for TokenInfo {
     type Error = Error;

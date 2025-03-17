@@ -1,5 +1,5 @@
 use super::Error;
-use crate::protocol::types::v1;
+use crate::interop::types::v1;
 
 impl TryFrom<v1::FixedBytes20> for [u8; 20] {
     type Error = Error;

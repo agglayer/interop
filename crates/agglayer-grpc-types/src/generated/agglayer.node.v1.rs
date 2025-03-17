@@ -4,15 +4,15 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SubmitCertificateRequest {
     /// The certificate to submit.
-    #[prost(message, optional, tag="1")]
-    pub certificate: ::core::option::Option<super::super::protocol::types::v1::Certificate>,
+    #[prost(message, optional, tag = "1")]
+    pub certificate: ::core::option::Option<super::super::interop::types::v1::Certificate>,
 }
 /// Type used as response to a certificate submission.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SubmitCertificateResponse {
     /// The certificate id of the submitted certificate.
-    #[prost(message, optional, tag="1")]
-    pub certificate_id: ::core::option::Option<super::super::protocol::types::v1::CertificateId>,
+    #[prost(message, optional, tag = "1")]
+    pub certificate_id: ::core::option::Option<super::super::interop::types::v1::CertificateId>,
 }
 /// The kind of error that occurred and that are reported by the service.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -33,14 +33,17 @@ impl SubmitCertificateErrorKind {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    /// (if the ProtoBuf definition does not change) and safe for programmatic
+    /// use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Self::Unspecified => "SUBMIT_CERTIFICATE_ERROR_KIND_UNSPECIFIED",
             Self::MissingField => "SUBMIT_CERTIFICATE_ERROR_KIND_MISSING_FIELD",
             Self::InvalidData => "SUBMIT_CERTIFICATE_ERROR_KIND_INVALID_DATA",
             Self::SignatureVerification => "SUBMIT_CERTIFICATE_ERROR_KIND_SIGNATURE_VERIFICATION",
-            Self::UnableToReplacePendingCertificate => "SUBMIT_CERTIFICATE_ERROR_KIND_UNABLE_TO_REPLACE_PENDING_CERTIFICATE",
+            Self::UnableToReplacePendingCertificate => {
+                "SUBMIT_CERTIFICATE_ERROR_KIND_UNABLE_TO_REPLACE_PENDING_CERTIFICATE"
+            }
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -49,22 +52,26 @@ impl SubmitCertificateErrorKind {
             "SUBMIT_CERTIFICATE_ERROR_KIND_UNSPECIFIED" => Some(Self::Unspecified),
             "SUBMIT_CERTIFICATE_ERROR_KIND_MISSING_FIELD" => Some(Self::MissingField),
             "SUBMIT_CERTIFICATE_ERROR_KIND_INVALID_DATA" => Some(Self::InvalidData),
-            "SUBMIT_CERTIFICATE_ERROR_KIND_SIGNATURE_VERIFICATION" => Some(Self::SignatureVerification),
-            "SUBMIT_CERTIFICATE_ERROR_KIND_UNABLE_TO_REPLACE_PENDING_CERTIFICATE" => Some(Self::UnableToReplacePendingCertificate),
+            "SUBMIT_CERTIFICATE_ERROR_KIND_SIGNATURE_VERIFICATION" => {
+                Some(Self::SignatureVerification)
+            }
+            "SUBMIT_CERTIFICATE_ERROR_KIND_UNABLE_TO_REPLACE_PENDING_CERTIFICATE" => {
+                Some(Self::UnableToReplacePendingCertificate)
+            }
             _ => None,
         }
     }
 }
 /// Request to get the current epoch configuration.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct GetEpochConfigurationRequest {
-}
+pub struct GetEpochConfigurationRequest {}
 /// Response to the current epoch configuration request.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct GetEpochConfigurationResponse {
     /// The epoch configuration.
-    #[prost(message, optional, tag="1")]
-    pub epoch_configuration: ::core::option::Option<super::super::protocol::types::v1::EpochConfiguration>,
+    #[prost(message, optional, tag = "1")]
+    pub epoch_configuration:
+        ::core::option::Option<super::super::protocol::types::v1::EpochConfiguration>,
 }
 /// The kind of error that occurred and that are reported by the configuration
 /// service.
@@ -81,18 +88,23 @@ impl GetEpochConfigurationErrorKind {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    /// (if the ProtoBuf definition does not change) and safe for programmatic
+    /// use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Self::Unspecified => "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNSPECIFIED",
-            Self::UnexpectedClockConfiguration => "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNEXPECTED_CLOCK_CONFIGURATION",
+            Self::UnexpectedClockConfiguration => {
+                "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNEXPECTED_CLOCK_CONFIGURATION"
+            }
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNSPECIFIED" => Some(Self::Unspecified),
-            "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNEXPECTED_CLOCK_CONFIGURATION" => Some(Self::UnexpectedClockConfiguration),
+            "GET_EPOCH_CONFIGURATION_ERROR_KIND_UNEXPECTED_CLOCK_CONFIGURATION" => {
+                Some(Self::UnexpectedClockConfiguration)
+            }
             _ => None,
         }
     }
@@ -101,32 +113,35 @@ impl GetEpochConfigurationErrorKind {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetCertificateHeaderRequest {
     /// The certificate identifier.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub certificate_id: ::core::option::Option<super::super::protocol::types::v1::CertificateId>,
 }
 /// Response to the CertificateHeader request.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetCertificateHeaderResponse {
     /// The certificate header.
-    #[prost(message, optional, tag="1")]
-    pub certificate_header: ::core::option::Option<super::super::protocol::types::v1::CertificateHeader>,
+    #[prost(message, optional, tag = "1")]
+    pub certificate_header:
+        ::core::option::Option<super::super::protocol::types::v1::CertificateHeader>,
 }
-/// Request to get the latest known/pending/settled certificate header for a network.
+/// Request to get the latest known/pending/settled certificate header for a
+/// network.
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct GetLatestCertificateHeaderRequest {
     /// Which type of latest certificate we want to get.
-    #[prost(enumeration="LatestCertificateRequestType", tag="1")]
+    #[prost(enumeration = "LatestCertificateRequestType", tag = "1")]
     pub r#type: i32,
     /// The network identifier.
-    #[prost(uint32, tag="2")]
+    #[prost(uint32, tag = "2")]
     pub network_id: u32,
 }
 /// Response to the latest known/pending/settled certificate header request.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetLatestCertificateHeaderResponse {
     /// The latest certificate header.
-    #[prost(message, optional, tag="1")]
-    pub certificate_header: ::core::option::Option<super::super::protocol::types::v1::CertificateHeader>,
+    #[prost(message, optional, tag = "1")]
+    pub certificate_header:
+        ::core::option::Option<super::super::protocol::types::v1::CertificateHeader>,
 }
 /// Error kind for GetCertificateHeader RPC.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -145,7 +160,8 @@ impl GetCertificateHeaderErrorKind {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    /// (if the ProtoBuf definition does not change) and safe for programmatic
+    /// use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Self::Unspecified => "GET_CERTIFICATE_HEADER_ERROR_KIND_UNSPECIFIED",
@@ -182,7 +198,8 @@ impl GetLatestCertificateHeaderErrorKind {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    /// (if the ProtoBuf definition does not change) and safe for programmatic
+    /// use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Self::Unspecified => "GET_LATEST_CERTIFICATE_HEADER_ERROR_KIND_UNSPECIFIED",
@@ -217,7 +234,8 @@ impl LatestCertificateRequestType {
     /// String value of the enum field names used in the ProtoBuf definition.
     ///
     /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    /// (if the ProtoBuf definition does not change) and safe for programmatic
+    /// use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
             Self::Unspecified => "LATEST_CERTIFICATE_REQUEST_TYPE_UNSPECIFIED",

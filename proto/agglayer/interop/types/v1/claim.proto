@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package agglayer.protocol.types.v1;
+package agglayer.interop.types.v1;
 
-import "agglayer/protocol/types/v1/bytes.proto";
-import "agglayer/protocol/types/v1/merkle_proof.proto";
+import "agglayer/interop/types/v1/bytes.proto";
+import "agglayer/interop/types/v1/merkle_proof.proto";
 
 // Represents a claim from the mainnet.
 message ClaimFromMainnet {

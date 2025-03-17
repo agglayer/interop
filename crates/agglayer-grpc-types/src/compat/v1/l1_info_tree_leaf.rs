@@ -1,7 +1,7 @@
 use agglayer_interop_types::{L1InfoTreeLeaf, L1InfoTreeLeafInner};
 
 use super::Error;
-use crate::protocol::types::v1;
+use crate::interop::types::v1;
 
 impl TryFrom<v1::L1InfoTreeLeaf> for L1InfoTreeLeafInner {
     type Error = Error;

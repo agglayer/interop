@@ -19,14 +19,3 @@ plugins:
     opt:
       - no_features
 
-  - local: protoc-gen-tonic
-    out: crates/agglayer-grpc-server/src/generated
-    opt:
-      - no_client
-      - no_include
-
-  - local: protoc-gen-tonic
-    out: crates/agglayer-grpc-client/src/generated
-    opt:
-      - no_server
-      - no_include
