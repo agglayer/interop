@@ -63,6 +63,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "agglayer-interop"
+version = "0.1.0"
+dependencies = [
+ "agglayer-grpc-types",
+ "agglayer-interop-types",
+]
+
+[[package]]
 name = "agglayer-interop-types"
 version = "0.1.0"
 dependencies = [

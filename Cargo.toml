@@ -14,11 +14,9 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 
 [workspace.dependencies]
 # Project dependencies
-## APIs
-agglayer-grpc-types = { path = "crates/agglayer-grpc-types" }
-
 agglayer-primitives = { path = "crates/agglayer-primitives" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types" }
+agglayer-grpc-types = { path = "crates/agglayer-grpc-types" }
 
 ## Pessimistic proof related
 pessimistic-proof = { path = "crates/pessimistic-proof" }
