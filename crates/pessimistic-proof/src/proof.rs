@@ -1,12 +1,6 @@
 pub use pessimistic_proof_core::PessimisticProofOutput;
-#[cfg(any(test, feature = "testutils"))]
-use pessimistic_proof_core::{
-    local_exit_tree::hasher::Keccak256Hasher, multi_batch_header::MultiBatchHeader, NetworkState,
-};
 use serde::{Deserialize, Serialize};
-#[cfg(any(test, feature = "testutils"))]
-use sp1_sdk::{Prover, ProverClient, SP1Stdin};
-use sp1_sdk::{SP1Proof, SP1ProofWithPublicValues, SP1PublicValues};
+use sp1_sdk::SP1ProofWithPublicValues;
 
 pub trait DisplayToHex {
     fn display_to_hex(&self) -> String;
