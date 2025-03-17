@@ -2,7 +2,7 @@ version: v2
 
 modules:
   - path: proto
-    name: buf.build/agglayer/agglayer
+    name: buf.build/agglayer/interop
 
 lint:
   use:
