@@ -1,10 +1,11 @@
+use agglayer_primitives::digest::Digest;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{
     bridge_exit::BridgeExit,
     global_index::GlobalIndex,
-    keccak::{digest::Digest, keccak256_combine},
+    keccak::keccak256_combine,
     local_exit_tree::{
         hasher::{Hasher, Keccak256Hasher},
         proof::LETMerkleProof,

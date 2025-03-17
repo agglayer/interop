@@ -1,11 +1,8 @@
+use agglayer_primitives::digest::Digest;
 use agglayer_primitives::U256;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    bridge_exit::NetworkId,
-    keccak::{digest::Digest, keccak256},
-    nullifier_tree::NullifierKey,
-};
+use crate::{bridge_exit::NetworkId, keccak::keccak256, nullifier_tree::NullifierKey};
 
 /// The [`GlobalIndex`] uniquely references one leaf within one Global Exit
 /// Tree.

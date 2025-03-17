@@ -1,10 +1,10 @@
 use std::{fmt::Display, ops::Deref};
 
-use agglayer_primitives::{Address, U256};
+use agglayer_primitives::{digest::Digest, Address, U256};
 pub use pessimistic_proof_core::bridge_exit::{LeafType, TokenInfo};
 use pessimistic_proof_core::{
     bridge_exit::L1_ETH,
-    keccak::{digest::Digest, keccak256, keccak256_combine},
+    keccak::{keccak256, keccak256_combine},
 };
 use serde::{Deserialize, Serialize};
 

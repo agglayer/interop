@@ -1,4 +1,4 @@
-use agglayer_types::{L1InfoTreeLeaf, L1InfoTreeLeafInner};
+use agglayer_interop_types::{L1InfoTreeLeaf, L1InfoTreeLeafInner};
 
 use super::Error;
 use crate::protocol::types::v1;

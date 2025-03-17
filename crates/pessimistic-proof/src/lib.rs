@@ -32,7 +32,3 @@ pub mod core {
 }
 
 pub mod error;
-
-/// ELF of the pessimistic proof program
-pub const ELF: &[u8] =
-    include_bytes!("../../pessimistic-proof-program/elf/riscv32im-succinct-zkvm-elf");

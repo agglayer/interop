@@ -1,5 +1,6 @@
 use std::collections::{btree_map::Entry, BTreeMap};
 
+use agglayer_primitives::digest::Digest;
 use agglayer_primitives::{ruint::UintTryFrom, Signature, B256, U256, U512};
 use commitment::StateCommitment;
 use serde::{Deserialize, Serialize};
@@ -13,7 +14,6 @@ use crate::{
     aggchain_proof::AggchainData,
     bridge_exit::{L1_ETH, L1_NETWORK_ID},
     imported_bridge_exit::{commit_imported_bridge_exits, Error},
-    keccak::digest::Digest,
     local_balance_tree::LocalBalanceTree,
     local_exit_tree::{hasher::Keccak256Hasher, LocalExitTree},
     multi_batch_header::MultiBatchHeader,

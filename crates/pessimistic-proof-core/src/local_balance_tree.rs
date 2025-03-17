@@ -1,14 +1,12 @@
 use std::hash::Hash;
 
+use agglayer_primitives::utils::FromU256;
 use agglayer_primitives::U256;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
 
 use crate::{
-    bridge_exit::TokenInfo,
-    local_exit_tree::hasher::Hasher,
-    utils::{smt::SmtMerkleProof, FromU256},
-    ProofError,
+    bridge_exit::TokenInfo, local_exit_tree::hasher::Hasher, utils::smt::SmtMerkleProof, ProofError,
 };
 
 /// The key is [`TokenInfo`] which can be packed into 192 bits (32 for network

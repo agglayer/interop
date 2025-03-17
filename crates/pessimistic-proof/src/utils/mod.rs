@@ -1,10 +1,10 @@
-use pessimistic_proof_core::keccak::digest::Digest;
+use agglayer_primitives::digest::Digest;
 
 pub mod empty_hash;
 pub mod smt;
 
-pub use pessimistic_proof_core::utils::FromBool;
-pub use pessimistic_proof_core::utils::FromU256;
+pub use agglayer_primitives::utils::FromBool;
+pub use agglayer_primitives::utils::FromU256;
 
 /// Trait for objects that can be hashed.
 pub trait Hashable {

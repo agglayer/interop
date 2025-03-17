@@ -1,5 +1,5 @@
 [package]
-name = "agglayer-types"
+name = "agglayer-interop-types"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ bincode.workspace = true
 rand.workspace = true
 
 [dev-dependencies]
-agglayer-types = { path = ".", features = ["testutils"] }
+agglayer-interop-types = { path = ".", features = ["testutils"] }
 
 [features]
 default = []

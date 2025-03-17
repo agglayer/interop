@@ -1,13 +1,11 @@
+use agglayer_primitives::utils::FromBool;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
 use crate::{
     bridge_exit::NetworkId,
     local_exit_tree::hasher::Hasher,
-    utils::{
-        smt::{SmtNonInclusionProof, ToBits},
-        FromBool,
-    },
+    utils::smt::{SmtNonInclusionProof, ToBits},
     ProofError,
 };
 

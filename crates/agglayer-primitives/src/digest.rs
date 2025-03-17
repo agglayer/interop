@@ -1,10 +1,10 @@
 use std::{fmt, ops::Deref};
 
-use agglayer_primitives::U256;
 use hex::FromHex;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::utils::{FromBool, FromU256};
+use crate::U256;
 
 #[derive(Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub struct Digest(pub [u8; 32]);

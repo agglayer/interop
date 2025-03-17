@@ -1,4 +1,4 @@
-use agglayer_types::U256;
+use agglayer_interop_types::U256;
 use prost::bytes::Bytes;
 
 use super::Error;

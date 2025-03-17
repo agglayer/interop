@@ -1,4 +1,4 @@
-use agglayer_types::ImportedBridgeExit;
+use agglayer_interop_types::ImportedBridgeExit;
 
 use super::Error;
 use crate::protocol::types::v1;

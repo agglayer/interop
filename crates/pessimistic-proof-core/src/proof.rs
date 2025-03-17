@@ -1,3 +1,4 @@
+use agglayer_primitives::digest::Digest;
 use agglayer_primitives::Address;
 pub use bincode::Options;
 use hex_literal::hex;
@@ -8,7 +9,6 @@ use crate::{
     bridge_exit::{NetworkId, TokenInfo},
     global_index::GlobalIndex,
     imported_bridge_exit,
-    keccak::digest::Digest,
     local_exit_tree::{hasher::Keccak256Hasher, LocalExitTreeError},
     local_state::{commitment::PessimisticRoot, NetworkState},
     multi_batch_header::MultiBatchHeader,

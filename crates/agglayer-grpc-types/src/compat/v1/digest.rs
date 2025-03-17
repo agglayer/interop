@@ -1,4 +1,4 @@
-use agglayer_types::Digest;
+use agglayer_interop_types::Digest;
 use prost::bytes::Bytes;
 
 use super::Error;

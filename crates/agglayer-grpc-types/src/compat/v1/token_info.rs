@@ -1,4 +1,4 @@
-use agglayer_types::TokenInfo;
+use agglayer_interop_types::TokenInfo;
 
 use super::Error;
 use crate::protocol::types::v1;

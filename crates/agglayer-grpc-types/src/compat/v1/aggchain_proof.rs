@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use agglayer_types::aggchain_proof::{AggchainData, Proof};
+use agglayer_interop_types::aggchain_proof::{AggchainData, Proof};
 use bincode::Options as _;
 use prost::bytes::Bytes;
 

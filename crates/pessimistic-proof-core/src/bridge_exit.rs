@@ -1,10 +1,11 @@
 #![allow(clippy::too_many_arguments)]
 
+use agglayer_primitives::digest::Digest;
 use agglayer_primitives::{address, Address, U256};
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 
-use crate::keccak::{digest::Digest, keccak256_combine};
+use crate::keccak::keccak256_combine;
 
 pub const L1_NETWORK_ID: NetworkId = 0;
 pub const L1_ETH: TokenInfo = TokenInfo {

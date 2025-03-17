@@ -1,4 +1,4 @@
-use agglayer_types::{Digest, MerkleProof};
+use agglayer_interop_types::{Digest, MerkleProof};
 
 use super::Error;
 use crate::protocol::types::v1;

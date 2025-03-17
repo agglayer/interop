@@ -1,11 +1,9 @@
+use agglayer_primitives::digest::Digest;
 pub use pessimistic_proof_core::imported_bridge_exit::{
     commit_imported_bridge_exits, Claim, ClaimFromMainnet, ClaimFromRollup, L1InfoTreeLeaf,
     L1InfoTreeLeafInner, MerkleProof,
 };
-use pessimistic_proof_core::{
-    global_index::GlobalIndex,
-    keccak::{digest::Digest, keccak256_combine},
-};
+use pessimistic_proof_core::{global_index::GlobalIndex, keccak::keccak256_combine};
 use serde::{Deserialize, Serialize};
 
 use crate::{bridge_exit::BridgeExit, utils::Hashable};

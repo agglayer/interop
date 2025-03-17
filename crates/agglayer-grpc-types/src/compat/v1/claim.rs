@@ -1,4 +1,4 @@
-use agglayer_types::{Claim, ClaimFromMainnet, ClaimFromRollup};
+use agglayer_interop_types::{Claim, ClaimFromMainnet, ClaimFromRollup};
 
 use super::Error;
 use crate::protocol::types::v1;

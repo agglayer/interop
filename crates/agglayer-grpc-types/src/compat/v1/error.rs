@@ -1,6 +1,6 @@
 use std::fmt;
 
-use agglayer_types::primitives::SignatureError;
+use agglayer_interop_types::primitives::SignatureError;
 use tonic_types::FieldViolation;
 
 #[derive(Debug, thiserror::Error)]

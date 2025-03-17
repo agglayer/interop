@@ -1,4 +1,5 @@
-use pessimistic_proof_core::{keccak::digest::Digest, local_exit_tree::hasher::Keccak256Hasher};
+use agglayer_primitives::digest::Digest;
+use pessimistic_proof_core::local_exit_tree::hasher::Keccak256Hasher;
 use serde::{Deserialize, Serialize};
 
 use crate::{

@@ -1,4 +1,4 @@
-use agglayer_types::{GlobalIndex, U256};
+use agglayer_interop_types::{GlobalIndex, U256};
 
 use super::Error;
 use crate::protocol::types::v1;

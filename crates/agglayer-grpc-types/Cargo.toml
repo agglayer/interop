@@ -6,7 +6,7 @@ license.workspace = true
 
 [features]
 default = []
-compat = ["dep:agglayer-types", "dep:bincode", "dep:thiserror"]
+compat = ["dep:agglayer-interop-types", "dep:bincode", "dep:thiserror"]
 
 [lints]
 workspace = true
@@ -19,4 +19,4 @@ serde.workspace = true
 tonic-types.workspace = true
 thiserror = { workspace = true, optional = true }
 
-agglayer-types = { workspace = true, optional = true }
+agglayer-interop-types = { workspace = true, optional = true }

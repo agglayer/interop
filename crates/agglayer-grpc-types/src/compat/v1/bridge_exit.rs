@@ -1,4 +1,4 @@
-use agglayer_types::{BridgeExit, LeafType, NetworkId};
+use agglayer_interop_types::{BridgeExit, LeafType, NetworkId};
 
 use super::Error;
 use crate::protocol::types::v1;

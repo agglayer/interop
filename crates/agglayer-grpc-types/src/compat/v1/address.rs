@@ -1,4 +1,4 @@
-use agglayer_types::Address;
+use agglayer_interop_types::Address;
 use prost::bytes::Bytes;
 
 use super::Error;

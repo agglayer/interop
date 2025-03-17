@@ -1,6 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 use std::{collections::BTreeMap, hash::Hash};
 
+use agglayer_primitives::digest::Digest;
 use agglayer_primitives::U256;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
@@ -10,7 +11,7 @@ use crate::{
     bridge_exit::{BridgeExit, NetworkId, TokenInfo},
     global_index::GlobalIndex,
     imported_bridge_exit::{commit_imported_bridge_exits, ImportedBridgeExit},
-    keccak::{digest::Digest, keccak256_combine},
+    keccak::keccak256_combine,
     local_balance_tree::LocalBalancePath,
     local_exit_tree::hasher::Hasher,
     local_state::commitment::StateCommitment,

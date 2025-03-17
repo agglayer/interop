@@ -1,7 +1,5 @@
-use digest::Digest;
+pub use agglayer_primitives::digest::Digest;
 use tiny_keccak::{Hasher, Keccak};
-
-pub mod digest;
 
 /// Hashes the input data using a Keccak hasher with a 256-bit security level.
 pub fn keccak256(data: &[u8]) -> Digest {

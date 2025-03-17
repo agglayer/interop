@@ -20,6 +20,7 @@ thiserror.workspace = true
 tiny-keccak = { version = "2.0", features = ["keccak"] }
 
 [dev-dependencies]
+agglayer-primitives = { workspace = true, features = ["testutils"] }
 pessimistic-proof-core = { workspace = true, features = ["testutils"] }
 rand = "0.9.0"
 rs_merkle = { version = "1.4", default-features = false }
