@@ -5,7 +5,7 @@ use bincode::Options as _;
 use prost::bytes::Bytes;
 
 use super::Error;
-use crate::interop::types::v1;
+use crate::v1;
 
 fn sp1v4_bincode_options() -> impl bincode::Options {
     bincode::DefaultOptions::new()
