@@ -5,11 +5,11 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-agglayer-interop-types = { workspace = true, optional = true }
+agglayer-interop-types = { workspace = true }
 agglayer-grpc-types = { workspace = true, optional = true }
 
 [features]
-default = ["agglayer-interop-types"]
+default = []
 
 grpc = ["dep:agglayer-grpc-types"]
 grpc-compat = ["grpc", "agglayer-grpc-types/compat"]
