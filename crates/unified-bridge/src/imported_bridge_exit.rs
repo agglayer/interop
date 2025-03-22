@@ -1,7 +1,7 @@
+use agglayer_primitives::utils::Hashable;
 use agglayer_primitives::{
     digest::Digest,
     keccak::{keccak256_combine, Hasher, Keccak256Hasher},
-    utils::Hashable,
 };
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -9,6 +9,48 @@ use thiserror::Error;
 use crate::bridge_exit::BridgeExit;
 use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
 
+impl Hashable for MerkleProof {
+    fn hash(&self) -> Digest {
+        keccak256_combine([
+            self.root.as_slice(),
+            self.proof
+                .siblings
+                .iter()
+                .flat_map(|v| v.0)
+                .collect::<Vec<_>>()
+                .as_slice(),
+        ])
+    }
+}
+impl Hashable for Claim {
+    fn hash(&self) -> Digest {
+        match self {
+            Claim::Mainnet(claim_from_mainnet) => claim_from_mainnet.hash(),
+            Claim::Rollup(claim_from_rollup) => claim_from_rollup.hash(),
+        }
+    }
+}
+
+impl Hashable for ClaimFromMainnet {
+    fn hash(&self) -> Digest {
+        keccak256_combine([
+            self.proof_leaf_mer.hash(),
+            self.proof_ger_l1root.hash(),
+            self.l1_leaf.hash(),
+        ])
+    }
+}
+
+impl Hashable for ClaimFromRollup {
+    fn hash(&self) -> Digest {
+        keccak256_combine([
+            self.proof_leaf_ler.hash(),
+            self.proof_ler_rer.hash(),
+            self.proof_ger_l1root.hash(),
+            self.l1_leaf.hash(),
+        ])
+    }
+}
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeafInner {
@@ -240,6 +282,43 @@ impl ImportedBridgeExit {
                 claim.verify(self.bridge_exit.hash(), self.global_index, l1root)
             }
         }
+    }
+}
+
+#[cfg(not(feature = "zkvm"))]
+impl ImportedBridgeExit {
+    /// Creates a new [`ImportedBridgeExit`].
+    pub fn new(bridge_exit: BridgeExit, claim_data: Claim, global_index: GlobalIndex) -> Self {
+        Self {
+            bridge_exit,
+            global_index,
+            claim_data,
+        }
+    }
+    /// Returns the considered L1 Info Root against which the claim is done.
+    pub fn l1_info_root(&self) -> Digest {
+        match &self.claim_data {
+            Claim::Mainnet(claim) => claim.proof_ger_l1root.root,
+            Claim::Rollup(claim) => claim.proof_ger_l1root.root,
+        }
+    }
+
+    /// Returns the considered L1 Info Tree leaf index against which the claim
+    /// is done.
+    pub fn l1_leaf_index(&self) -> u32 {
+        match &self.claim_data {
+            Claim::Mainnet(claim) => claim.l1_leaf.l1_info_tree_index,
+            Claim::Rollup(claim) => claim.l1_leaf.l1_info_tree_index,
+        }
+    }
+
+    /// Hash the entire data structure.
+    pub fn hash(&self) -> Digest {
+        keccak256_combine([
+            self.bridge_exit.hash(),
+            self.claim_data.hash(),
+            self.global_index.hash(),
+        ])
     }
 }
 

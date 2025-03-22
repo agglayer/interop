@@ -6,13 +6,15 @@ license.workspace = true
 
 [dependencies]
 agglayer-interop-types = { workspace = true }
-agglayer-grpc-types = { workspace = true, optional = true }
+agglayer-interop-grpc-types = { workspace = true, optional = true }
 
 [features]
 default = []
 
-grpc = ["dep:agglayer-grpc-types"]
-grpc-compat = ["grpc", "agglayer-grpc-types/compat"]
+grpc = ["dep:agglayer-interop-grpc-types"]
+grpc-compat = ["grpc", "agglayer-interop-grpc-types/compat"]
+
+testutils = ["agglayer-interop-types/testutils"]
 
 [lints]
 workspace = true

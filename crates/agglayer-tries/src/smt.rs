@@ -1,16 +1,14 @@
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
-use pessimistic_proof_core::utils::smt::SmtMerkleProof;
-use pessimistic_proof_core::{
-    local_exit_tree::hasher::Hasher,
-    utils::smt::{SmtNonInclusionProof, ToBits},
-};
+use agglayer_primitives::keccak::Hasher;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
-use thiserror::Error;
 
-use super::empty_hash::empty_hash_at_height;
+use crate::error::SmtError;
+use crate::node::Node;
+use crate::proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits};
+use crate::utils::empty_hash_at_height;
 
 /// An SMT consistent with a zero-initialized Merkle tree
 #[serde_as]
@@ -282,7 +280,7 @@ where
 mod tests {
     use std::hash::Hash;
 
-    use pessimistic_proof_core::local_exit_tree::hasher::Keccak256Hasher;
+    use agglayer_primitives::keccak::Keccak256Hasher;
     use rand::{
         prelude::{IndexedRandom as _, SliceRandom as _},
         random, rng, Rng,
@@ -290,7 +288,7 @@ mod tests {
     use rs_merkle::{Hasher as MerkleHasher, MerkleTree};
     use tiny_keccak::{Hasher as _, Keccak};
 
-    use crate::utils::smt::{Smt, SmtError};
+    use crate::{error::SmtError, smt::Smt};
 
     const DEPTH: usize = 32;
     type H = Keccak256Hasher;

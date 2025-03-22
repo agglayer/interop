@@ -50,7 +50,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "agglayer-grpc-types"
+name = "agglayer-interop"
+version = "0.1.0"
+dependencies = [
+ "agglayer-interop-grpc-types",
+ "agglayer-interop-types",
+]
+
+[[package]]
+name = "agglayer-interop-grpc-types"
 version = "0.1.0"
 dependencies = [
  "agglayer-interop-types",
@@ -65,14 +73,6 @@ dependencies = [
  "serde",
  "thiserror 2.0.12",
  "tonic-types",
-]
-
-[[package]]
-name = "agglayer-interop"
-version = "0.1.0"
-dependencies = [
- "agglayer-grpc-types",
- "agglayer-interop-types",
 ]
 
 [[package]]
@@ -115,9 +115,12 @@ name = "agglayer-tries"
 version = "0.1.0"
 dependencies = [
  "agglayer-primitives",
+ "rand 0.9.0",
+ "rs_merkle",
  "serde",
  "serde_with",
  "thiserror 2.0.12",
+ "tiny-keccak 2.0.2 (git+https://github.com/sp1-patches/tiny-keccak?tag=patch-2.0.2-sp1-4.0.0)",
 ]
 
 [[package]]

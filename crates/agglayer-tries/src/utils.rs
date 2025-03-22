@@ -1,8 +1,8 @@
-use pessimistic_proof_core::local_exit_tree::hasher::Hasher;
+use agglayer_primitives::keccak::Hasher;
 
 /// Returns an array whose `i`th element is the root of an empty Merkle tree of
 /// depth `i`.
-pub(crate) fn empty_hash_at_height<H, const DEPTH: usize>() -> [H::Digest; DEPTH]
+pub fn empty_hash_at_height<H, const DEPTH: usize>() -> [H::Digest; DEPTH]
 where
     H: Hasher,
     H::Digest: Default + Copy,
