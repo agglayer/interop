@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = ["crates/*"]
-exclude = ["crates/pessimistic-proof"]
+exclude = ["crates/pessimistic-proof", "crates/pessimistic-proof-core"]
 
 [workspace.package]
 version = "0.1.0"
@@ -20,11 +20,7 @@ agglayer-primitives = { path = "crates/agglayer-primitives" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types" }
 agglayer-grpc-types = { path = "crates/agglayer-grpc-types" }
 agglayer-tries = { path = "crates/agglayer-tries" }
-
-## Pessimistic proof related
-# pessimistic-proof = { path = "crates/pessimistic-proof" }
 unified-bridge = { path = "crates/unified-bridge" }
-pessimistic-proof-core = { path = "crates/pessimistic-proof-core" }
 
 # Core dependencies
 alloy = { version = "0.8.1", features = ["full"] }
