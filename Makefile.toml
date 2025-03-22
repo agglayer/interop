@@ -1,6 +1,7 @@
 extend = [
-    { path = "Makefile.ci.toml" },
-    { path = "Makefile.proto.toml" },
+    { path = "scripts/make/Makefile.ci.toml" },
+    { path = "scripts/make/Makefile.fuzz.toml" },
+    { path = "scripts/make/Makefile.proto.toml" },
 ]
 
 [config]
