@@ -12,7 +12,8 @@ use crate::{
     },
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeafInner {
     pub global_exit_root: Digest,
     pub block_hash: Digest,
@@ -29,7 +30,8 @@ impl L1InfoTreeLeafInner {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeaf {
     pub l1_info_tree_index: u32,
     pub rer: Digest,
@@ -76,7 +78,8 @@ pub enum Error {
     InvalidExitNetwork,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct MerkleProof {
     pub proof: LETMerkleProof<Keccak256Hasher>,
     pub root: Digest,
@@ -99,13 +102,15 @@ impl MerkleProof {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub enum Claim {
     Mainnet(Box<ClaimFromMainnet>),
     Rollup(Box<ClaimFromRollup>),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ClaimFromMainnet {
     /// Proof from bridge exit leaf to MER
     pub proof_leaf_mer: MerkleProof,
@@ -149,7 +154,8 @@ impl ClaimFromMainnet {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ClaimFromRollup {
     /// Proof from bridge exit leaf to LER
     pub proof_leaf_ler: MerkleProof,
@@ -205,7 +211,8 @@ impl ClaimFromRollup {
 
 /// Represents a token bridge exit originating on another network but claimed on
 /// the current network.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ImportedBridgeExit {
     /// The bridge exit initiated on another network, called the "sending"
     /// network. Need to verify that the destination network matches the

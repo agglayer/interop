@@ -7,6 +7,7 @@ use crate::utils::{FromBool, FromU256};
 use crate::U256;
 
 #[derive(Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct Digest(pub [u8; 32]);
 
 impl Deref for Digest {

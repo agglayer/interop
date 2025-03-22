@@ -10,7 +10,7 @@ macro_rules! required_field {
 }
 
 mod address;
-mod aggchain_proof;
+mod aggchain_data;
 mod bridge_exit;
 mod bytes;
 mod claim;
@@ -24,3 +24,6 @@ mod token_info;
 mod u256;
 
 pub use error::{Error, ErrorKind};
+
+#[cfg(test)]
+pub mod tests;
