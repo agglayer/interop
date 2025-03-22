@@ -1,16 +1,13 @@
-use agglayer_primitives::digest::Digest;
+use agglayer_primitives::{
+    digest::Digest,
+    keccak::{keccak256_combine, Hasher, Keccak256Hasher},
+    utils::Hashable,
+};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{
-    bridge_exit::BridgeExit,
-    global_index::GlobalIndex,
-    keccak::keccak256_combine,
-    local_exit_tree::{
-        hasher::{Hasher, Keccak256Hasher},
-        proof::LETMerkleProof,
-    },
-};
+use crate::bridge_exit::BridgeExit;
+use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]

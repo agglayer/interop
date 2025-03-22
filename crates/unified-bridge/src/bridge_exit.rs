@@ -1,14 +1,16 @@
 use std::{fmt::Display, ops::Deref};
 
+use agglayer_primitives::keccak::{keccak256, keccak256_combine};
+use agglayer_primitives::utils::Hashable;
 use agglayer_primitives::{digest::Digest, Address, U256};
-pub use pessimistic_proof_core::bridge_exit::{LeafType, TokenInfo};
-use pessimistic_proof_core::{
-    bridge_exit::L1_ETH,
-    keccak::{keccak256, keccak256_combine},
-};
+use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 
-use crate::utils::Hashable;
+use crate::token_info::{LeafType, TokenInfo, L1_ETH};
+
+const EMPTY_METADATA_HASH: Digest = Digest(hex!(
+    "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+));
 
 impl Hashable for TokenInfo {
     fn hash(&self) -> Digest {
@@ -40,19 +42,6 @@ pub struct BridgeExit {
     pub metadata: Option<Digest>,
 }
 
-impl From<BridgeExit> for pessimistic_proof_core::bridge_exit::BridgeExit {
-    fn from(value: BridgeExit) -> Self {
-        Self {
-            leaf_type: value.leaf_type,
-            token_info: value.token_info,
-            dest_network: value.dest_network.into(),
-            dest_address: value.dest_address,
-            amount: value.amount,
-            metadata: value.metadata,
-        }
-    }
-}
-
 impl BridgeExit {
     /// Creates a new [`BridgeExit`].
     pub fn new(
@@ -67,7 +56,7 @@ impl BridgeExit {
         Self {
             leaf_type,
             token_info: TokenInfo {
-                origin_network: *origin_network,
+                origin_network,
                 origin_token_address,
             },
             dest_network,
@@ -84,15 +73,15 @@ impl BridgeExit {
 
 impl Hashable for BridgeExit {
     fn hash(&self) -> Digest {
-        pessimistic_proof_core::bridge_exit::bridge_exit_hasher(
-            self.leaf_type as u8,
-            self.token_info.origin_network,
-            self.token_info.origin_token_address,
-            *self.dest_network,
-            self.dest_address,
-            self.amount,
-            self.metadata,
-        )
+        keccak256_combine([
+            [self.leaf_type as u8].as_slice(),
+            &u32::to_be_bytes(*self.token_info.origin_network),
+            self.token_info.origin_token_address.as_slice(),
+            &u32::to_be_bytes(*self.dest_network),
+            self.dest_address.as_slice(),
+            &self.amount.to_be_bytes::<32>(),
+            &self.metadata.unwrap_or(EMPTY_METADATA_HASH).0,
+        ])
     }
 }
 
@@ -152,46 +141,5 @@ impl Deref for NetworkId {
 
     fn deref(&self) -> &Self::Target {
         &self.0
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use pessimistic_proof_core::local_exit_tree::hasher::Keccak256Hasher;
-
-    use super::*;
-    use crate::local_exit_tree::LocalExitTree;
-
-    #[test]
-    fn test_deposit_hash() {
-        let mut deposit = BridgeExit::new(
-            LeafType::Transfer,
-            0.into(),
-            Address::default(),
-            1.into(),
-            Address::default(),
-            U256::default(),
-            vec![],
-        );
-
-        let amount_bytes = hex::decode("8ac7230489e80000").unwrap_or_default();
-        deposit.amount = U256::try_from_be_slice(amount_bytes.as_slice()).unwrap();
-
-        let dest_addr = hex::decode("c949254d682d8c9ad5682521675b8f43b102aec4").unwrap_or_default();
-        deposit.dest_address.copy_from_slice(&dest_addr);
-
-        let leaf_hash = deposit.hash();
-        assert_eq!(
-            "22ed288677b4c2afd83a6d7d55f7df7f4eaaf60f7310210c030fd27adacbc5e0",
-            hex::encode(leaf_hash)
-        );
-
-        let mut dm = LocalExitTree::<Keccak256Hasher>::new();
-        dm.add_leaf(leaf_hash).unwrap();
-        let dm_root = dm.get_root();
-        assert_eq!(
-            "5ba002329b53c11a2f1dfe90b11e031771842056cf2125b43da8103c199dcd7f",
-            hex::encode(dm_root)
-        );
     }
 }

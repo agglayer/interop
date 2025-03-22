@@ -1,10 +1,9 @@
 #![allow(clippy::needless_range_loop)]
 use std::fmt::Debug;
 
+use agglayer_primitives::keccak::Hasher;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
-
-use crate::local_exit_tree::hasher::Hasher;
 
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]

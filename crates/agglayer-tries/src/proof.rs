@@ -1,28 +1,11 @@
-#![allow(clippy::needless_range_loop)]
 use std::hash::Hash;
 
+use agglayer_primitives::keccak::Hasher;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
 
-use crate::{bridge_exit::TokenInfo, local_exit_tree::hasher::Hasher};
-
 pub trait ToBits<const NUM_BITS: usize> {
     fn to_bits(&self) -> [bool; NUM_BITS];
-}
-
-impl ToBits<192> for TokenInfo {
-    fn to_bits(&self) -> [bool; 192] {
-        let address_bytes = self.origin_token_address.0;
-        // Security: We assume here that `address_bytes` is a fixed-size array of
-        // 20 bytes. The following code could panic otherwise.
-        std::array::from_fn(|i| {
-            if i < 32 {
-                (self.origin_network >> i) & 1 == 1
-            } else {
-                ((address_bytes[(i - 32) / 8]) >> (i % 8)) & 1 == 1
-            }
-        })
-    }
 }
 
 impl ToBits<8> for u8 {
@@ -36,7 +19,6 @@ impl ToBits<32> for u32 {
         std::array::from_fn(|i| (self >> i) & 1 == 1)
     }
 }
-
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SmtMerkleProof<H, const DEPTH: usize>

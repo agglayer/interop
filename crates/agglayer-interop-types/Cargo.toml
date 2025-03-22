@@ -6,11 +6,12 @@ license.workspace = true
 
 [features]
 default = []
-testutils = ["dep:arbitrary", "dep:ethers", "pessimistic-proof/testutils"]
+testutils = ["dep:arbitrary", "dep:ethers", "unified-bridge/testutils"]
 
 [dependencies]
 agglayer-primitives.workspace = true
-pessimistic-proof.workspace = true
+agglayer-tries.workspace = true
+unified-bridge.workspace = true
 
 arbitrary = { workspace = true, optional = true }
 ethers = { workspace = true, optional = true }

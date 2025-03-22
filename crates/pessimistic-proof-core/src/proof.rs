@@ -1,15 +1,16 @@
-use agglayer_primitives::digest::Digest;
 use agglayer_primitives::Address;
+use agglayer_primitives::{digest::Digest, keccak::Keccak256Hasher};
 pub use bincode::Options;
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use unified_bridge::bridge_exit::NetworkId;
+use unified_bridge::global_index::GlobalIndex;
+use unified_bridge::imported_bridge_exit;
+use unified_bridge::local_exit_tree::LocalExitTreeError;
+use unified_bridge::token_info::TokenInfo;
 
 use crate::{
-    bridge_exit::{NetworkId, TokenInfo},
-    global_index::GlobalIndex,
-    imported_bridge_exit,
-    local_exit_tree::{hasher::Keccak256Hasher, LocalExitTreeError},
     local_state::{commitment::PessimisticRoot, NetworkState},
     multi_batch_header::MultiBatchHeader,
 };

@@ -2,12 +2,11 @@
 //!
 //! The pessimistic proof has the "pessimistic root" as part of its public
 //! inputs. Some logic in this file handles the migration on its computation.
-use agglayer_primitives::digest::Digest;
+use agglayer_primitives::{digest::Digest, keccak::keccak256_combine};
 use serde::{Deserialize, Serialize};
+use unified_bridge::bridge_exit::NetworkId;
 
-use crate::{
-    bridge_exit::NetworkId, keccak::keccak256_combine, proof::EMPTY_PP_ROOT_V2, ProofError,
-};
+use crate::{proof::EMPTY_PP_ROOT_V2, ProofError};
 
 /// The state commitment of one [`super::NetworkState`].
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]

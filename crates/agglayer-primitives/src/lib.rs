@@ -9,3 +9,6 @@ pub mod bytes {
     pub use byteorder::BigEndian;
     pub use byteorder::ByteOrder;
 }
+
+#[cfg(feature = "keccak")]
+pub mod keccak;

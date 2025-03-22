@@ -12,59 +12,6 @@ use thiserror::Error;
 
 use super::empty_hash::empty_hash_at_height;
 
-#[derive(Error, Debug, Eq, PartialEq, Serialize, Deserialize, Clone)]
-pub enum SmtError {
-    #[error("trying to insert a key already in the SMT")]
-    KeyAlreadyPresent,
-    #[error("trying to generate a Merkle proof for a key not in the SMT")]
-    KeyNotPresent,
-    #[error("trying to generate a non-inclusion proof for a key present in the SMT")]
-    KeyPresent,
-    #[error("depth out of bounds")]
-    DepthOutOfBounds,
-}
-
-/// A node in an SMT
-#[serde_as]
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-pub struct Node<H>
-where
-    H: Hasher,
-    H::Digest: Serialize + DeserializeOwned,
-{
-    #[serde_as(as = "_")]
-    pub left: H::Digest,
-    #[serde_as(as = "_")]
-    pub right: H::Digest,
-}
-
-impl<H> Clone for Node<H>
-where
-    H: Hasher,
-    H::Digest: Copy + Serialize + DeserializeOwned,
-{
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-
-impl<H> Copy for Node<H>
-where
-    H: Hasher,
-    H::Digest: Copy + Serialize + DeserializeOwned,
-{
-}
-
-impl<H> Node<H>
-where
-    H: Hasher,
-    H::Digest: Serialize + DeserializeOwned,
-{
-    pub fn hash(&self) -> H::Digest {
-        H::merge(&self.left, &self.right)
-    }
-}
-
 /// An SMT consistent with a zero-initialized Merkle tree
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]

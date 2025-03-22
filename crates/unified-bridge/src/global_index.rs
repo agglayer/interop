@@ -1,8 +1,8 @@
-use agglayer_primitives::digest::Digest;
 use agglayer_primitives::U256;
+use agglayer_primitives::{digest::Digest, keccak::keccak256};
 use serde::{Deserialize, Serialize};
 
-use crate::{bridge_exit::NetworkId, keccak::keccak256, nullifier_tree::NullifierKey};
+use crate::bridge_exit::NetworkId;
 
 /// The [`GlobalIndex`] uniquely references one leaf within one Global Exit
 /// Tree.
@@ -22,25 +22,18 @@ impl GlobalIndex {
     const MAINNET_FLAG_OFFSET: usize = 2 * 32;
 
     pub fn network_id(&self) -> NetworkId {
-        if self.mainnet_flag {
+        let id = if self.mainnet_flag {
             0
         } else {
             self.rollup_index + 1
-        }
+        };
+
+        NetworkId::new(id)
     }
 
     pub fn hash(&self) -> Digest {
         let global_index: U256 = (*self).into();
         keccak256(global_index.as_le_slice())
-    }
-}
-
-impl From<GlobalIndex> for NullifierKey {
-    fn from(value: GlobalIndex) -> Self {
-        Self {
-            network_id: value.network_id(),
-            let_index: value.leaf_index,
-        }
     }
 }
 

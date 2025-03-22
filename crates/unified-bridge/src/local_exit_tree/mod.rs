@@ -1,9 +1,7 @@
+use agglayer_primitives::keccak::Hasher;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use thiserror::Error;
-
-pub mod hasher;
-use hasher::Hasher;
 
 pub mod proof;
 
@@ -38,6 +36,19 @@ pub enum LocalExitTreeError {
     FrontierIndexOutOfBounds,
 }
 
+impl<H, const TREE_DEPTH: usize> Default for LocalExitTree<H, TREE_DEPTH>
+where
+    H: Hasher,
+    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
+{
+    fn default() -> Self {
+        Self {
+            leaf_count: 0,
+            frontier: [H::Digest::default(); TREE_DEPTH],
+        }
+    }
+}
+
 impl<H, const TREE_DEPTH: usize> LocalExitTree<H, TREE_DEPTH>
 where
     H: Hasher,
@@ -45,6 +56,40 @@ where
 {
     const MAX_NUM_LEAVES: u32 = ((1u64 << TREE_DEPTH) - 1) as u32;
 
+    /// Creates a new empty [`LocalExitTree`].
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn leaf_count(&self) -> u32 {
+        self.leaf_count
+    }
+
+    pub fn frontier(&self) -> [H::Digest; TREE_DEPTH] {
+        self.frontier
+    }
+
+    /// Creates a new [`LocalExitTree`] and populates its leaves.
+    pub fn from_leaves(
+        leaves: impl Iterator<Item = H::Digest>,
+    ) -> Result<Self, LocalExitTreeError> {
+        let mut tree = Self::new();
+
+        for leaf in leaves {
+            tree.add_leaf(leaf)?;
+        }
+
+        Ok(tree)
+    }
+
+    /// Creates a new [`LocalExitTree`] from its parts: leaf count, and
+    /// frontier.
+    pub fn from_parts(leaf_count: u32, frontier: [H::Digest; TREE_DEPTH]) -> Self {
+        Self {
+            leaf_count,
+            frontier,
+        }
+    }
     /// Appends a leaf to the tree.
     pub fn add_leaf(&mut self, leaf: H::Digest) -> Result<u32, LocalExitTreeError> {
         if self.leaf_count >= Self::MAX_NUM_LEAVES {
@@ -101,4 +146,48 @@ where
 /// Returns the bit value at index `bit_idx` in `target`
 fn get_bit_at(target: u32, bit_idx: usize) -> u32 {
     (target >> bit_idx) & 1
+}
+
+#[cfg(test)]
+mod tests {
+
+    use agglayer_primitives::keccak::Keccak256Hasher;
+    use agglayer_primitives::utils::Hashable;
+    use agglayer_primitives::{Address, U256};
+
+    use crate::local_exit_tree::LocalExitTree;
+    use crate::{bridge_exit::BridgeExit, token_info::LeafType};
+
+    #[test]
+    fn test_deposit_hash() {
+        let mut deposit = BridgeExit::new(
+            LeafType::Transfer,
+            0.into(),
+            Address::default(),
+            1.into(),
+            Address::default(),
+            U256::default(),
+            vec![],
+        );
+
+        let amount_bytes = hex::decode("8ac7230489e80000").unwrap_or_default();
+        deposit.amount = U256::try_from_be_slice(amount_bytes.as_slice()).unwrap();
+
+        let dest_addr = hex::decode("c949254d682d8c9ad5682521675b8f43b102aec4").unwrap_or_default();
+        deposit.dest_address.copy_from_slice(&dest_addr);
+
+        let leaf_hash = deposit.hash();
+        assert_eq!(
+            "22ed288677b4c2afd83a6d7d55f7df7f4eaaf60f7310210c030fd27adacbc5e0",
+            hex::encode(leaf_hash)
+        );
+
+        let mut dm = LocalExitTree::<Keccak256Hasher>::new();
+        dm.add_leaf(leaf_hash).unwrap();
+        let dm_root = dm.get_root();
+        assert_eq!(
+            "5ba002329b53c11a2f1dfe90b11e031771842056cf2125b43da8103c199dcd7f",
+            hex::encode(dm_root)
+        );
+    }
 }
