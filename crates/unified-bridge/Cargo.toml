@@ -6,7 +6,7 @@ license.workspace = true
 
 [features]
 zkvm = []
-testutils = ["dep:arbitrary"]
+testutils = ["dep:arbitrary", "agglayer-primitives/testutils"]
 
 [dependencies]
 agglayer-primitives.workspace = true
