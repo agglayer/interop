@@ -7077,19 +7077,13 @@ dependencies = [
  "agglayer-primitives",
  "agglayer-tries",
  "arbitrary",
- "bincode",
  "hex",
  "hex-literal",
  "rand 0.9.0",
  "rs_merkle",
  "serde",
- "serde_json",
  "serde_with",
- "sp1-core-machine",
- "sp1-prover",
- "sp1-sdk",
  "thiserror 2.0.12",
- "tiny-keccak 2.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
