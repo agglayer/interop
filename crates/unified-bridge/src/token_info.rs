@@ -17,6 +17,7 @@ pub const L1_ETH: TokenInfo = TokenInfo {
 pub struct TokenInfo {
     /// Network which the token originates from
     pub origin_network: NetworkId,
+
     /// The address of the token on the origin network
     pub origin_token_address: Address,
 }
@@ -35,6 +36,7 @@ pub struct LeafTypeFromU8Error;
 impl TryFrom<u8> for LeafType {
     type Error = LeafTypeFromU8Error;
 
+    #[inline]
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(Self::Transfer),
@@ -45,6 +47,7 @@ impl TryFrom<u8> for LeafType {
 }
 
 impl ToBits<192> for TokenInfo {
+    #[inline]
     fn to_bits(&self) -> [bool; 192] {
         let address_bytes = self.origin_token_address.0;
         // Security: We assume here that `address_bytes` is a fixed-size array of

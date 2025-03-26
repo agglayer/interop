@@ -12,30 +12,36 @@ pub struct Digest(pub [u8; 32]);
 
 impl Deref for Digest {
     type Target = [u8; 32];
+
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
 impl AsRef<[u8]> for Digest {
+    #[inline]
     fn as_ref(&self) -> &[u8] {
         &self.0
     }
 }
 
 impl fmt::Display for Digest {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> std::fmt::Result {
         write!(f, "{:#x}", self)
     }
 }
 
 impl fmt::Debug for Digest {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:x}", self)
     }
 }
 
 impl fmt::UpperHex for Digest {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             write!(f, "0x")?;
@@ -52,22 +58,26 @@ impl fmt::UpperHex for Digest {
 impl Digest {
     pub const ZERO: Digest = Digest([0u8; 32]);
 
+    #[inline]
     pub fn as_slice(&self) -> &[u8] {
         self.0.as_slice()
     }
 
+    #[inline]
     pub fn as_bytes(&self) -> &[u8; 32] {
         &self.0
     }
 }
 
 impl From<[u8; 32]> for Digest {
+    #[inline]
     fn from(bytes: [u8; 32]) -> Self {
         Self(bytes)
     }
 }
 
 impl fmt::LowerHex for Digest {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             write!(f, "0x")?;
@@ -82,6 +92,7 @@ impl fmt::LowerHex for Digest {
 }
 
 impl<'de> Deserialize<'de> for Digest {
+    #[inline]
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -105,6 +116,7 @@ impl<'de> Deserialize<'de> for Digest {
 }
 
 impl Serialize for Digest {
+    #[inline]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -126,6 +138,7 @@ const DIGEST_FROM_BOOL_FALSE: Digest = Digest([
 ]);
 
 impl FromBool for Digest {
+    #[inline]
     fn from_bool(b: bool) -> Self {
         if b {
             DIGEST_FROM_BOOL_TRUE
@@ -136,6 +149,7 @@ impl FromBool for Digest {
 }
 
 impl FromU256 for Digest {
+    #[inline]
     fn from_u256(u: U256) -> Self {
         Self(u.to_be_bytes())
     }
@@ -143,6 +157,8 @@ impl FromU256 for Digest {
 
 impl TryFrom<&[u8]> for Digest {
     type Error = std::array::TryFromSliceError;
+
+    #[inline]
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         <[u8; 32]>::try_from(value).map(Digest)
     }
@@ -150,12 +166,15 @@ impl TryFrom<&[u8]> for Digest {
 
 impl TryFrom<Vec<u8>> for Digest {
     type Error = std::array::TryFromSliceError;
+
+    #[inline]
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
         Self::try_from(&*value)
     }
 }
 
 impl From<Digest> for Vec<u8> {
+    #[inline]
     fn from(value: Digest) -> Self {
         value.0.to_vec()
     }
@@ -163,6 +182,7 @@ impl From<Digest> for Vec<u8> {
 
 #[cfg(any(test, feature = "testutils"))]
 impl rand::distr::Distribution<Digest> for rand::distr::StandardUniform {
+    #[inline]
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Digest {
         let raw: [u8; 32] = rng.random();
         Digest(raw)

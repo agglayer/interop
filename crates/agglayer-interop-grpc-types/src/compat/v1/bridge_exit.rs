@@ -30,6 +30,7 @@ impl TryFrom<v1::BridgeExit> for BridgeExit {
 }
 
 impl From<BridgeExit> for v1::BridgeExit {
+    #[inline]
     fn from(value: BridgeExit) -> Self {
         v1::BridgeExit {
             leaf_type: match value.leaf_type {

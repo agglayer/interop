@@ -13,6 +13,7 @@ const EMPTY_METADATA_HASH: Digest = Digest(hex!(
 ));
 
 impl Hashable for TokenInfo {
+    #[inline]
     fn hash(&self) -> Digest {
         keccak256_combine([
             &self.origin_network.to_be_bytes(),
@@ -44,6 +45,7 @@ pub struct BridgeExit {
 
 impl BridgeExit {
     /// Creates a new [`BridgeExit`].
+    #[inline]
     pub fn new(
         leaf_type: LeafType,
         origin_network: NetworkId,
@@ -66,12 +68,14 @@ impl BridgeExit {
         }
     }
 
+    #[inline]
     pub fn is_transfer(&self) -> bool {
         self.leaf_type == LeafType::Transfer
     }
 }
 
 impl Hashable for BridgeExit {
+    #[inline]
     fn hash(&self) -> Digest {
         keccak256_combine([
             [self.leaf_type as u8].as_slice(),
@@ -86,12 +90,14 @@ impl Hashable for BridgeExit {
 }
 
 impl BridgeExit {
+    #[inline]
     pub fn is_message(&self) -> bool {
         self.leaf_type == LeafType::Message
     }
 
     /// Returns the [`TokenInfo`] considered for the the given amount.
     /// The amount corresponds to L1 ETH if the bridge exit is a message.
+    #[inline]
     pub fn amount_token_info(&self) -> TokenInfo {
         match self.leaf_type {
             LeafType::Message => L1_ETH,
@@ -107,6 +113,7 @@ impl BridgeExit {
 pub struct NetworkId(u32);
 
 impl Display for NetworkId {
+    #[inline]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -115,22 +122,26 @@ impl Display for NetworkId {
 impl NetworkId {
     pub const BITS: usize = u32::BITS as usize;
 
+    #[inline]
     pub const fn new(value: u32) -> Self {
         Self(value)
     }
 
+    #[inline]
     pub const fn to_u32(self) -> u32 {
         self.0
     }
 }
 
 impl From<u32> for NetworkId {
+    #[inline]
     fn from(value: u32) -> Self {
         Self(value)
     }
 }
 
 impl From<NetworkId> for u32 {
+    #[inline]
     fn from(value: NetworkId) -> Self {
         value.0
     }
@@ -139,6 +150,7 @@ impl From<NetworkId> for u32 {
 impl Deref for NetworkId {
     type Target = u32;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
     }

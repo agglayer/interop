@@ -21,9 +21,11 @@ where
     /// The SMT root
     #[serde_as(as = "_")]
     pub root: H::Digest,
+
     /// A map from node hash to node
     #[serde_as(as = "HashMap<_, _>")]
     pub tree: HashMap<H::Digest, Node<H>>,
+
     /// `empty_hash_at_height[i]` is the root of an empty Merkle tree of depth
     /// `i`.
     #[serde_as(as = "[_; DEPTH]")]
@@ -35,6 +37,7 @@ where
     H: Hasher,
     H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + Default,
 {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }
@@ -45,6 +48,7 @@ where
     H: Hasher,
     H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
 {
+    #[inline]
     pub fn new() -> Self
     where
         H::Digest: Default,
@@ -57,6 +61,7 @@ where
         Self::new_with_nodes(root.hash(), &[root])
     }
 
+    #[inline]
     pub fn new_with_nodes(root: H::Digest, nodes: &[Node<H>]) -> Self
     where
         H::Digest: Default,
@@ -69,6 +74,7 @@ where
         }
     }
 
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.root
             == H::merge(
@@ -77,6 +83,7 @@ where
             )
     }
 
+    #[inline]
     pub fn get<K>(&self, key: K) -> Option<H::Digest>
     where
         K: ToBits<DEPTH>,
@@ -135,6 +142,7 @@ where
         Ok(new_hash)
     }
 
+    #[inline]
     pub fn insert<K>(&mut self, key: K, value: H::Digest) -> Result<(), SmtError>
     where
         K: ToBits<DEPTH>,
@@ -145,6 +153,7 @@ where
         Ok(())
     }
 
+    #[inline]
     pub fn update<K>(&mut self, key: K, value: H::Digest) -> Result<(), SmtError>
     where
         K: ToBits<DEPTH>,
@@ -183,6 +192,7 @@ where
     }
 
     /// Traverse the SMT and prune all stale nodes.
+    #[inline]
     pub fn traverse_and_prune(&mut self) -> Result<(), SmtError>
     where
         H::Digest: Eq + Hash,
@@ -217,6 +227,7 @@ where
         Ok(SmtMerkleProof { siblings })
     }
 
+    #[inline]
     pub fn get_inclusion_proof<K>(&self, key: K) -> Result<SmtMerkleProof<H, DEPTH>, SmtError>
     where
         K: ToBits<DEPTH>,
@@ -230,6 +241,7 @@ where
     /// inclusion proofs to verify the balance of a token in the tree and
     /// update it. If the token is not already in the tree, we still want an
     /// inclusion proof, so we use this function.
+    #[inline]
     pub fn get_inclusion_proof_zero<K>(
         &mut self,
         key: K,

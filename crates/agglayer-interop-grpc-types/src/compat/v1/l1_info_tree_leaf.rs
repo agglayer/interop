@@ -6,6 +6,7 @@ use crate::v1;
 impl TryFrom<v1::L1InfoTreeLeaf> for L1InfoTreeLeafInner {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::L1InfoTreeLeaf) -> Result<Self, Self::Error> {
         Ok(L1InfoTreeLeafInner {
             global_exit_root: required_field!(value, global_exit_root),
@@ -16,6 +17,7 @@ impl TryFrom<v1::L1InfoTreeLeaf> for L1InfoTreeLeafInner {
 }
 
 impl From<L1InfoTreeLeafInner> for v1::L1InfoTreeLeaf {
+    #[inline]
     fn from(value: L1InfoTreeLeafInner) -> Self {
         v1::L1InfoTreeLeaf {
             global_exit_root: Some(value.global_exit_root.into()),
@@ -28,6 +30,7 @@ impl From<L1InfoTreeLeafInner> for v1::L1InfoTreeLeaf {
 impl TryFrom<v1::L1InfoTreeLeafWithContext> for L1InfoTreeLeaf {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::L1InfoTreeLeafWithContext) -> Result<Self, Self::Error> {
         Ok(L1InfoTreeLeaf {
             l1_info_tree_index: value.l1_info_tree_index,
@@ -39,6 +42,7 @@ impl TryFrom<v1::L1InfoTreeLeafWithContext> for L1InfoTreeLeaf {
 }
 
 impl From<L1InfoTreeLeaf> for v1::L1InfoTreeLeafWithContext {
+    #[inline]
     fn from(value: L1InfoTreeLeaf) -> Self {
         v1::L1InfoTreeLeafWithContext {
             l1_info_tree_index: value.l1_info_tree_index,

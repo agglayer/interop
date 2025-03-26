@@ -22,6 +22,7 @@ where
     H: Hasher,
     H::Digest: Serialize + DeserializeOwned + arbitrary::Arbitrary<'a>,
 {
+    #[inline]
     fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
         let siblings = <[H::Digest; TREE_DEPTH]>::arbitrary(u)?;
         Ok(Self { siblings })
@@ -33,6 +34,7 @@ where
     H: Hasher,
     H::Digest: Eq + Copy + Default + Serialize + DeserializeOwned,
 {
+    #[inline]
     pub fn verify(&self, leaf: H::Digest, leaf_index: u32, root: H::Digest) -> bool {
         let mut entry = leaf;
         let mut index = leaf_index;

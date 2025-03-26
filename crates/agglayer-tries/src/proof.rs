@@ -9,16 +9,19 @@ pub trait ToBits<const NUM_BITS: usize> {
 }
 
 impl ToBits<8> for u8 {
+    #[inline]
     fn to_bits(&self) -> [bool; 8] {
         std::array::from_fn(|i| (self >> i) & 1 == 1)
     }
 }
 
 impl ToBits<32> for u32 {
+    #[inline]
     fn to_bits(&self) -> [bool; 32] {
         std::array::from_fn(|i| (self >> i) & 1 == 1)
     }
 }
+
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SmtMerkleProof<H, const DEPTH: usize>

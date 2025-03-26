@@ -6,6 +6,7 @@ use crate::v1;
 impl TryFrom<v1::ImportedBridgeExit> for ImportedBridgeExit {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::ImportedBridgeExit) -> Result<Self, Self::Error> {
         Ok(ImportedBridgeExit {
             bridge_exit: required_field!(value, bridge_exit),
@@ -16,6 +17,7 @@ impl TryFrom<v1::ImportedBridgeExit> for ImportedBridgeExit {
 }
 
 impl From<ImportedBridgeExit> for v1::ImportedBridgeExit {
+    #[inline]
     fn from(value: ImportedBridgeExit) -> Self {
         v1::ImportedBridgeExit {
             bridge_exit: Some(value.bridge_exit.into()),

@@ -21,6 +21,7 @@ pub struct GlobalIndex {
 impl GlobalIndex {
     const MAINNET_FLAG_OFFSET: usize = 2 * 32;
 
+    #[inline]
     pub fn network_id(&self) -> NetworkId {
         let id = if self.mainnet_flag {
             0
@@ -31,6 +32,7 @@ impl GlobalIndex {
         NetworkId::new(id)
     }
 
+    #[inline]
     pub fn hash(&self) -> Digest {
         let global_index: U256 = (*self).into();
         keccak256(global_index.as_le_slice())
@@ -38,6 +40,7 @@ impl GlobalIndex {
 }
 
 impl From<U256> for GlobalIndex {
+    #[inline]
     fn from(value: U256) -> Self {
         let bytes = value.as_le_slice();
 
@@ -58,6 +61,7 @@ impl From<U256> for GlobalIndex {
 }
 
 impl From<GlobalIndex> for U256 {
+    #[inline]
     fn from(value: GlobalIndex) -> Self {
         let mut bytes = [0u8; 32];
 
