@@ -6,6 +6,7 @@ use crate::v1;
 impl TryFrom<v1::TokenInfo> for TokenInfo {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::TokenInfo) -> Result<Self, Self::Error> {
         Ok(TokenInfo {
             origin_network: value.origin_network.into(),
@@ -15,6 +16,7 @@ impl TryFrom<v1::TokenInfo> for TokenInfo {
 }
 
 impl From<TokenInfo> for v1::TokenInfo {
+    #[inline]
     fn from(value: TokenInfo) -> Self {
         v1::TokenInfo {
             origin_network: *value.origin_network,

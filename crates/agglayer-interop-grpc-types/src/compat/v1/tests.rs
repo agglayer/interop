@@ -8,22 +8,6 @@ use prost::Message;
 use super::Error;
 use crate::v1;
 
-#[cfg(fuzzing)]
-pub mod fuzzing_workarounds {
-    // TODO: these all should be in sp1 upstream, but they're not marked as #[used]
-    // and so disappear with optimizations
-    #[no_mangle]
-    pub extern "C" fn read_vec_raw() {
-        unimplemented!("SP1 workaround, should never be called")
-    }
-    #[no_mangle]
-    pub extern "C" fn _end() {
-        unimplemented!("SP1 workaround, should never be called")
-    }
-    #[used]
-    static _USED: [extern "C" fn(); 2] = [read_vec_raw, _end];
-}
-
 #[rstest::rstest]
 #[case::error("no_proof", Error::missing_field("proof"))]
 #[case::error("bad_data", Error::invalid_data("invalid value".to_owned()))]

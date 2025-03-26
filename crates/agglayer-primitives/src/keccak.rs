@@ -4,6 +4,7 @@ use tiny_keccak::{Hasher as _, Keccak};
 pub use crate::digest::Digest;
 
 /// Hashes the input data using a Keccak hasher with a 256-bit security level.
+#[inline]
 pub fn keccak256(data: &[u8]) -> Digest {
     let mut hasher = Keccak::v256();
     hasher.update(data);
@@ -16,6 +17,7 @@ pub fn keccak256(data: &[u8]) -> Digest {
 /// Hashes the input items using a Keccak hasher with a 256-bit security level.
 /// Safety: This function should only be called with fixed-size items to avoid
 /// collisions.
+#[inline]
 pub fn keccak256_combine<I, T>(items: I) -> Digest
 where
     I: IntoIterator<Item = T>,
@@ -46,6 +48,7 @@ pub struct Keccak256Hasher;
 impl Hasher for Keccak256Hasher {
     type Digest = Digest;
 
+    #[inline]
     fn merge(left: &Self::Digest, right: &Self::Digest) -> Self::Digest {
         keccak256_combine([left.as_ref(), right.as_ref()])
     }

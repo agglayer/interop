@@ -19,6 +19,7 @@ pub enum ErrorKind {
 }
 
 impl fmt::Display for ErrorKind {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ErrorKind::InvalidData => {
@@ -41,6 +42,7 @@ pub struct Error {
 }
 
 impl fmt::Display for Error {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if !self.field.is_empty() {
             write!(f, "{}: ", self.field_str())?;
@@ -50,6 +52,7 @@ impl fmt::Display for Error {
 }
 
 impl Error {
+    #[inline]
     pub fn missing_field(f: &'static str) -> Self {
         Error {
             kind: ErrorKind::MissingField,
@@ -59,6 +62,7 @@ impl Error {
         }
     }
 
+    #[inline]
     pub fn invalid_data(m: String) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
@@ -68,12 +72,14 @@ impl Error {
         }
     }
 
+    #[inline]
     pub fn inside_field(mut self, f: &'static str) -> Self {
         self.field.push(f);
         self.field.rotate_right(1);
         self
     }
 
+    #[inline]
     pub fn serializing_proof(e: bincode::Error) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
@@ -83,6 +89,7 @@ impl Error {
         }
     }
 
+    #[inline]
     pub fn deserializing_proof(e: bincode::Error) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
@@ -92,6 +99,7 @@ impl Error {
         }
     }
 
+    #[inline]
     pub fn parsing_signature(e: SignatureError) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
@@ -101,14 +109,17 @@ impl Error {
         }
     }
 
+    #[inline]
     pub fn kind(&self) -> ErrorKind {
         self.kind
     }
 
+    #[inline]
     pub fn field(&self) -> &[&'static str] {
         &self.field
     }
 
+    #[inline]
     pub fn field_str(&self) -> String {
         if self.field.is_empty() {
             ".".to_string()
@@ -119,6 +130,7 @@ impl Error {
 }
 
 impl From<&Error> for Vec<FieldViolation> {
+    #[inline]
     fn from(value: &Error) -> Self {
         vec![FieldViolation::new(
             value.field_str(),

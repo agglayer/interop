@@ -2,6 +2,7 @@ use agglayer_primitives::keccak::Hasher;
 
 /// Returns an array whose `i`th element is the root of an empty Merkle tree of
 /// depth `i`.
+#[inline]
 pub fn empty_hash_at_height<H, const DEPTH: usize>() -> [H::Digest; DEPTH]
 where
     H: Hasher,

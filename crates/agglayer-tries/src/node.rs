@@ -12,6 +12,7 @@ where
 {
     #[serde_as(as = "_")]
     pub left: H::Digest,
+
     #[serde_as(as = "_")]
     pub right: H::Digest,
 }
@@ -21,6 +22,7 @@ where
     H: Hasher,
     H::Digest: Copy + Serialize + DeserializeOwned,
 {
+    #[inline]
     fn clone(&self) -> Self {
         *self
     }
@@ -38,6 +40,7 @@ where
     H: Hasher,
     H::Digest: Serialize + DeserializeOwned,
 {
+    #[inline]
     pub fn hash(&self) -> H::Digest {
         H::merge(&self.left, &self.right)
     }

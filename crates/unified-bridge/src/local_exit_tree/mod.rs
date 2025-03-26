@@ -30,8 +30,10 @@ where
 pub enum LocalExitTreeError {
     #[error("Leaf index overflow")]
     LeafIndexOverflow,
+
     #[error("Index out of bounds")]
     IndexOutOfBounds,
+
     #[error("Frontier index out of bounds")]
     FrontierIndexOutOfBounds,
 }
@@ -41,6 +43,7 @@ where
     H: Hasher,
     H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
 {
+    #[inline]
     fn default() -> Self {
         Self {
             leaf_count: 0,
@@ -57,19 +60,23 @@ where
     const MAX_NUM_LEAVES: u32 = ((1u64 << TREE_DEPTH) - 1) as u32;
 
     /// Creates a new empty [`LocalExitTree`].
+    #[inline]
     pub fn new() -> Self {
         Self::default()
     }
 
+    #[inline]
     pub fn leaf_count(&self) -> u32 {
         self.leaf_count
     }
 
+    #[inline]
     pub fn frontier(&self) -> [H::Digest; TREE_DEPTH] {
         self.frontier
     }
 
     /// Creates a new [`LocalExitTree`] and populates its leaves.
+    #[inline]
     pub fn from_leaves(
         leaves: impl Iterator<Item = H::Digest>,
     ) -> Result<Self, LocalExitTreeError> {
@@ -84,6 +91,7 @@ where
 
     /// Creates a new [`LocalExitTree`] from its parts: leaf count, and
     /// frontier.
+    #[inline]
     pub fn from_parts(leaf_count: u32, frontier: [H::Digest; TREE_DEPTH]) -> Self {
         Self {
             leaf_count,
@@ -91,6 +99,7 @@ where
         }
     }
     /// Appends a leaf to the tree.
+    #[inline]
     pub fn add_leaf(&mut self, leaf: H::Digest) -> Result<u32, LocalExitTreeError> {
         if self.leaf_count >= Self::MAX_NUM_LEAVES {
             return Err(LocalExitTreeError::LeafIndexOverflow);
@@ -123,6 +132,7 @@ where
     }
 
     /// Computes and returns the root of the tree.
+    #[inline]
     pub fn get_root(&self) -> H::Digest {
         // `root` is the hash of the node we’re going to fill next.
         // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
@@ -144,6 +154,7 @@ where
 }
 
 /// Returns the bit value at index `bit_idx` in `target`
+#[inline]
 fn get_bit_at(target: u32, bit_idx: usize) -> u32 {
     (target >> bit_idx) & 1
 }

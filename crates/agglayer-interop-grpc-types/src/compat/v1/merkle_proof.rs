@@ -25,6 +25,7 @@ impl TryFrom<v1::MerkleProof> for MerkleProof {
 }
 
 impl From<MerkleProof> for v1::MerkleProof {
+    #[inline]
     fn from(value: MerkleProof) -> Self {
         v1::MerkleProof {
             root: Some(value.root.into()),

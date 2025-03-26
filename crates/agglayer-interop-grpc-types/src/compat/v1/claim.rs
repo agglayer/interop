@@ -6,6 +6,7 @@ use crate::v1;
 impl TryFrom<v1::ClaimFromMainnet> for ClaimFromMainnet {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::ClaimFromMainnet) -> Result<Self, Self::Error> {
         Ok(ClaimFromMainnet {
             proof_leaf_mer: required_field!(value, proof_leaf_mer),
@@ -16,6 +17,7 @@ impl TryFrom<v1::ClaimFromMainnet> for ClaimFromMainnet {
 }
 
 impl From<ClaimFromMainnet> for v1::ClaimFromMainnet {
+    #[inline]
     fn from(value: ClaimFromMainnet) -> Self {
         v1::ClaimFromMainnet {
             proof_leaf_mer: Some(value.proof_leaf_mer.into()),
@@ -28,6 +30,7 @@ impl From<ClaimFromMainnet> for v1::ClaimFromMainnet {
 impl TryFrom<v1::ClaimFromRollup> for ClaimFromRollup {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::ClaimFromRollup) -> Result<Self, Self::Error> {
         Ok(ClaimFromRollup {
             proof_leaf_ler: required_field!(value, proof_leaf_ler),
@@ -39,6 +42,7 @@ impl TryFrom<v1::ClaimFromRollup> for ClaimFromRollup {
 }
 
 impl From<ClaimFromRollup> for v1::ClaimFromRollup {
+    #[inline]
     fn from(value: ClaimFromRollup) -> Self {
         v1::ClaimFromRollup {
             proof_leaf_ler: Some(value.proof_leaf_ler.into()),
@@ -52,6 +56,7 @@ impl From<ClaimFromRollup> for v1::ClaimFromRollup {
 impl TryFrom<v1::imported_bridge_exit::Claim> for Claim {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: v1::imported_bridge_exit::Claim) -> Result<Self, Self::Error> {
         Ok(match value {
             v1::imported_bridge_exit::Claim::Mainnet(claim_from_mainnet) => {
@@ -71,6 +76,7 @@ impl TryFrom<v1::imported_bridge_exit::Claim> for Claim {
 }
 
 impl From<Claim> for v1::imported_bridge_exit::Claim {
+    #[inline]
     fn from(value: Claim) -> Self {
         match value {
             Claim::Mainnet(claim_from_mainnet) => {

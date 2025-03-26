@@ -7,6 +7,7 @@ use prost::bytes::Bytes;
 use super::Error;
 use crate::v1;
 
+#[inline]
 fn sp1v4_bincode_options() -> impl bincode::Options {
     bincode::DefaultOptions::new()
         .with_big_endian()
