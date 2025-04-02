@@ -14,6 +14,7 @@ agglayer-tries.workspace = true
 unified-bridge.workspace = true
 
 arbitrary = { workspace = true, optional = true }
+educe.workspace = true
 ethers = { workspace = true, optional = true }
 hex.workspace = true
 serde.workspace = true

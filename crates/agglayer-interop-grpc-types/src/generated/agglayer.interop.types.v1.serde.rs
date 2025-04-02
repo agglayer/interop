@@ -137,9 +137,7 @@ impl serde::Serialize for AggchainProof {
         if let Some(v) = self.proof.as_ref() {
             match v {
                 aggchain_proof::Proof::Sp1Stark(v) => {
-                    #[allow(clippy::needless_borrow)]
-                    #[allow(clippy::needless_borrows_for_generic_args)]
-                    struct_ser.serialize_field("sp1Stark", pbjson::private::base64::encode(&v).as_str())?;
+                    struct_ser.serialize_field("sp1Stark", v)?;
                 }
             }
         }
@@ -232,7 +230,8 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
                             if proof__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("sp1Stark"));
                             }
-                            proof__ = map_.next_value::<::std::option::Option<::pbjson::private::BytesDeserialize<_>>>()?.map(|x| aggchain_proof::Proof::Sp1Stark(x.0));
+                            proof__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_proof::Proof::Sp1Stark)
+;
                         }
                     }
                 }
@@ -1590,6 +1589,139 @@ impl<'de> serde::Deserialize<'de> for MerkleProof {
             }
         }
         deserializer.deserialize_struct("agglayer.interop.types.v1.MerkleProof", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for Sp1StarkProof {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.version.is_empty() {
+            len += 1;
+        }
+        if !self.proof.is_empty() {
+            len += 1;
+        }
+        if !self.vkey.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.SP1StarkProof", len)?;
+        if !self.version.is_empty() {
+            struct_ser.serialize_field("version", &self.version)?;
+        }
+        if !self.proof.is_empty() {
+            #[allow(clippy::needless_borrow)]
+            #[allow(clippy::needless_borrows_for_generic_args)]
+            struct_ser.serialize_field("proof", pbjson::private::base64::encode(&self.proof).as_str())?;
+        }
+        if !self.vkey.is_empty() {
+            #[allow(clippy::needless_borrow)]
+            #[allow(clippy::needless_borrows_for_generic_args)]
+            struct_ser.serialize_field("vkey", pbjson::private::base64::encode(&self.vkey).as_str())?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for Sp1StarkProof {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "version",
+            "proof",
+            "vkey",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Version,
+            Proof,
+            Vkey,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "version" => Ok(GeneratedField::Version),
+                            "proof" => Ok(GeneratedField::Proof),
+                            "vkey" => Ok(GeneratedField::Vkey),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = Sp1StarkProof;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct agglayer.interop.types.v1.SP1StarkProof")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<Sp1StarkProof, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut version__ = None;
+                let mut proof__ = None;
+                let mut vkey__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::Version => {
+                            if version__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("version"));
+                            }
+                            version__ = Some(map_.next_value()?);
+                        }
+                        GeneratedField::Proof => {
+                            if proof__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("proof"));
+                            }
+                            proof__ = 
+                                Some(map_.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::Vkey => {
+                            if vkey__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("vkey"));
+                            }
+                            vkey__ = 
+                                Some(map_.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0)
+                            ;
+                        }
+                    }
+                }
+                Ok(Sp1StarkProof {
+                    version: version__.unwrap_or_default(),
+                    proof: proof__.unwrap_or_default(),
+                    vkey: vkey__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("agglayer.interop.types.v1.SP1StarkProof", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for TokenInfo {

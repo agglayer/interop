@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use agglayer_interop_types::aggchain_proof::{AggchainData, Proof};
+use agglayer_interop_types::aggchain_proof::{AggchainData, Proof, SP1StarkWithContext};
 use bincode::Options as _;
 use prost::bytes::Bytes;
 
@@ -27,15 +27,33 @@ impl TryFrom<v1::AggchainData> for AggchainData {
             Some(v1::aggchain_data::Data::Generic(proof)) => AggchainData::Generic {
                 aggchain_params: required_field!(proof, aggchain_params),
                 proof: match proof.proof {
-                    Some(v1::aggchain_proof::Proof::Sp1Stark(proof)) => Proof::SP1Stark(Box::new(
-                        std::panic::catch_unwind(|| sp1v4_bincode_options().deserialize(&proof))
+                    Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
+                        version,
+                        proof,
+                        vkey,
+                    })) => Proof::SP1Stark(SP1StarkWithContext {
+                        proof: Box::new(
+                            std::panic::catch_unwind(|| {
+                                sp1v4_bincode_options().deserialize(&proof)
+                            })
                             .map_err(|_| {
                                 Error::deserializing_proof(Box::new(bincode::ErrorKind::Custom(
                                     String::from("panic"),
                                 )))
                             })?
                             .map_err(Error::deserializing_proof)?,
-                    )),
+                        ),
+                        vkey: std::panic::catch_unwind(|| {
+                            sp1v4_bincode_options().deserialize(&vkey)
+                        })
+                        .map_err(|_| {
+                            Error::deserializing_proof(Box::new(bincode::ErrorKind::Custom(
+                                String::from("panic"),
+                            )))
+                        })?
+                        .map_err(Error::deserializing_vkey)?,
+                        version,
+                    }),
                     None => return Err(Error::missing_field("proof").inside_field("data")),
                 },
             },
@@ -61,12 +79,17 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                 } => v1::aggchain_data::Data::Generic(v1::AggchainProof {
                     context: HashMap::new(),
                     aggchain_params: Some(aggchain_params.into()),
-                    proof: Some(v1::aggchain_proof::Proof::Sp1Stark(
-                        sp1v4_bincode_options()
-                            .serialize(&proof)
+                    proof: Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
+                        version: proof.version,
+                        proof: sp1v4_bincode_options()
+                            .serialize(&proof.proof)
                             .map_err(Error::serializing_proof)?
                             .into(),
-                    )),
+                        vkey: sp1v4_bincode_options()
+                            .serialize(&proof.vkey)
+                            .map_err(Error::serializing_vkey)?
+                            .into(),
+                    })),
                 }),
             }),
         })
