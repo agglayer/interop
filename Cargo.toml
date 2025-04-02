@@ -36,6 +36,7 @@ buildstructor = "0.5.4"
 clap = { version = "4.5.28", features = ["derive", "env"] }
 dirs = "5.0.1"
 dotenvy = "0.15.7"
+educe = "0.6.0"
 ethers = "2.0.14"
 ethers-gcp-kms-signer = "0.1.5"
 ethers-signers = "2.0.14"

@@ -1,9 +1,11 @@
 use agglayer_primitives::Signature;
+use educe::Educe;
 use serde::{Deserialize, Serialize};
 use sp1_core_machine::reduce::SP1ReduceProof;
 use sp1_prover::InnerSC;
+use sp1_sdk::SP1VerifyingKey;
 
-use crate::Digest;
+use crate::{aggchain_proof, Digest};
 
 // Aggchain data submitted via the [`Certificate`].
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -23,10 +25,19 @@ pub enum AggchainData {
 
 pub type SP1StarkProof = SP1ReduceProof<InnerSC>;
 
+#[derive(Educe, Serialize, Deserialize, Clone)]
+#[educe(Debug)]
+pub struct SP1StarkWithContext {
+    pub proof: Box<SP1StarkProof>,
+    #[educe(Debug(ignore))]
+    pub vkey: SP1VerifyingKey,
+    pub version: String,
+}
+
 /// Proof that is part of the aggchain proof submitted via the [`Certificate`].
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum Proof {
-    SP1Stark(Box<SP1StarkProof>),
+    SP1Stark(SP1StarkWithContext),
 }
 
 #[cfg(feature = "testutils")]
@@ -44,7 +55,23 @@ impl<'a> arbitrary::Arbitrary<'a> for Proof {
             bincode::ErrorKind::SizeLimit => arbitrary::Error::NotEnoughData,
             _ => arbitrary::Error::IncorrectFormat,
         })?;
-        Ok(Proof::SP1Stark(Box::new(proof)))
+
+        let bytes = <&[u8]>::arbitrary(u)?;
+        let vkey = std::panic::catch_unwind(|| {
+            bincode::options()
+                .with_limit(bytes.len() as u64)
+                .deserialize(bytes)
+        })
+        .map_err(|_| arbitrary::Error::IncorrectFormat)?
+        .map_err(|e| match *e {
+            bincode::ErrorKind::SizeLimit => arbitrary::Error::NotEnoughData,
+            _ => arbitrary::Error::IncorrectFormat,
+        })?;
+        Ok(Proof::SP1Stark(aggchain_proof::SP1StarkWithContext {
+            proof,
+            vkey,
+            version: String::arbitrary(u)?,
+        }))
     }
 }
 

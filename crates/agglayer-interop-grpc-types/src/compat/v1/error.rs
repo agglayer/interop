@@ -90,10 +90,30 @@ impl Error {
     }
 
     #[inline]
+    pub fn serializing_vkey(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to serialize vkey".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
     pub fn deserializing_proof(e: bincode::Error) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
             message: "failed to deserialize proof".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
+    pub fn deserializing_vkey(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to deserialize vkey".to_string(),
             field: vec![],
             source: Some(SourceError::Bincode(e)),
         }
