@@ -5,7 +5,7 @@ use sp1_core_machine::reduce::SP1ReduceProof;
 use sp1_prover::InnerSC;
 use sp1_sdk::SP1VerifyingKey;
 
-use crate::{aggchain_proof, Digest};
+use crate::Digest;
 
 // Aggchain data submitted via the [`Certificate`].
 #[derive(Serialize, Deserialize, Clone, Debug)]
