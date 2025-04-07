@@ -383,11 +383,21 @@ impl GlobalIndexWithLeafHash {
     }
 }
 
+impl From<&ImportedBridgeExit> for GlobalIndexWithLeafHash {
+    fn from(value: &ImportedBridgeExit) -> Self {
+        Self {
+            global_index: value.global_index.into(),
+            bridge_exit_hash: value.bridge_exit.hash(),
+        }
+    }
+}
+
 /// The values which compose the commitment on the imported bridge exits.
 pub struct ImportedBridgeExitCommitmentValues {
     pub claims: Vec<GlobalIndexWithLeafHash>,
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum CommitmentVersion {
     V2,
     V3,

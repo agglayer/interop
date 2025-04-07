@@ -67,11 +67,13 @@ impl<'a> arbitrary::Arbitrary<'a> for Proof {
             bincode::ErrorKind::SizeLimit => arbitrary::Error::NotEnoughData,
             _ => arbitrary::Error::IncorrectFormat,
         })?;
-        Ok(Proof::SP1Stark(aggchain_proof::SP1StarkWithContext {
-            proof,
-            vkey,
-            version: String::arbitrary(u)?,
-        }))
+        Ok(Proof::SP1Stark(
+            crate::aggchain_proof::SP1StarkWithContext {
+                proof,
+                vkey,
+                version: String::arbitrary(u)?,
+            },
+        ))
     }
 }
 
