@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::bridge_exit::BridgeExit;
+use crate::CommitmentVersion;
 use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
 
 impl Hashable for MerkleProof {
@@ -395,12 +396,6 @@ impl From<&ImportedBridgeExit> for GlobalIndexWithLeafHash {
 /// The values which compose the commitment on the imported bridge exits.
 pub struct ImportedBridgeExitCommitmentValues {
     pub claims: Vec<GlobalIndexWithLeafHash>,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum CommitmentVersion {
-    V2,
-    V3,
 }
 
 impl ImportedBridgeExitCommitmentValues {
