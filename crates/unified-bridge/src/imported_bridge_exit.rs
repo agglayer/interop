@@ -88,8 +88,13 @@ pub struct L1InfoTreeLeaf {
 
 impl L1InfoTreeLeaf {
     #[inline]
+    pub fn ger(&self) -> Digest {
+        keccak256_combine([self.mer, self.rer])
+    }
+
+    #[inline]
     pub fn hash(&self) -> Digest {
-        self.inner.hash(keccak256_combine([self.mer, self.rer]))
+        self.inner.hash(self.ger())
     }
 }
 
