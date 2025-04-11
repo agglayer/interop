@@ -370,6 +370,14 @@ impl ImportedBridgeExit {
             }
         }
     }
+
+    /// Returns the global index and the underlying bridge exit leaf hash.
+    pub fn to_indexed_exit_hash(value: &ImportedBridgeExit) -> GlobalIndexWithLeafHash {
+        GlobalIndexWithLeafHash {
+            global_index: value.global_index.into(),
+            bridge_exit_hash: value.bridge_exit.hash(),
+        }
+    }
 }
 
 /// Refers to one claim as per its global index and the hash of the underlying
@@ -378,23 +386,15 @@ impl ImportedBridgeExit {
 pub struct GlobalIndexWithLeafHash {
     /// Global index of the claimed bridge exit.
     pub global_index: U256,
+
     /// Hash of the claimed bridge exit.
     pub bridge_exit_hash: Digest,
 }
 
 impl GlobalIndexWithLeafHash {
-    /// Compute the bridge exit commitment for the hash chain.
+    /// Compute the bridge exit commitment used for the hash chain.
     pub fn commitment(&self) -> Digest {
         keccak256_combine([self.global_index.to_be_bytes(), self.bridge_exit_hash.0])
-    }
-}
-
-impl From<&ImportedBridgeExit> for GlobalIndexWithLeafHash {
-    fn from(value: &ImportedBridgeExit) -> Self {
-        Self {
-            global_index: value.global_index.into(),
-            bridge_exit_hash: value.bridge_exit.hash(),
-        }
     }
 }
 
