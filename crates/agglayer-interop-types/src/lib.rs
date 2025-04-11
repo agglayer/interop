@@ -14,12 +14,11 @@ pub use unified_bridge::bridge_exit::BridgeExit;
 pub use unified_bridge::bridge_exit::NetworkId;
 pub use unified_bridge::global_index::GlobalIndex;
 pub use unified_bridge::imported_bridge_exit::{
-    Claim, ClaimFromMainnet, ClaimFromRollup, ImportedBridgeExit, L1InfoTreeLeaf,
-    L1InfoTreeLeafInner, MerkleProof,
+    Claim, ClaimFromMainnet, ClaimFromRollup, GlobalIndexWithLeafHash, ImportedBridgeExit,
+    ImportedBridgeExitCommitmentValues, L1InfoTreeLeaf, L1InfoTreeLeafInner, MerkleProof,
 };
 pub use unified_bridge::token_info::LeafType;
 pub use unified_bridge::token_info::TokenInfo;
-// pub use pessimistic_proof::proof::Proof;
 
 #[derive(Debug, thiserror::Error, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Error {
