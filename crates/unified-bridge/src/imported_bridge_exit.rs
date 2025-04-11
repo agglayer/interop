@@ -372,10 +372,10 @@ impl ImportedBridgeExit {
     }
 
     /// Returns the global index and the underlying bridge exit leaf hash.
-    pub fn to_indexed_exit_hash(value: &ImportedBridgeExit) -> GlobalIndexWithLeafHash {
+    pub fn to_indexed_exit_hash(&self) -> GlobalIndexWithLeafHash {
         GlobalIndexWithLeafHash {
-            global_index: value.global_index.into(),
-            bridge_exit_hash: value.bridge_exit.hash(),
+            global_index: self.global_index.into(),
+            bridge_exit_hash: self.bridge_exit.hash(),
         }
     }
 }
