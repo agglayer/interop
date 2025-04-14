@@ -78,8 +78,8 @@ rstest = "0.22.0"
 test-log = "0.2.16"
 
 # SP1 dependencies
-sp1-core-machine = "=4.1.4"
-sp1-sdk = "=4.1.4"
-sp1-primitives = "=4.1.4"
-sp1-prover = "=4.1.4"
-sp1-zkvm = { version = "=4.1.4", default-features = false }
+sp1-core-machine = "=4.1.7"
+sp1-sdk = "=4.1.7"
+sp1-primitives = "=4.1.7"
+sp1-prover = "=4.1.7"
+sp1-zkvm = { version = "=4.1.7", default-features = false }
