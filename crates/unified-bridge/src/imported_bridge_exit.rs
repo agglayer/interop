@@ -1,4 +1,6 @@
+use agglayer_primitives::keccak::keccak256;
 use agglayer_primitives::utils::Hashable;
+use agglayer_primitives::U256;
 use agglayer_primitives::{
     digest::Digest,
     keccak::{keccak256_combine, Hasher, Keccak256Hasher},
@@ -7,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::bridge_exit::BridgeExit;
+use crate::CommitmentVersion;
 use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
 
 impl Hashable for MerkleProof {
@@ -85,8 +88,13 @@ pub struct L1InfoTreeLeaf {
 
 impl L1InfoTreeLeaf {
     #[inline]
+    pub fn ger(&self) -> Digest {
+        keccak256_combine([self.mer, self.rer])
+    }
+
+    #[inline]
     pub fn hash(&self) -> Digest {
-        self.inner.hash(keccak256_combine([self.mer, self.rer]))
+        self.inner.hash(self.ger())
     }
 }
 
@@ -362,9 +370,64 @@ impl ImportedBridgeExit {
             }
         }
     }
+
+    /// Returns the global index and the underlying bridge exit leaf hash.
+    pub fn to_indexed_exit_hash(&self) -> GlobalIndexWithLeafHash {
+        GlobalIndexWithLeafHash {
+            global_index: self.global_index.into(),
+            bridge_exit_hash: self.bridge_exit.hash(),
+        }
+    }
 }
 
-#[inline]
-pub fn commit_imported_bridge_exits(iter: impl Iterator<Item = GlobalIndex>) -> Digest {
-    keccak256_combine(iter.map(|global_index| global_index.hash()))
+/// Refers to one claim as per its global index and the hash of the underlying
+/// bridge exit.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct GlobalIndexWithLeafHash {
+    /// Global index of the claimed bridge exit.
+    pub global_index: U256,
+
+    /// Hash of the claimed bridge exit.
+    pub bridge_exit_hash: Digest,
+}
+
+impl GlobalIndexWithLeafHash {
+    /// Compute the bridge exit commitment used for the hash chain.
+    pub fn commitment(&self) -> Digest {
+        keccak256_combine([self.global_index.to_be_bytes(), self.bridge_exit_hash.0])
+    }
+}
+
+/// The values which compose the commitment on the imported bridge exits.
+pub struct ImportedBridgeExitCommitmentValues {
+    pub claims: Vec<GlobalIndexWithLeafHash>,
+}
+
+impl ImportedBridgeExitCommitmentValues {
+    /// Returns the expected signed commitment for the provided version.
+    #[inline]
+    pub fn commitment(&self, version: CommitmentVersion) -> Digest {
+        match version {
+            CommitmentVersion::V2 => {
+                // Commits solely to the global index of each imported bridge exit. Designed
+                // prior to having any notion of aggchain proof.
+                keccak256_combine(
+                    self.claims
+                        .iter()
+                        .map(|ibe| keccak256(ibe.global_index.as_le_slice())),
+                )
+            }
+            CommitmentVersion::V3 => {
+                // Adds the bridge exit hashes in the commitment to ensure that the aggchain
+                // proof and PP talk about the exact same set of imported bridge exits.
+                keccak256_combine(self.claims.iter().map(|ibe| {
+                    [
+                        ibe.global_index.as_le_slice(),
+                        ibe.bridge_exit_hash.as_slice(),
+                    ]
+                    .concat()
+                }))
+            }
+        }
+    }
 }
