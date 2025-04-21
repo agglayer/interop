@@ -31,9 +31,9 @@ async-trait = "0.1.88"
 axum = "0.8.1"
 base64 = "0.22.0"
 bincode = "1.3.3"
-bolero = { version = "0.13.0", features = ["arbitrary"] }
+bolero = { version = "0.13.2", features = ["arbitrary"] }
 buildstructor = "0.5.4"
-clap = { version = "4.5.36", features = ["derive", "env"] }
+clap = { version = "4.5.37", features = ["derive", "env"] }
 dirs = "5.0.1"
 dotenvy = "0.15.7"
 educe = "0.6.0"
@@ -73,7 +73,7 @@ insta = { git = "https://github.com/freyskeyd/insta", branch = "chore/updating-d
     "json",
 ] }
 mockall = "0.13.1"
-rand = "0.9.0"
+rand = "0.9.1"
 rstest = "0.22.0"
 test-log = "0.2.16"
 
