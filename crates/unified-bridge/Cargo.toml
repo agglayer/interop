@@ -22,7 +22,7 @@ thiserror.workspace = true
 [dev-dependencies]
 agglayer-primitives = { workspace = true, features = ["testutils"] }
 hex.workspace = true
-rand = "0.9.0"
+rand = "0.9.1"
 rs_merkle = { version = "1.4", default-features = false }
 
 [lints]
