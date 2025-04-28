@@ -16,7 +16,7 @@ agglayer-interop-types = { workspace = true, optional = true }
 
 bincode = { workspace = true, optional = true }
 hex.workspace = true
-pbjson = "0.7.0"
+pbjson.workspace = true
 prost.workspace = true
 serde.workspace = true
 tonic-types.workspace = true
