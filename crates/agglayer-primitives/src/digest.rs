@@ -1,5 +1,6 @@
 use std::{fmt, ops::Deref};
 
+use alloy_primitives::B256;
 use hex::FromHex;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -73,6 +74,20 @@ impl From<[u8; 32]> for Digest {
     #[inline]
     fn from(bytes: [u8; 32]) -> Self {
         Self(bytes)
+    }
+}
+
+impl From<B256> for Digest {
+    #[inline]
+    fn from(bytes: B256) -> Self {
+        Self(bytes.into())
+    }
+}
+
+impl From<Digest> for B256 {
+    #[inline]
+    fn from(bytes: Digest) -> Self {
+        Self::from(bytes.0)
     }
 }
 

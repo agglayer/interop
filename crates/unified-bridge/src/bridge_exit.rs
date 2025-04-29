@@ -1,8 +1,8 @@
 use std::{fmt::Display, ops::Deref};
 
 use agglayer_primitives::keccak::{keccak256, keccak256_combine};
-use agglayer_primitives::utils::Hashable;
-use agglayer_primitives::{digest::Digest, Address, U256};
+use agglayer_primitives::Hashable;
+use agglayer_primitives::{Address, Digest, U256};
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 

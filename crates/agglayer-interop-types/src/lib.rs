@@ -1,4 +1,4 @@
-pub use agglayer_primitives::digest::Digest;
+pub use agglayer_primitives::Digest;
 use agglayer_tries::error::SmtError;
 use serde::{Deserialize, Serialize};
 
