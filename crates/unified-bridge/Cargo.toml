@@ -8,22 +8,22 @@ license.workspace = true
 zkvm = []
 testutils = ["dep:arbitrary", "agglayer-primitives/testutils"]
 
+[lints]
+workspace = true
+
 [dependencies]
 agglayer-primitives.workspace = true
 agglayer-tries.workspace = true
 
 arbitrary = { workspace = true, optional = true }
-hex-literal = "0.4"
-serde = { version = "1", features = ["derive"] }
-serde_with = { version = "3" }
-sha2 = { git = "https://github.com/sp1-patches/RustCrypto-hashes.git", package = "sha2", tag = "patch-sha2-0.10.8-sp1-4.0.0" }
+hex-literal.workspace = true
+serde.workspace = true
+serde_with.workspace = true
+sha2.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
-agglayer-primitives = { workspace = true, features = ["testutils"] }
+unified-bridge = { workspace = true, features = ["testutils"] }
 hex.workspace = true
-rand = "0.9.0"
-rs_merkle = { version = "1.4", default-features = false }
-
-[lints]
-workspace = true
+rand.workspace = true
+rs_merkle.workspace = true

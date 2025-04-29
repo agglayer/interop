@@ -4,10 +4,6 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
-[dependencies]
-agglayer-interop-types = { workspace = true }
-agglayer-interop-grpc-types = { workspace = true, optional = true }
-
 [features]
 default = []
 
@@ -18,3 +14,7 @@ testutils = ["agglayer-interop-types/testutils"]
 
 [lints]
 workspace = true
+
+[dependencies]
+agglayer-interop-types.workspace = true
+agglayer-interop-grpc-types = { workspace = true, optional = true }
