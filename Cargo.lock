@@ -50,10 +50,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "agglayer-blockchain"
+name = "agglayer-evm-client"
 version = "0.1.0"
 dependencies = [
- "agglayer-blockchain",
+ "agglayer-evm-client",
  "agglayer-primitives",
  "alloy",
  "anyhow",

@@ -14,7 +14,7 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 ] }
 
 [workspace.dependencies]
-agglayer-blockchain = { path = "crates/agglayer-blockchain" }
+agglayer-evm-client = { path = "crates/agglayer-evm-client" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types" }
 agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types" }
 agglayer-primitives = { path = "crates/agglayer-primitives" }

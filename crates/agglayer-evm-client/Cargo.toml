@@ -1,5 +1,5 @@
 [package]
-name = "agglayer-blockchain"
+name = "agglayer-evm-client"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -21,4 +21,4 @@ mockall = { workspace = true, optional = true }
 thiserror.workspace = true
 
 [dev-dependencies]
-agglayer-blockchain = { workspace = true, features = ["testutils"] }
+agglayer-evm-client = { workspace = true, features = ["testutils"] }
