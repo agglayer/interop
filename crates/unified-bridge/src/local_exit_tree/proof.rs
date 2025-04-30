@@ -32,7 +32,7 @@ where
 impl<H, const TREE_DEPTH: usize> LETMerkleProof<H, TREE_DEPTH>
 where
     H: Hasher,
-    H::Digest: Eq + Copy + Default + Serialize + DeserializeOwned,
+    H::Digest: Eq + Copy + Default + Serialize + DeserializeOwned + Debug,
 {
     #[inline]
     pub fn verify(&self, leaf: H::Digest, leaf_index: u32, root: H::Digest) -> bool {
@@ -50,6 +50,7 @@ where
             return false;
         }
 
+        eprintln!("Computed root is {entry:?}, expected root is {root:?}");
         entry == root
     }
 }
