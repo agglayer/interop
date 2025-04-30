@@ -1,4 +1,4 @@
-use agglayer_primitives::keccak::Digest;
+use agglayer_primitives::Digest;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest as Sha256Digest, Sha256};
 

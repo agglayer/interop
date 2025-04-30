@@ -1,5 +1,5 @@
 use agglayer_primitives::U256;
-use agglayer_primitives::{digest::Digest, keccak::keccak256};
+use agglayer_primitives::{keccak::keccak256, Digest};
 use serde::{Deserialize, Serialize};
 
 use crate::bridge_exit::NetworkId;

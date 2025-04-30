@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tiny_keccak::{Hasher as _, Keccak};
 
-pub use crate::digest::Digest;
+use crate::Digest;
 
 /// Hashes the input data using a Keccak hasher with a 256-bit security level.
 #[inline]

@@ -1,9 +1,7 @@
-use agglayer_primitives::keccak::keccak256;
-use agglayer_primitives::utils::Hashable;
-use agglayer_primitives::U256;
 use agglayer_primitives::{
-    digest::Digest,
+    keccak::keccak256,
     keccak::{keccak256_combine, Hasher, Keccak256Hasher},
+    Digest, Hashable, U256,
 };
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
