@@ -98,14 +98,10 @@ fn regression_sp1_serialization_roundtrip_fail() {
     let input: SP1StarkProof = bincode::options()
         .deserialize(&bytes)
         .expect("failed first deserialization, would be fine");
-    let serialized: Vec<u8> = bincode::DefaultOptions::new()
-        .with_big_endian()
-        .with_fixint_encoding()
+    let serialized: Vec<u8> = crate::bincode::default()
         .serialize(&input)
         .expect("failed serialization, unexpected");
-    let _output: SP1StarkProof = bincode::DefaultOptions::new()
-        .with_big_endian()
-        .with_fixint_encoding()
+    let _output: SP1StarkProof = crate::bincode::default()
         .deserialize(&serialized)
         .expect("failed second deserialization, is unexpected");
 }
