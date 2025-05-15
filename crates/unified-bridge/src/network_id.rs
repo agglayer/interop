@@ -2,13 +2,10 @@ use std::{fmt::Display, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
-
 /// A network ID.
-/// 
+///
 /// 0 refers to ethereum, and rollups are numbered from 1 to `u32::MAX`.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct NetworkId(u32);
 

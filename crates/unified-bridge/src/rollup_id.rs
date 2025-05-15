@@ -4,15 +4,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::{NetworkId, RollupIndex};
 
-
 /// A rollup ID.
-/// 
+///
 /// Rollups are numbered from 1 to `u32::MAX`.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
-pub struct RollupId(#[arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(1..=u32::MAX))] u32);
+pub struct RollupId(
+    #[arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(1..=u32::MAX))] u32,
+);
 
 impl Display for RollupId {
     #[inline]
@@ -24,7 +23,8 @@ impl Display for RollupId {
 impl<'de> Deserialize<'de> for RollupId {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: serde::Deserializer<'de> {
+        D: serde::Deserializer<'de>,
+    {
         let id = u32::deserialize(deserializer)?;
         if id == 0 {
             return Err(serde::de::Error::custom("Rollup ID cannot be 0"));
@@ -56,7 +56,7 @@ impl RollupId {
 
 impl TryFrom<u32> for RollupId {
     type Error = InvalidRollupIdError;
-    
+
     #[inline]
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         if value == 0 {

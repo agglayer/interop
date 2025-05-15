@@ -4,8 +4,7 @@ use agglayer_primitives::{Address, Digest, U256};
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 
-pub use crate::token_info::{LeafType, TokenInfo, L1_ETH};
-pub use crate::NetworkId;
+use crate::{LeafType, NetworkId, TokenInfo, L1_ETH};
 
 const EMPTY_METADATA_HASH: Digest = Digest(hex!(
     "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
