@@ -10,7 +10,7 @@ use crate::bridge_exit::NetworkId;
 /// Further defined by the LXLY specifications.
 /// | 191 bits |    1 bit      |    32 bits   |    32 bits   |
 /// |    0     |  mainnet flag | rollup index |  leaf index  |
-#[derive(Debug, Clone, Serialize, Deserialize, Copy, Default, PartialEq, PartialOrd, Ord, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, PartialOrd, Ord, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct GlobalIndex {
     pub mainnet_flag: bool,

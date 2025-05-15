@@ -2,7 +2,7 @@ use agglayer_primitives::{address, Address};
 use agglayer_tries::proof::ToBits;
 use serde::{Deserialize, Serialize};
 
-use crate::bridge_exit::NetworkId;
+use crate::NetworkId;
 
 pub const L1_NETWORK_ID: NetworkId = NetworkId::new(0);
 pub const L1_ETH: TokenInfo = TokenInfo {
