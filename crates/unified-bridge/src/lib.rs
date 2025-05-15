@@ -17,8 +17,8 @@ pub use imported_bridge_exit::{
 };
 pub use local_exit_tree::{proof::LETMerkleProof, LocalExitTree};
 pub use network_id::NetworkId;
-pub use rollup_id::RollupId;
-pub use rollup_index::RollupIndex;
+pub use rollup_id::{InvalidRollupIdError, RollupId};
+pub use rollup_index::{InvalidRollupIndexError, RollupIndex};
 pub use token_info::{LeafType, TokenInfo, L1_ETH};
 
 #[derive(Debug, Clone, Copy)]
