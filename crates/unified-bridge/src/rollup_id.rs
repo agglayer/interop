@@ -10,7 +10,8 @@ use crate::{NetworkId, RollupIndex};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct RollupId(
-    #[arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(1..=u32::MAX))] u32,
+    #[cfg_attr(feature = "testutils", arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(1..=u32::MAX)))]
+     u32,
 );
 
 impl Display for RollupId {

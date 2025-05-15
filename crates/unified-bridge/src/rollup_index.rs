@@ -10,7 +10,8 @@ use crate::{NetworkId, RollupId};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct RollupIndex(
-    #[arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(0..=u32::MAX - 1))] u32,
+    #[cfg_attr(feature = "testutils", arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(0..=u32::MAX - 1)))]
+     u32,
 );
 
 // No Display implementation on purpose: the integer here is off-by-one compared
