@@ -1,6 +1,7 @@
-use agglayer_primitives::keccak::{keccak256, keccak256_combine};
-use agglayer_primitives::Hashable;
-use agglayer_primitives::{Address, Digest, U256};
+use agglayer_primitives::{
+    keccak::{keccak256, keccak256_combine},
+    Address, Digest, Hashable, U256,
+};
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 

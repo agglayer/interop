@@ -1,14 +1,14 @@
 use agglayer_primitives::{
-    keccak::keccak256,
-    keccak::{keccak256_combine, Hasher, Keccak256Hasher},
+    keccak::{keccak256, keccak256_combine, Hasher, Keccak256Hasher},
     Digest, Hashable, U256,
 };
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::bridge_exit::BridgeExit;
-use crate::CommitmentVersion;
-use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
+use crate::{
+    bridge_exit::BridgeExit, global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof,
+    CommitmentVersion,
+};
 
 impl Hashable for MerkleProof {
     #[inline]
