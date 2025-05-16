@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use serde::{Deserialize, Serialize};
 
 use crate::{NetworkId, RollupId};
@@ -15,7 +13,9 @@ pub struct RollupIndex(
 );
 
 // No Display implementation on purpose: the integer here is off-by-one compared
-// to NetworkIds
+// to NetworkIds. We don't want ourselves to mistakenly write eg. `error
+// handling certificate from network {rollup_index}`, so let's force Debug
+// representation here.
 
 impl<'de> Deserialize<'de> for RollupIndex {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -49,6 +49,16 @@ impl RollupIndex {
     pub const fn to_u32(self) -> u32 {
         self.0
     }
+
+    #[inline]
+    pub const fn to_be_bytes(self) -> [u8; 4] {
+        self.0.to_be_bytes()
+    }
+
+    #[inline]
+    pub const fn to_le_bytes(self) -> [u8; 4] {
+        self.0.to_le_bytes()
+    }
 }
 
 impl TryFrom<u32> for RollupIndex {
@@ -56,10 +66,7 @@ impl TryFrom<u32> for RollupIndex {
 
     #[inline]
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        if value == u32::MAX {
-            return Err(InvalidRollupIndexError);
-        }
-        Ok(RollupIndex(value))
+        RollupIndex::new(value)
     }
 }
 
@@ -93,14 +100,5 @@ impl From<RollupId> for RollupIndex {
     #[inline]
     fn from(value: RollupId) -> Self {
         RollupIndex(value.to_u32() - 1)
-    }
-}
-
-impl Deref for RollupIndex {
-    type Target = u32;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
     }
 }

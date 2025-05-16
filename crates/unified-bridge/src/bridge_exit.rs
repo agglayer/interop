@@ -78,9 +78,9 @@ impl Hashable for BridgeExit {
     fn hash(&self) -> Digest {
         keccak256_combine([
             [self.leaf_type as u8].as_slice(),
-            &u32::to_be_bytes(*self.token_info.origin_network),
+            &self.token_info.origin_network.to_be_bytes(),
             self.token_info.origin_token_address.as_slice(),
-            &u32::to_be_bytes(*self.dest_network),
+            &self.dest_network.to_be_bytes(),
             self.dest_address.as_slice(),
             &self.amount.to_be_bytes::<32>(),
             &self.metadata.unwrap_or(EMPTY_METADATA_HASH).0,
