@@ -19,12 +19,22 @@ message AggchainData {
 message AggchainProof {
   // Aggchain params.
   FixedBytes32 aggchain_params = 1;
+
+  // The signature linked to the aggchain-proof.
+  // This signature is used to verify the authenticity of the aggchain-proof.
+  // It represents a commitment to:
+  // - `NewLocalExitRoot`
+  // - `ClaimHash` (which is the hash of all the claims's global index + bridge exit hash)
+  // - `Height` of the certificate associated to this aggchain-proof
+  // - `AggchainParams` of the aggchain-proof
+  FixedBytes65 signature = 2;
+
   // Aggchain proof context to share non-sensitive data.
-  map<string, bytes> context = 2;
+  map<string, bytes> context = 3;
   // The proof for the aggchain.
   oneof proof {
     // SP1 stark proof.
-    SP1StarkProof sp1_stark = 3;
+    SP1StarkProof sp1_stark = 4;
   }
 }
 
