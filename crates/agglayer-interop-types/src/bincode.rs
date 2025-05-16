@@ -31,7 +31,7 @@ pub struct Codec<Opts>(Opts);
 
 /// Create a bincode codec with default agglayer settings.
 #[inline]
-pub fn default() -> DefaultCodec {
+pub fn default() -> Codec<options::Default> {
     Codec(options::default())
 }
 
