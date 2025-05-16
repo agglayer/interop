@@ -1,5 +1,4 @@
-use bincode::Options;
-pub use bincode::{Error, Result};
+pub use bincode::{Error, Options, Result};
 
 /// Bincode configuration. Deliberately inaccessible from the outside.
 mod options {
@@ -32,7 +31,7 @@ pub struct Codec<Opts>(Opts);
 
 /// Create a bincode codec with default agglayer settings.
 #[inline]
-pub fn default() -> Codec<options::Default> {
+pub fn default() -> DefaultCodec {
     Codec(options::default())
 }
 
