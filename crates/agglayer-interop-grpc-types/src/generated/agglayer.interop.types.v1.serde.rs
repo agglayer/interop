@@ -119,6 +119,9 @@ impl serde::Serialize for AggchainProof {
         if self.aggchain_params.is_some() {
             len += 1;
         }
+        if self.signature.is_some() {
+            len += 1;
+        }
         if !self.context.is_empty() {
             len += 1;
         }
@@ -128,6 +131,9 @@ impl serde::Serialize for AggchainProof {
         let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.AggchainProof", len)?;
         if let Some(v) = self.aggchain_params.as_ref() {
             struct_ser.serialize_field("aggchainParams", v)?;
+        }
+        if let Some(v) = self.signature.as_ref() {
+            struct_ser.serialize_field("signature", v)?;
         }
         if !self.context.is_empty() {
             let v: std::collections::HashMap<_, _> = self.context.iter()
@@ -153,6 +159,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
         const FIELDS: &[&str] = &[
             "aggchain_params",
             "aggchainParams",
+            "signature",
             "context",
             "sp1_stark",
             "sp1Stark",
@@ -161,6 +168,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             AggchainParams,
+            Signature,
             Context,
             Sp1Stark,
         }
@@ -185,6 +193,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
                     {
                         match value {
                             "aggchainParams" | "aggchain_params" => Ok(GeneratedField::AggchainParams),
+                            "signature" => Ok(GeneratedField::Signature),
                             "context" => Ok(GeneratedField::Context),
                             "sp1Stark" | "sp1_stark" => Ok(GeneratedField::Sp1Stark),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
@@ -207,6 +216,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
                     V: serde::de::MapAccess<'de>,
             {
                 let mut aggchain_params__ = None;
+                let mut signature__ = None;
                 let mut context__ = None;
                 let mut proof__ = None;
                 while let Some(k) = map_.next_key()? {
@@ -216,6 +226,12 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
                                 return Err(serde::de::Error::duplicate_field("aggchainParams"));
                             }
                             aggchain_params__ = map_.next_value()?;
+                        }
+                        GeneratedField::Signature => {
+                            if signature__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("signature"));
+                            }
+                            signature__ = map_.next_value()?;
                         }
                         GeneratedField::Context => {
                             if context__.is_some() {
@@ -237,6 +253,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
                 }
                 Ok(AggchainProof {
                     aggchain_params: aggchain_params__,
+                    signature: signature__,
                     context: context__.unwrap_or_default(),
                     proof: proof__,
                 })
