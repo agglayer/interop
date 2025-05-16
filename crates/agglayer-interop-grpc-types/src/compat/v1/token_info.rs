@@ -19,7 +19,7 @@ impl From<TokenInfo> for v1::TokenInfo {
     #[inline]
     fn from(value: TokenInfo) -> Self {
         v1::TokenInfo {
-            origin_network: *value.origin_network,
+            origin_network: value.origin_network.to_u32(),
             origin_token_address: Some(value.origin_token_address.into()),
         }
     }

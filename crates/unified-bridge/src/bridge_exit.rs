@@ -1,12 +1,11 @@
-use std::{fmt::Display, ops::Deref};
-
-use agglayer_primitives::keccak::{keccak256, keccak256_combine};
-use agglayer_primitives::Hashable;
-use agglayer_primitives::{Address, Digest, U256};
+use agglayer_primitives::{
+    keccak::{keccak256, keccak256_combine},
+    Address, Digest, Hashable, U256,
+};
 use hex_literal::hex;
 use serde::{Deserialize, Serialize};
 
-pub use crate::token_info::{LeafType, TokenInfo, L1_ETH};
+use crate::{LeafType, NetworkId, TokenInfo, L1_ETH};
 
 const EMPTY_METADATA_HASH: Digest = Digest(hex!(
     "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
@@ -79,9 +78,9 @@ impl Hashable for BridgeExit {
     fn hash(&self) -> Digest {
         keccak256_combine([
             [self.leaf_type as u8].as_slice(),
-            &u32::to_be_bytes(*self.token_info.origin_network),
+            &self.token_info.origin_network.to_be_bytes(),
             self.token_info.origin_token_address.as_slice(),
-            &u32::to_be_bytes(*self.dest_network),
+            &self.dest_network.to_be_bytes(),
             self.dest_address.as_slice(),
             &self.amount.to_be_bytes::<32>(),
             &self.metadata.unwrap_or(EMPTY_METADATA_HASH).0,
@@ -103,55 +102,5 @@ impl BridgeExit {
             LeafType::Message => L1_ETH,
             LeafType::Transfer => self.token_info,
         }
-    }
-}
-
-#[derive(
-    Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash,
-)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
-pub struct NetworkId(u32);
-
-impl Display for NetworkId {
-    #[inline]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl NetworkId {
-    pub const BITS: usize = u32::BITS as usize;
-
-    #[inline]
-    pub const fn new(value: u32) -> Self {
-        Self(value)
-    }
-
-    #[inline]
-    pub const fn to_u32(self) -> u32 {
-        self.0
-    }
-}
-
-impl From<u32> for NetworkId {
-    #[inline]
-    fn from(value: u32) -> Self {
-        Self(value)
-    }
-}
-
-impl From<NetworkId> for u32 {
-    #[inline]
-    fn from(value: NetworkId) -> Self {
-        value.0
-    }
-}
-
-impl Deref for NetworkId {
-    type Target = u32;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
     }
 }

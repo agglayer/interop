@@ -163,8 +163,7 @@ fn get_bit_at(target: u32, bit_idx: usize) -> u32 {
 mod tests {
     use agglayer_primitives::{keccak::Keccak256Hasher, Address, Hashable, U256};
 
-    use crate::local_exit_tree::LocalExitTree;
-    use crate::{bridge_exit::BridgeExit, token_info::LeafType};
+    use crate::{bridge_exit::BridgeExit, local_exit_tree::LocalExitTree, token_info::LeafType};
 
     #[test]
     fn test_deposit_hash() {

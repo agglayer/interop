@@ -1,2 +1,1 @@
-pub use byteorder::BigEndian;
-pub use byteorder::ByteOrder;
+pub use byteorder::{BigEndian, ByteOrder};

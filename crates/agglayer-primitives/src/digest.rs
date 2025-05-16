@@ -4,8 +4,10 @@ use alloy_primitives::B256;
 use hex::FromHex;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::utils::{FromBool, FromU256};
-use crate::U256;
+use crate::{
+    utils::{FromBool, FromU256},
+    U256,
+};
 
 #[derive(Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
