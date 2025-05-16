@@ -10,11 +10,29 @@ use crate::{InvalidRollupIndexError, NetworkId, RollupIndex};
 /// | 191 bits |    1 bit      |    32 bits   |    32 bits   |
 /// |    0     |  mainnet flag | rollup index |  leaf index  |
 #[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, PartialOrd, Ord, Eq)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct GlobalIndex {
     mainnet_flag: bool,
     rollup_index: RollupIndex,
     leaf_index: u32,
+}
+
+#[cfg(feature = "testutils")]
+impl arbitrary::Arbitrary<'_> for GlobalIndex {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'_>) -> arbitrary::Result<Self> {
+        let mainnet_flag = u.arbitrary()?;
+        let rollup_index = if mainnet_flag {
+            RollupIndex::new(0).unwrap()
+        } else {
+            RollupIndex::arbitrary(u)?
+        };
+        let leaf_index = u.arbitrary()?;
+
+        Ok(Self {
+            mainnet_flag,
+            rollup_index,
+            leaf_index,
+        })
+    }
 }
 
 impl GlobalIndex {
