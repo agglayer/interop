@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::NetworkId;
 
 pub const L1_ETH: TokenInfo = TokenInfo {
-    origin_network: L1_NETWORK_ID,
+    origin_network: NetworkId::ETH_L1,
     origin_token_address: address!("0000000000000000000000000000000000000000"),
 };
 
