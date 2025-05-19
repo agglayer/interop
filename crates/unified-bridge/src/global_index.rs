@@ -89,9 +89,6 @@ impl GlobalIndex {
 pub enum InvalidGlobalIndexError {
     #[error(transparent)]
     InvalidRollupIndex(InvalidRollupIndexError),
-
-    #[error("Global index has the mainnet flag but a non-zero rollup index")]
-    MainnetWithNonZeroRollupIndex,
 }
 
 impl TryFrom<U256> for GlobalIndex {
@@ -108,10 +105,6 @@ impl TryFrom<U256> for GlobalIndex {
         // and treat this as an infallible conversion.
         let rollup_index = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
         let leaf_index = u32::from_le_bytes(bytes[0..4].try_into().unwrap());
-
-        if mainnet_flag && rollup_index != 0 {
-            return Err(InvalidGlobalIndexError::MainnetWithNonZeroRollupIndex);
-        }
 
         Ok(Self {
             mainnet_flag,
@@ -183,10 +176,6 @@ mod tests {
         assert!(
             GlobalIndex::try_from(U256::from_str_radix("FFFFFFFF12345678", 16).unwrap()).is_err(),
             "Invalid rollup index should fail to parse",
-        );
-        assert!(
-            GlobalIndex::try_from(U256::from_str_radix("10000000A12345678", 16).unwrap()).is_err(),
-            "Mainnet with non-zero rollup index should fail to parse",
         );
     }
 }
