@@ -39,6 +39,18 @@ impl GlobalIndex {
     const MAINNET_FLAG_OFFSET: usize = 2 * 32;
 
     #[inline]
+    pub fn new(network: NetworkId, leaf_index: u32) -> Self {
+        let mainnet_flag = network == NetworkId::ETH_L1;
+        let rollup_index = RollupIndex::new(network.to_u32()).unwrap();
+
+        Self {
+            mainnet_flag,
+            rollup_index,
+            leaf_index,
+        }
+    }
+
+    #[inline]
     pub fn is_mainnet(&self) -> bool {
         self.mainnet_flag
     }
