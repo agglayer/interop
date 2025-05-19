@@ -19,7 +19,7 @@ impl Display for NetworkId {
 impl NetworkId {
     pub const BITS: usize = u32::BITS as usize;
     
-    pub const MAINNET: Self = Self::new(0);
+    pub const ETH_L1: NetworkId = NetworkId::new(0);
 
     #[inline]
     pub const fn new(value: u32) -> Self {
