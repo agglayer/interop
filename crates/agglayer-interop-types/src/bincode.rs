@@ -3,8 +3,8 @@ pub use bincode::{Error, Options, Result};
 /// Bincode configuration. Deliberately inaccessible from the outside.
 mod options {
     use bincode::config::{
-        BigEndian, Bounded, DefaultOptions as BincodeDefaultOptions, FixintEncoding, Options as _,
-        WithOtherEndian, WithOtherIntEncoding, WithOtherLimit,
+        AllowTrailing, BigEndian, Bounded, DefaultOptions as BincodeDefaultOptions, FixintEncoding,
+        Options as _, WithOtherEndian, WithOtherIntEncoding, WithOtherLimit, WithOtherTrailing,
     };
 
     pub type Default =
@@ -17,11 +17,16 @@ mod options {
 
     pub type Limited<T> = WithOtherLimit<T, Bounded>;
 
-    pub type SP1v4 = BincodeDefaultOptions;
+    pub type SP1v4 = WithOtherTrailing<
+        WithOtherIntEncoding<BincodeDefaultOptions, FixintEncoding>,
+        AllowTrailing,
+    >;
 
     #[inline]
     pub fn sp1v4() -> SP1v4 {
         bincode::options()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
     }
 }
 
