@@ -21,7 +21,7 @@ pub enum AggchainData {
         /// Chain-specific commitment forwarded through the PP.
         aggchain_params: Digest,
         /// Signature of the aggchain proof.
-        signature: Box<Signature>,
+        signature: Option<Box<Signature>>,
     },
 }
 

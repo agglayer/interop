@@ -26,15 +26,15 @@ impl TryFrom<v1::AggchainData> for AggchainData {
             },
             Some(v1::aggchain_data::Data::Generic(proof)) => AggchainData::Generic {
                 aggchain_params: required_field!(proof, aggchain_params),
-                signature: Box::new(
-                    proof
-                        .signature
-                        .ok_or(Error::missing_field("signature"))?
-                        .value
-                        .as_ref()
-                        .try_into()
-                        .map_err(Error::parsing_signature)?,
-                ),
+                signature: proof
+                    .signature
+                    .map(|signature| {
+                        (&*signature.value)
+                            .try_into()
+                            .map_err(Error::parsing_signature)
+                    })
+                    .transpose()?
+                    .map(Box::new),
                 proof: match proof.proof {
                     Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
                         version,
@@ -89,7 +89,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                 } => v1::aggchain_data::Data::Generic(v1::AggchainProof {
                     context: HashMap::new(),
                     aggchain_params: Some(aggchain_params.into()),
-                    signature: Some(v1::FixedBytes65 {
+                    signature: signature.map(|signature| v1::FixedBytes65 {
                         value: Bytes::copy_from_slice(&signature.as_bytes()),
                     }),
                     proof: Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
