@@ -1,14 +1,18 @@
-use std::collections::{HashMap, HashSet};
-use std::hash::Hash;
+use std::{
+    collections::{HashMap, HashSet},
+    hash::Hash,
+};
 
 use agglayer_primitives::keccak::Hasher;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_with::serde_as;
 
-use crate::error::SmtError;
-use crate::node::Node;
-use crate::proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits};
-use crate::utils::empty_hash_at_height;
+use crate::{
+    error::SmtError,
+    node::Node,
+    proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits},
+    utils::empty_hash_at_height,
+};
 
 /// An SMT consistent with a zero-initialized Merkle tree
 #[serde_as]

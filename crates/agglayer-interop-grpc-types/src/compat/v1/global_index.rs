@@ -8,7 +8,8 @@ impl TryFrom<v1::FixedBytes32> for GlobalIndex {
 
     #[inline]
     fn try_from(value: v1::FixedBytes32) -> Result<Self, Self::Error> {
-        Ok(GlobalIndex::from(U256::try_from(value)?))
+        Ok(GlobalIndex::try_from(U256::try_from(value)?)
+            .map_err(|e| Error::invalid_data(e.to_string()))?)
     }
 }
 

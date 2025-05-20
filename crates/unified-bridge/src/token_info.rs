@@ -2,11 +2,10 @@ use agglayer_primitives::{address, Address};
 use agglayer_tries::proof::ToBits;
 use serde::{Deserialize, Serialize};
 
-use crate::bridge_exit::NetworkId;
+use crate::NetworkId;
 
-pub const L1_NETWORK_ID: NetworkId = NetworkId::new(0);
 pub const L1_ETH: TokenInfo = TokenInfo {
-    origin_network: L1_NETWORK_ID,
+    origin_network: NetworkId::ETH_L1,
     origin_token_address: address!("0000000000000000000000000000000000000000"),
 };
 
@@ -54,7 +53,7 @@ impl ToBits<192> for TokenInfo {
         // 20 bytes. The following code could panic otherwise.
         std::array::from_fn(|i| {
             if i < 32 {
-                (*self.origin_network >> i) & 1 == 1
+                (self.origin_network.to_u32() >> i) & 1 == 1
             } else {
                 ((address_bytes[(i - 32) / 8]) >> (i % 8)) & 1 == 1
             }
