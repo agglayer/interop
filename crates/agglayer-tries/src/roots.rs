@@ -1,7 +1,8 @@
 use std::fmt;
+
 use agglayer_primitives::Digest;
-use serde::{Deserialize, Serialize};
 use fmt::Display;
+use serde::{Deserialize, Serialize};
 
 pub trait TreeRoot {
     fn as_slice(&self) -> &[u8];
@@ -36,7 +37,6 @@ macro_rules! define_root {
                 write!(f, "{}", self.0)
             }
         }
-
     };
 }
 
