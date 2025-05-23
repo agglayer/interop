@@ -15,8 +15,6 @@ mod options {
         bincode::options().with_big_endian().with_fixint_encoding()
     }
 
-    pub type Limited<T> = WithOtherLimit<T, Bounded>;
-
     pub type SP1v4 = WithOtherTrailing<
         WithOtherIntEncoding<BincodeDefaultOptions, FixintEncoding>,
         AllowTrailing,
@@ -28,6 +26,8 @@ mod options {
             .with_fixint_encoding()
             .allow_trailing_bytes()
     }
+
+    pub type Limited<T> = WithOtherLimit<T, Bounded>;
 }
 
 /// Bincode codec with opinionated settings.
@@ -44,6 +44,14 @@ pub fn default() -> Codec<options::Default> {
 #[inline]
 pub fn sp1v4() -> Codec<options::SP1v4> {
     Codec(options::sp1v4())
+}
+
+/// Create a bincode coded with settings used by smart contract verifiers.
+///
+/// This happens to be the same as [default] but with a more accurate name.
+#[inline]
+pub fn contracts() -> Codec<options::Default> {
+    default()
 }
 
 impl<Opts: Options> Codec<Opts> {
