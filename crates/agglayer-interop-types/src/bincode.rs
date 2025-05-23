@@ -99,3 +99,24 @@ impl<Opts: Options> Codec<Opts> {
         self.0.deserialize_from(reader)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use unified_bridge::NetworkId;
+
+    #[test]
+    fn sp1_endians() {
+        let network_id = NetworkId::new(0x00112233);
+        let network_id_enc = super::sp1v4().serialize(&network_id).unwrap();
+
+        let mut stdin0 = sp1_sdk::SP1Stdin::new();
+        stdin0.write_slice(&network_id_enc);
+
+        let mut stdin1 = sp1_sdk::SP1Stdin::new();
+        stdin1.write(&network_id);
+
+        assert_eq!(&stdin1.buffer[0], &[0x33, 0x22, 0x11, 0x00]);
+        assert_eq!(stdin0.buffer, stdin1.buffer);
+        assert_eq!(stdin0.read::<NetworkId>(), stdin1.read::<NetworkId>());
+    }
+}
