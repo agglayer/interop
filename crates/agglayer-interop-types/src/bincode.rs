@@ -1,4 +1,4 @@
-pub use bincode::{Error, Options, Result};
+pub use bincode::{Error, ErrorKind, Options, Result};
 
 /// Bincode configuration. Deliberately inaccessible from the outside.
 mod options {
