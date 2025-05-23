@@ -36,7 +36,8 @@ impl arbitrary::Arbitrary<'_> for GlobalIndex {
 }
 
 impl GlobalIndex {
-    const MAINNET_FLAG_OFFSET: usize = 2 * 32;
+    /// Mainnet flag masked with LSB indexing.
+    const MAINNET_FLAG_LSB_OFFSET: usize = 2 * 32;
 
     #[inline]
     pub fn new(network: NetworkId, leaf_index: u32) -> Self {
@@ -98,7 +99,7 @@ impl TryFrom<U256> for GlobalIndex {
     fn try_from(value: U256) -> Result<Self, Self::Error> {
         let bytes = value.as_le_slice();
 
-        let mainnet_flag = value.bit(Self::MAINNET_FLAG_OFFSET);
+        let mainnet_flag = value.bit(Self::MAINNET_FLAG_LSB_OFFSET);
         // Security: This uses the slice to fixed array TryFrom impl in the std
         // library that is technically fallible. However, our range length in
         // both cases is equal to u32::len() so it is safe to disregard the Result
