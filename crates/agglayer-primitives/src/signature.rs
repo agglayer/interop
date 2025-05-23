@@ -1,23 +1,23 @@
-use alloy_primitives::PrimitiveSignature;
+use alloy_primitives::Signature as AlloySignature;
 use k256::ecdsa;
 
 use super::{Address, SignatureError, B256, U256};
 
-/// A wrapper over [PrimitiveSignature] with custom serialization.
+/// A wrapper over [AlloySignature] with custom serialization.
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 #[serde(from = "compat::Signature", into = "compat::Signature")]
-pub struct Signature(PrimitiveSignature);
+pub struct Signature(AlloySignature);
 
 impl Signature {
     #[inline]
     pub fn from_signature_and_parity(sig: ecdsa::Signature, v: bool) -> Self {
-        PrimitiveSignature::from_signature_and_parity(sig, v).into()
+        AlloySignature::from_signature_and_parity(sig, v).into()
     }
 
     #[inline]
     pub fn new(r: U256, s: U256, v: bool) -> Self {
-        PrimitiveSignature::new(r, s, v).into()
+        AlloySignature::new(r, s, v).into()
     }
 
     #[inline]
@@ -26,7 +26,7 @@ impl Signature {
     }
 
     #[inline]
-    pub fn as_primitive_signature(&self) -> &PrimitiveSignature {
+    pub fn as_primitive_signature(&self) -> &AlloySignature {
         &self.0
     }
 
@@ -51,14 +51,14 @@ impl Signature {
     }
 }
 
-impl From<PrimitiveSignature> for Signature {
+impl From<AlloySignature> for Signature {
     #[inline]
-    fn from(ps: PrimitiveSignature) -> Self {
+    fn from(ps: AlloySignature) -> Self {
         Self(ps)
     }
 }
 
-impl From<Signature> for PrimitiveSignature {
+impl From<Signature> for AlloySignature {
     #[inline]
     fn from(value: Signature) -> Self {
         value.0
@@ -75,7 +75,7 @@ impl TryFrom<&[u8]> for Signature {
 }
 
 impl std::str::FromStr for Signature {
-    type Err = <PrimitiveSignature as std::str::FromStr>::Err;
+    type Err = <AlloySignature as std::str::FromStr>::Err;
 
     #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {

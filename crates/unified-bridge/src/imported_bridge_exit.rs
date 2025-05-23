@@ -1,14 +1,14 @@
 use agglayer_primitives::{
-    keccak::keccak256,
-    keccak::{keccak256_combine, Hasher, Keccak256Hasher},
+    keccak::{keccak256, keccak256_combine, Hasher, Keccak256Hasher},
     Digest, Hashable, U256,
 };
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::bridge_exit::BridgeExit;
-use crate::CommitmentVersion;
-use crate::{global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof};
+use crate::{
+    bridge_exit::BridgeExit, global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof,
+    CommitmentVersion, RollupIndex,
+};
 
 impl Hashable for MerkleProof {
     #[inline]
@@ -185,12 +185,7 @@ pub struct ClaimFromMainnet {
 
 impl ClaimFromMainnet {
     #[inline]
-    pub fn verify(
-        &self,
-        leaf: Digest,
-        global_index: GlobalIndex,
-        l1root: Digest,
-    ) -> Result<(), Error> {
+    pub fn verify(&self, leaf: Digest, leaf_index: u32, l1root: Digest) -> Result<(), Error> {
         // Check the consistency on the l1 root
         if l1root != self.proof_ger_l1root.root {
             return Err(Error::MismatchL1Root);
@@ -202,7 +197,7 @@ impl ClaimFromMainnet {
         }
 
         // Check the inclusion proof of the leaf to the LER (here LER is the MER)
-        if !self.proof_leaf_mer.verify(leaf, global_index.leaf_index) {
+        if !self.proof_leaf_mer.verify(leaf, leaf_index) {
             return Err(Error::InvalidMerklePathLeafToLER);
         }
 
@@ -236,7 +231,8 @@ impl ClaimFromRollup {
     pub fn verify(
         &self,
         leaf: Digest,
-        global_index: GlobalIndex,
+        leaf_index: u32,
+        rollup_index: RollupIndex,
         l1root: Digest,
     ) -> Result<(), Error> {
         // Check the consistency on the l1 root
@@ -250,14 +246,14 @@ impl ClaimFromRollup {
         }
 
         // Check the inclusion proof of the leaf to the LER
-        if !self.proof_leaf_ler.verify(leaf, global_index.leaf_index) {
+        if !self.proof_leaf_ler.verify(leaf, leaf_index) {
             return Err(Error::InvalidMerklePathLeafToLER);
         }
 
         // Check the inclusion proof of the LER to the RER
         if !self
             .proof_ler_rer
-            .verify(self.proof_leaf_ler.root, global_index.rollup_index)
+            .verify(self.proof_leaf_ler.root, rollup_index.to_u32())
         {
             return Err(Error::InvalidMerklePathLERToRER);
         }
@@ -299,17 +295,22 @@ impl ImportedBridgeExit {
     pub fn verify_path(&self, l1root: Digest) -> Result<(), Error> {
         // Check that the inclusion proof and the global index both refer to mainnet or
         // rollup
-        if self.global_index.mainnet_flag != matches!(self.claim_data, Claim::Mainnet(_)) {
+        if self.global_index.is_mainnet() != matches!(self.claim_data, Claim::Mainnet(_)) {
             return Err(Error::MismatchGlobalIndexInclusionProof);
         }
 
         match &self.claim_data {
-            Claim::Mainnet(claim) => {
-                claim.verify(self.bridge_exit.hash(), self.global_index, l1root)
-            }
-            Claim::Rollup(claim) => {
-                claim.verify(self.bridge_exit.hash(), self.global_index, l1root)
-            }
+            Claim::Mainnet(claim) => claim.verify(
+                self.bridge_exit.hash(),
+                self.global_index.leaf_index(),
+                l1root,
+            ),
+            Claim::Rollup(claim) => claim.verify(
+                self.bridge_exit.hash(),
+                self.global_index.leaf_index(),
+                self.global_index.rollup_index().unwrap(), // Checked just above
+                l1root,
+            ),
         }
     }
 }

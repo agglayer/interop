@@ -2,6 +2,8 @@ use agglayer_primitives::Digest;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest as Sha256Digest, Sha256};
 
+use crate::NetworkId;
+
 /// Public values to verify the SP1 aggchain proof.
 #[derive(Serialize, Deserialize)]
 pub struct AggchainProofPublicValues {
@@ -15,7 +17,7 @@ pub struct AggchainProofPublicValues {
     pub l1_info_root: Digest,
 
     /// Origin network for which the proof was generated.
-    pub origin_network: u32,
+    pub origin_network: NetworkId,
 
     /// Commitment to the imported bridge exits indexes.
     pub commit_imported_bridge_exits: Digest,
