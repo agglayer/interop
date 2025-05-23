@@ -1,9 +1,9 @@
+pub use agglayer_bincode as bincode;
 pub use agglayer_primitives::Digest;
 use agglayer_tries::error::SmtError;
 use serde::{Deserialize, Serialize};
 
 pub mod aggchain_proof;
-pub mod bincode;
 
 pub type EpochNumber = u64;
 pub type CertificateId = Digest;
