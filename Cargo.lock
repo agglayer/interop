@@ -50,6 +50,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "agglayer-bincode"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+ "sp1-sdk",
+ "unified-bridge",
+]
+
+[[package]]
 name = "agglayer-evm-client"
 version = "0.1.0"
 dependencies = [
@@ -93,6 +103,7 @@ dependencies = [
 name = "agglayer-interop-types"
 version = "0.1.0"
 dependencies = [
+ "agglayer-bincode",
  "agglayer-interop-types",
  "agglayer-primitives",
  "agglayer-tries",
