@@ -3,6 +3,8 @@ name = "agglayer-tries"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "agglayer-tries contains various structs and traits for tries used in agglayer protocol."
+repository.workspace = true
 
 [lints]
 workspace = true
