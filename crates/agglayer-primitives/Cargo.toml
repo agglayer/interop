@@ -3,6 +3,8 @@ name = "agglayer-primitives"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "agglayer-primitives contains various structs and traits that are the ground of agglayer protocol."
+repository.workspace = true
 
 [features]
 default = ["keccak"]
