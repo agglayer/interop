@@ -3,7 +3,8 @@ name = "agglayer-interop-types"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+description = "agglayer-interop-types contains structs and traits for the interoperability layer of agglayer."
+repository.workspace = true
 
 [features]
 default = []
@@ -29,4 +30,4 @@ thiserror.workspace = true
 rand.workspace = true
 
 [dev-dependencies]
-agglayer-interop-types = { workspace = true, features = ["testutils"] }
+agglayer-interop-types = { path = ".", features = ["testutils"] }

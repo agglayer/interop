@@ -3,7 +3,8 @@ name = "agglayer-interop-grpc-types"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+description = "agglayer-interop-grpc-types contains structs and traits for the gRPC interoperability layer of agglayer."
+repository.workspace = true
 
 [features]
 default = []
