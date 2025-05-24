@@ -18,8 +18,8 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 agglayer-evm-client = { path = "crates/agglayer-evm-client" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types" }
 agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types" }
-agglayer-primitives = { path = "crates/agglayer-primitives" }
-agglayer-tries = { path = "crates/agglayer-tries" }
+agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
+agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
 unified-bridge = { path = "crates/unified-bridge" }
 
 sp1-core-machine = "=4.2.1"
