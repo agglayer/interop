@@ -1,3 +1,4 @@
+pub use agglayer_bincode as bincode;
 pub use agglayer_primitives::Digest;
 use agglayer_tries::error::SmtError;
 use serde::{Deserialize, Serialize};

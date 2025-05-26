@@ -1,4 +1,5 @@
 extend = [
+    { path = "scripts/make/Makefile.changelog.toml" },
     { path = "scripts/make/Makefile.ci.toml" },
     { path = "scripts/make/Makefile.fuzz.toml" },
     { path = "scripts/make/Makefile.proto.toml" },

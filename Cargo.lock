@@ -50,8 +50,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "agglayer-evm-client"
+name = "agglayer-bincode"
 version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+ "sp1-sdk",
+ "unified-bridge",
+]
+
+[[package]]
+name = "agglayer-evm-client"
+version = "0.6.0"
 dependencies = [
  "agglayer-evm-client",
  "agglayer-primitives",
@@ -65,7 +75,7 @@ dependencies = [
 
 [[package]]
 name = "agglayer-interop"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "agglayer-interop-grpc-types",
  "agglayer-interop-types",
@@ -73,7 +83,7 @@ dependencies = [
 
 [[package]]
 name = "agglayer-interop-grpc-types"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "agglayer-interop-types",
  "anyhow",
@@ -91,8 +101,9 @@ dependencies = [
 
 [[package]]
 name = "agglayer-interop-types"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
+ "agglayer-bincode",
  "agglayer-interop-types",
  "agglayer-primitives",
  "agglayer-tries",
@@ -113,7 +124,7 @@ dependencies = [
 
 [[package]]
 name = "agglayer-primitives"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "agglayer-primitives",
  "alloy-primitives",
@@ -128,7 +139,7 @@ dependencies = [
 
 [[package]]
 name = "agglayer-tries"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "agglayer-primitives",
  "rand 0.9.1",
@@ -7917,7 +7928,7 @@ checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
 name = "unified-bridge"
-version = "0.1.0"
+version = "0.6.0"
 dependencies = [
  "agglayer-primitives",
  "agglayer-tries",

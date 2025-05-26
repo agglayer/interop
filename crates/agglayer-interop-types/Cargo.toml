@@ -3,12 +3,14 @@ name = "agglayer-interop-types"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish = false
 
 [features]
 default = []
 testutils = ["dep:arbitrary", "dep:ethers", "unified-bridge/testutils"]
 
 [dependencies]
+agglayer-bincode.workspace = true
 agglayer-primitives.workspace = true
 agglayer-tries.workspace = true
 unified-bridge.workspace = true
