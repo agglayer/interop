@@ -1,7 +1,6 @@
 use std::fmt;
 
 use agglayer_primitives::Digest;
-use fmt::Display;
 use serde::{Deserialize, Serialize};
 
 pub trait TreeRoot {
@@ -12,6 +11,7 @@ pub trait TreeRoot {
 macro_rules! define_root {
     ($name:ident) => {
         #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
+        #[serde(transparent)]
         pub struct $name(Digest);
 
         impl $name {
@@ -34,7 +34,7 @@ macro_rules! define_root {
 
         impl fmt::Display for $name {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(f, "{}", self.0)
+                self.0.fmt(f)
             }
         }
     };
@@ -42,4 +42,4 @@ macro_rules! define_root {
 
 define_root!(BalanceRoot);
 define_root!(NullifierRoot);
-define_root!(ExitRoot);
+define_root!(LocalExitRoot);
