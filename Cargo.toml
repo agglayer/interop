@@ -17,11 +17,11 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 [workspace.dependencies]
 agglayer-bincode = { path = "crates/agglayer-bincode" }
 agglayer-evm-client = { path = "crates/agglayer-evm-client" }
-agglayer-interop-types = { path = "crates/agglayer-interop-types" }
-agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types" }
-agglayer-primitives = { path = "crates/agglayer-primitives" }
-agglayer-tries = { path = "crates/agglayer-tries" }
-unified-bridge = { path = "crates/unified-bridge" }
+agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.6.0" }
+agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.6.0" }
+agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
+agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
+unified-bridge = { path = "crates/unified-bridge", version = "0.6.0" }
 
 sp1-core-machine = "=4.2.1"
 sp1-sdk = "=4.2.1"

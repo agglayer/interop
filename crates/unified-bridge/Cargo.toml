@@ -3,6 +3,8 @@ name = "unified-bridge"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "unified-bridge contains structs and traits for the unified bridge protocol."
+repository.workspace = true
 
 [features]
 zkvm = []
