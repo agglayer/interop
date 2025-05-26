@@ -1,5 +1,4 @@
 use agglayer_primitives::keccak::Hasher;
-use agglayer_tries::roots::LocalExitRoot;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use thiserror::Error;
@@ -55,7 +54,7 @@ where
 
 impl<H, const TREE_DEPTH: usize> LocalExitTree<H, TREE_DEPTH>
 where
-    H: Hasher<Digest = agglayer_primitives::Digest>,
+    H: Hasher,
     H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
 {
     const MAX_NUM_LEAVES: u32 = ((1u64 << TREE_DEPTH) - 1) as u32;
@@ -134,7 +133,7 @@ where
 
     /// Computes and returns the root of the tree.
     #[inline]
-    pub fn get_root(&self) -> LocalExitRoot {
+    pub fn get_root(&self) -> H::Digest {
         // `root` is the hash of the node we’re going to fill next.
         // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
         let mut root = H::Digest::default();
@@ -150,7 +149,7 @@ where
             empty_hash_at_height = H::merge(&empty_hash_at_height, &empty_hash_at_height);
         }
 
-        LocalExitRoot::new(root)
+        root
     }
 }
 
@@ -163,7 +162,6 @@ fn get_bit_at(target: u32, bit_idx: usize) -> u32 {
 #[cfg(test)]
 mod tests {
     use agglayer_primitives::{keccak::Keccak256Hasher, Address, Hashable, U256};
-    use agglayer_tries::roots::TreeRoot;
 
     use crate::{bridge_exit::BridgeExit, local_exit_tree::LocalExitTree, token_info::LeafType};
 
