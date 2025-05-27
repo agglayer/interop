@@ -1,6 +1,7 @@
 pub use agglayer_bincode as bincode;
 pub use agglayer_primitives::Digest;
 use agglayer_tries::error::SmtError;
+pub use agglayer_tries::roots::{BalanceRoot, LocalExitRoot, NullifierRoot};
 use serde::{Deserialize, Serialize};
 
 pub mod aggchain_proof;

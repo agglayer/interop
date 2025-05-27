@@ -1,4 +1,4 @@
-use agglayer_interop_types::roots::LocalExitRoot;
+use agglayer_interop_types::LocalExitRoot;
 use prost::bytes::Bytes;
 
 use super::Error;
