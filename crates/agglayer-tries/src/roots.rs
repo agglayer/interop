@@ -1,6 +1,6 @@
 use std::fmt;
 
-use agglayer_primitives::Digest;
+use agglayer_primitives::{Digest, B256};
 use serde::{Deserialize, Serialize};
 
 macro_rules! define_root {
@@ -31,6 +31,13 @@ macro_rules! define_root {
             }
         }
 
+        impl AsRef<[u8; 32]> for $name {
+            #[inline]
+            fn as_ref(&self) -> &[u8; 32] {
+                &self.0 .0
+            }
+        }
+
         impl From<Digest> for $name {
             #[inline]
             fn from(digest: Digest) -> Self {
@@ -51,6 +58,20 @@ macro_rules! define_root {
             #[inline]
             fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
                 Digest::try_from(value).map(Self)
+            }
+        }
+
+        impl From<B256> for $name {
+            #[inline]
+            fn from(value: B256) -> Self {
+                Self(Digest::from(value))
+            }
+        }
+
+        impl From<$name> for B256 {
+            #[inline]
+            fn from(value: $name) -> Self {
+                B256::from(value.0)
             }
         }
 
