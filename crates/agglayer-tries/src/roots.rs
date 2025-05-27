@@ -3,14 +3,11 @@ use std::fmt;
 use agglayer_primitives::Digest;
 use serde::{Deserialize, Serialize};
 
-pub trait TreeRoot {
-    fn as_slice(&self) -> &[u8];
-    fn as_digest(&self) -> &Digest;
-}
-
 macro_rules! define_root {
     ($name:ident) => {
-        #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Default)]
+        #[derive(
+            Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default,
+        )]
         #[serde(transparent)]
         pub struct $name(Digest);
 
@@ -20,15 +17,52 @@ macro_rules! define_root {
             }
         }
 
-        impl TreeRoot for $name {
+        impl AsRef<[u8]> for $name {
             #[inline]
-            fn as_slice(&self) -> &[u8] {
+            fn as_ref(&self) -> &[u8] {
                 self.0.as_slice()
             }
+        }
+
+        impl AsRef<Digest> for $name {
+            #[inline]
+            fn as_ref(&self) -> &Digest {
+                &self.0
+            }
+        }
+
+        impl From<Digest> for $name {
+            #[inline]
+            fn from(digest: Digest) -> Self {
+                Self(digest)
+            }
+        }
+
+        impl From<$name> for Digest {
+            #[inline]
+            fn from(it: $name) -> Self {
+                it.0
+            }
+        }
+
+        impl TryFrom<&[u8]> for $name {
+            type Error = std::array::TryFromSliceError;
 
             #[inline]
-            fn as_digest(&self) -> &Digest {
-                &self.0
+            fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+                Digest::try_from(value).map(Self)
+            }
+        }
+
+        impl fmt::UpperHex for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                self.0.fmt(f)
+            }
+        }
+
+        impl fmt::LowerHex for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                self.0.fmt(f)
             }
         }
 
