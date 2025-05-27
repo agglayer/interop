@@ -38,6 +38,13 @@ macro_rules! define_root {
             }
         }
 
+        impl AsMut<[u8; 32]> for $name {
+            #[inline]
+            fn as_mut(&mut self) -> &mut [u8; 32] {
+                &mut self.0 .0
+            }
+        }
+
         impl TryFrom<Vec<u8>> for $name {
             type Error = std::array::TryFromSliceError;
 
