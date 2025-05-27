@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use agglayer_interop_types::aggchain_proof::{AggchainData, Proof, SP1StarkWithContext};
+use agglayer_interop_types::aggchain_proof::{
+    AggchainData, AggchainProofPublicValues, Proof, SP1StarkWithContext,
+};
 use bincode::Options as _;
 use prost::bytes::Bytes;
 
@@ -25,6 +27,12 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                     .map_err(Error::parsing_signature)?,
             },
             Some(v1::aggchain_data::Data::Generic(proof)) => AggchainData::Generic {
+                public_values: proof
+                    .context
+                    .get("public_values")
+                    .map(|bytes| bincode::deserialize::<AggchainProofPublicValues>(bytes.as_ref()))
+                    .transpose()
+                    .map_err(Error::deserializing_aggchain_proof_public_values)?,
                 aggchain_params: required_field!(proof, aggchain_params),
                 signature: proof
                     .signature
@@ -86,6 +94,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                     proof: Proof::SP1Stark(proof),
                     signature,
                     aggchain_params,
+                    public_values: _, // TODO
                 } => v1::aggchain_data::Data::Generic(v1::AggchainProof {
                     context: HashMap::new(),
                     aggchain_params: Some(aggchain_params.into()),
