@@ -3,7 +3,8 @@ name = "agglayer-interop"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-publish = false
+description = "agglayer-interop contains all the shared structs and traits used in agglayer protocol."
+repository.workspace = true
 
 [features]
 default = []

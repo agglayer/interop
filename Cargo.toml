@@ -17,11 +17,11 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 [workspace.dependencies]
 agglayer-bincode = { path = "crates/agglayer-bincode" }
 agglayer-evm-client = { path = "crates/agglayer-evm-client" }
-agglayer-interop-types = { path = "crates/agglayer-interop-types" }
-agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types" }
-agglayer-primitives = { path = "crates/agglayer-primitives" }
-agglayer-tries = { path = "crates/agglayer-tries" }
-unified-bridge = { path = "crates/unified-bridge" }
+agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.6.0" }
+agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.6.0" }
+agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
+agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
+unified-bridge = { path = "crates/unified-bridge", version = "0.6.0" }
 
 sp1-core-machine = "=4.2.1"
 sp1-sdk = "=4.2.1"
@@ -69,16 +69,16 @@ rstest = "0.25.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.12"
-sha2 = "0.10.8"
+sha2 = "0.10.9"
 test-log = "0.2.16"
 thiserror = "2.0"
 tiny-keccak = { version = "2.0", features = ["keccak"] }
-tokio = { version = "1.44", features = ["full"] }
+tokio = { version = "1.45", features = ["full"] }
 tokio-stream = { version = "0.1.17", features = ["sync"] }
 tokio-util = "0.7.14"
 toml = "0.8.20"
-tonic = { version = "0.12.3", default-features = false }
-tonic-types = "0.13.0"
+tonic = { version = "0.13.0", default-features = false }
+tonic-types = "0.13.1"
 tower = "0.5.2"
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
