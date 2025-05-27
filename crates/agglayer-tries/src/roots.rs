@@ -54,6 +54,13 @@ macro_rules! define_root {
             }
         }
 
+        impl From<[u8; 32]> for $name {
+            #[inline]
+            fn from(array: [u8; 32]) -> Self {
+                Self(array.into())
+            }
+        }
+
         impl From<$name> for Digest {
             #[inline]
             fn from(it: $name) -> Self {
