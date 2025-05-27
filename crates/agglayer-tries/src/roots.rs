@@ -38,6 +38,15 @@ macro_rules! define_root {
             }
         }
 
+        impl TryFrom<Vec<u8>> for $name {
+            type Error = std::array::TryFromSliceError;
+
+            #[inline]
+            fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
+                Digest::try_from(value).map(Self)
+            }
+        }
+
         impl From<Digest> for $name {
             #[inline]
             fn from(digest: Digest) -> Self {
