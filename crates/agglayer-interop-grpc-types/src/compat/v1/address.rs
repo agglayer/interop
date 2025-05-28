@@ -17,7 +17,7 @@ impl From<Address> for v1::FixedBytes20 {
     #[inline]
     fn from(value: Address) -> Self {
         v1::FixedBytes20 {
-            value: Bytes::copy_from_slice(&value.0 .0),
+            value: Bytes::copy_from_slice(value.as_slice()),
         }
     }
 }
