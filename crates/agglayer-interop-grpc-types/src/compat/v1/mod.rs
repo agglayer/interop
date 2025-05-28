@@ -25,5 +25,6 @@ mod u256;
 
 pub use error::{Error, ErrorKind};
 
+mod roots;
 #[cfg(test)]
 pub mod tests;

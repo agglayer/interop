@@ -32,14 +32,14 @@ impl AsRef<[u8]> for Digest {
 impl fmt::Display for Digest {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:#x}", self)
+        write!(f, "{self:#x}")
     }
 }
 
 impl fmt::Debug for Digest {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:x}", self)
+        write!(f, "{self:x}")
     }
 }
 
@@ -51,7 +51,7 @@ impl fmt::UpperHex for Digest {
         }
 
         for byte in &self.0 {
-            write!(f, "{:02X}", byte)?;
+            write!(f, "{byte:02X}")?;
         }
 
         Ok(())
@@ -101,7 +101,7 @@ impl fmt::LowerHex for Digest {
         }
 
         for byte in &self.0 {
-            write!(f, "{:02x}", byte)?;
+            write!(f, "{byte:02x}")?;
         }
 
         Ok(())
@@ -139,7 +139,7 @@ impl Serialize for Digest {
         S: Serializer,
     {
         if serializer.is_human_readable() {
-            format!("{:#x}", self).serialize(serializer)
+            format!("{self:#x}").serialize(serializer)
         } else {
             serializer.serialize_newtype_struct("NewDigest", &self.0)
         }

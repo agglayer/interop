@@ -194,7 +194,7 @@ mod tests {
         let dm_root = dm.get_root();
         assert_eq!(
             "5ba002329b53c11a2f1dfe90b11e031771842056cf2125b43da8103c199dcd7f",
-            hex::encode(dm_root)
+            hex::encode(dm_root.as_slice())
         );
     }
 }
