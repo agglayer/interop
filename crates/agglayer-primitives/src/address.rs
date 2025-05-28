@@ -41,9 +41,21 @@ impl Address {
     }
 }
 
+impl From<[u8; 20]> for Address {
+    fn from(value: [u8; 20]) -> Self {
+        Self::new(value)
+    }
+}
+
 impl From<AlloyAddress> for Address {
     fn from(value: AlloyAddress) -> Self {
         Self::from_alloy(value)
+    }
+}
+
+impl std::fmt::Display for Address {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
