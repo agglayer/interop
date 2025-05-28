@@ -3,7 +3,7 @@ use std::fmt;
 use agglayer_primitives::{Digest, B256};
 use serde::{Deserialize, Serialize};
 
-macro_rules! define_root {
+macro_rules! define_digest_type {
     ($name:ident) => {
         #[derive(
             Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default,
@@ -12,6 +12,7 @@ macro_rules! define_root {
         pub struct $name(Digest);
 
         impl $name {
+            #[inline]
             pub const fn new(digest: Digest) -> Self {
                 Self(digest)
             }
@@ -118,6 +119,6 @@ macro_rules! define_root {
     };
 }
 
-define_root!(BalanceRoot);
-define_root!(NullifierRoot);
-define_root!(LocalExitRoot);
+define_digest_type!(BalanceRoot);
+define_digest_type!(NullifierRoot);
+define_digest_type!(LocalExitRoot);
