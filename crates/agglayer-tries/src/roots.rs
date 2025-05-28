@@ -119,6 +119,6 @@ macro_rules! define_digest_type {
     };
 }
 
-define_digest_type!(BalanceRoot);
-define_digest_type!(NullifierRoot);
+define_digest_type!(LocalBalanceRoot);
+define_digest_type!(LocalNullifierRoot);
 define_digest_type!(LocalExitRoot);
