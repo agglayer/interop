@@ -5,17 +5,16 @@ managed:
 
 plugins:
   - local: protoc-gen-prost
-    out: crates/agglayer-grpc-types/src/generated
+    out: crates/agglayer-interop-grpc-types/src/generated
     opt:
       - bytes=.
       - file_descriptor_set
 
   - local: protoc-gen-prost-serde
-    out: crates/agglayer-grpc-types/src/generated
+    out: crates/agglayer-interop-grpc-types/src/generated
 
   - local: protoc-gen-prost-crate
-    out: crates/agglayer-grpc-types/src/generated/
+    out: crates/agglayer-interop-grpc-types/src/generated/
     strategy: all
     opt:
       - no_features
-

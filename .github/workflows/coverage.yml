@@ -25,7 +25,7 @@ jobs:
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly-2024-07-15
+          toolchain: nightly-2025-04-24
           components: clippy rustfmt llvm-tools-preview
 
       - name: Set up rust cache
@@ -49,7 +49,7 @@ jobs:
         env:
           RUST_LOG: info
           LLVM_PROFILE_FILE: "llvm_profile-instrumentation-%p-%m.profraw"
-        run: cargo nextest run --workspace -F coverage --cargo-profile codecov -Z profile-rustflags
+        run: cargo nextest run --workspace --cargo-profile codecov -Z profile-rustflags
 
       - name: Run grcov
         run: |

@@ -1,0 +1,22 @@
+[package]
+name = "agglayer-interop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "agglayer-interop contains all the shared structs and traits used in agglayer protocol."
+repository.workspace = true
+
+[features]
+default = []
+
+grpc = ["dep:agglayer-interop-grpc-types"]
+grpc-compat = ["grpc", "agglayer-interop-grpc-types/compat"]
+
+testutils = ["agglayer-interop-types/testutils"]
+
+[lints]
+workspace = true
+
+[dependencies]
+agglayer-interop-types.workspace = true
+agglayer-interop-grpc-types = { workspace = true, optional = true }

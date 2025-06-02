@@ -1,0 +1,15 @@
+[env]
+FUZZ_TIME = "60s"
+
+[tasks.install-bolero]
+description = "Install cargo-bolero"
+install_crate = { crate_name = "cargo-bolero", version = "0.13.1" }
+
+[tasks.install-newer-clang]
+description = "Install newer clang on macos"
+
+[tasks.fuzz-all]
+description = "Run all fuzzers for ${FUZZ_TIME} each"
+dependencies = ["install-bolero"]
+command = "./scripts/fuzz.sh"
+args = ["${FUZZ_TIME}"]

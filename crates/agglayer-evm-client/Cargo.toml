@@ -1,0 +1,26 @@
+[package]
+name = "agglayer-evm-client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "agglayer-evm-client contains the client use to communicate with EVM rpc."
+repository.workspace = true
+
+[features]
+testutils = ["dep:mockall"]
+
+[lints]
+workspace = true
+
+[dependencies]
+agglayer-primitives.workspace = true
+
+alloy.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+mockall = { workspace = true, optional = true }
+thiserror.workspace = true
+
+[dev-dependencies]
+agglayer-evm-client = { workspace = true, features = ["testutils"] }

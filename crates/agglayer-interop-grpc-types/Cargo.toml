@@ -1,0 +1,33 @@
+[package]
+name = "agglayer-interop-grpc-types"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "agglayer-interop-grpc-types contains structs and traits for the gRPC interoperability layer of agglayer."
+repository.workspace = true
+
+[features]
+default = []
+compat = ["dep:agglayer-interop-types", "dep:bincode", "dep:thiserror"]
+
+[lints]
+workspace = true
+
+[dependencies]
+agglayer-interop-types = { workspace = true, optional = true }
+
+bincode = { workspace = true, optional = true }
+hex.workspace = true
+pbjson.workspace = true
+prost.workspace = true
+serde.workspace = true
+tonic-types.workspace = true
+thiserror = { workspace = true, optional = true }
+
+[dev-dependencies]
+agglayer-interop-types = { workspace = true, features = ["testutils"] }
+
+anyhow.workspace = true
+bolero.workspace = true
+insta.workspace = true
+rstest.workspace = true

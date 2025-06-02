@@ -1,0 +1,24 @@
+[package]
+name = "agglayer-tries"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "agglayer-tries contains various structs and traits for tries used in agglayer protocol."
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+agglayer-primitives.workspace = true
+
+hex.workspace = true
+serde.workspace = true
+serde_with.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+agglayer-primitives = { workspace = true, features = ["testutils"] }
+rand.workspace = true
+rs_merkle.workspace = true
+tiny-keccak.workspace = true

@@ -3,21 +3,26 @@ name = "agglayer-primitives"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-
-[dependencies]
-alloy-primitives = { version = "0.8.20", features = ["serde", "k256"] }
-byteorder = "1.5.0"
-k256 = "0.13.4"
-serde = { version = "1.0.217", features = ["derive"] }
-hex = "0.4.3"
-rand = { version = "0.9.0", optional = true }
-
-[dev-dependencies]
-rand = "0.9.0"
+description = "agglayer-primitives contains various structs and traits that are the ground of agglayer protocol."
+repository.workspace = true
 
 [features]
-default = []
-testutils = ["rand"]
+default = ["keccak"]
+keccak = ["dep:tiny-keccak"]
+testutils = ["alloy-primitives/arbitrary", "dep:arbitrary", "dep:rand"]
 
 [lints]
 workspace = true
+
+[dependencies]
+alloy-primitives.workspace = true
+arbitrary = { workspace = true, optional = true }
+byteorder.workspace = true
+k256.workspace = true
+serde.workspace = true
+hex.workspace = true
+rand = { workspace = true, optional = true }
+tiny-keccak = { workspace = true, optional = true }
+
+[dev-dependencies]
+agglayer-primitives = { workspace = true, features = ["testutils"] }

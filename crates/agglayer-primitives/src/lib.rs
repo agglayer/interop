@@ -2,10 +2,12 @@ pub use alloy_primitives::{address, ruint, Address, SignatureError, B256, U256, 
 
 pub use crate::signature::Signature;
 
-pub mod digest;
+pub mod bytes;
+mod digest;
+#[cfg(feature = "keccak")]
+pub mod keccak;
 mod signature;
-pub mod utils;
-pub mod bytes {
-    pub use byteorder::BigEndian;
-    pub use byteorder::ByteOrder;
-}
+mod utils;
+
+pub use digest::Digest;
+pub use utils::{FromBool, FromU256, Hashable};
