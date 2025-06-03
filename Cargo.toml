@@ -23,11 +23,11 @@ agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
 agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
 unified-bridge = { path = "crates/unified-bridge", version = "0.6.0" }
 
-sp1-core-machine = "=4.2.1"
-sp1-sdk = "=4.2.1"
-sp1-primitives = "=4.2.1"
-sp1-prover = "=4.2.1"
-sp1-zkvm = { version = "=4.2.1", default-features = false }
+sp1-core-machine = "=5.0.0"
+sp1-sdk = "=5.0.3"
+sp1-primitives = "=5.0.0"
+sp1-prover = "=5.0.1"
+sp1-zkvm = { version = "=5.0.0", default-features = false }
 
 alloy = { version = "0.14.0", features = ["full"] }
 alloy-primitives = { version = "1.1", features = ["serde", "k256"] }
