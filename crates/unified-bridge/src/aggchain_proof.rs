@@ -5,7 +5,8 @@ use sha2::{Digest as Sha256Digest, Sha256};
 use crate::NetworkId;
 
 /// Public values to verify the SP1 aggchain proof.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct AggchainProofPublicValues {
     /// Previous local exit root.
     pub prev_local_exit_root: Digest,

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use sp1_core_machine::reduce::SP1ReduceProof;
 use sp1_prover::InnerSC;
 use sp1_sdk::SP1VerifyingKey;
+pub use unified_bridge::AggchainProofPublicValues;
 
 use crate::Digest;
 
@@ -22,6 +23,8 @@ pub enum AggchainData {
         aggchain_params: Digest,
         /// Signature of the aggchain proof.
         signature: Option<Box<Signature>>,
+        /// Optional aggchain proof public values.
+        public_values: Option<Box<AggchainProofPublicValues>>,
     },
 }
 
