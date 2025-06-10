@@ -97,6 +97,7 @@ impl L1InfoTreeLeaf {
 }
 
 #[derive(Clone, Debug, Error, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename = "unified_bridge::Error")]
 pub enum Error {
     /// The global index and the inclusion proof do not both correspond to the
     /// same network type: mainnet or rollup.

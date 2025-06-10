@@ -123,7 +123,7 @@ impl<'de> Deserialize<'de> for Digest {
             Ok(Digest(s))
         } else {
             #[derive(::serde::Deserialize)]
-            #[serde(rename = "NewDigest")]
+            #[serde(rename = "agglayer_primitives::Digest")]
             struct Value([u8; 32]);
 
             let value = Value::deserialize(deserializer)?;
@@ -141,7 +141,7 @@ impl Serialize for Digest {
         if serializer.is_human_readable() {
             format!("{self:#x}").serialize(serializer)
         } else {
-            serializer.serialize_newtype_struct("NewDigest", &self.0)
+            serializer.serialize_newtype_struct("agglayer_primitives::Digest", &self.0)
         }
     }
 }

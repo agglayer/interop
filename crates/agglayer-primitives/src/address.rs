@@ -26,6 +26,7 @@ pub use alloy_primitives::Address as AlloyAddress;
 #[into(AlloyAddress, [u8; 20])]
 #[as_ref(AlloyAddress, [u8; 20], [u8])]
 #[repr(transparent)]
+#[serde(rename = "agglayer_primitives::Address")]
 pub struct Address(AlloyAddress);
 
 impl Address {
