@@ -56,43 +56,30 @@ impl Hashable for ClaimFromRollup {
         ])
     }
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
-pub struct L1InfoTreeLeafInner {
-    pub global_exit_root: Digest,
-    pub block_hash: Digest,
-    pub timestamp: u64,
-}
-
-impl L1InfoTreeLeafInner {
-    #[inline]
-    pub fn hash(&self, global_exit_root: Digest) -> Digest {
-        keccak256_combine([
-            global_exit_root.as_slice(),
-            self.block_hash.as_slice(),
-            &self.timestamp.to_be_bytes(),
-        ])
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeaf {
-    pub l1_info_tree_index: u32,
     pub rer: Digest,
     pub mer: Digest,
-    pub inner: L1InfoTreeLeafInner,
+    pub block_hash: Digest,
+    pub timestamp: u64,
+    pub l1_info_tree_index: u32,
 }
 
 impl L1InfoTreeLeaf {
     #[inline]
-    pub fn ger(&self) -> Digest {
-        keccak256_combine([self.mer, self.rer])
+    pub fn hash(&self) -> Digest {
+        keccak256_combine([
+            self.ger().as_slice(),
+            self.block_hash.as_slice(),
+            &self.timestamp.to_be_bytes(),
+        ])
     }
 
     #[inline]
-    pub fn hash(&self) -> Digest {
-        self.inner.hash(self.ger())
+    pub fn ger(&self) -> Digest {
+        keccak256_combine([self.mer, self.rer])
     }
 }
 
@@ -202,10 +189,10 @@ impl ClaimFromMainnet {
         }
 
         // Check the inclusion proof of the L1 leaf to L1Root
-        if !self
-            .proof_ger_l1root
-            .verify(self.l1_leaf.hash(), self.l1_leaf.l1_info_tree_index)
-        {
+        if !self.proof_ger_l1root.verify(
+            self.l1_leaf.hash(),
+            self.l1_leaf.l1_info_tree_index,
+        ) {
             return Err(Error::InvalidMerklePathGERToL1Root);
         }
 
@@ -259,10 +246,10 @@ impl ClaimFromRollup {
         }
 
         // Check the inclusion proof of the L1 leaf to L1Root
-        if !self
-            .proof_ger_l1root
-            .verify(self.l1_leaf.hash(), self.l1_leaf.l1_info_tree_index)
-        {
+        if !self.proof_ger_l1root.verify(
+            self.l1_leaf.hash(),
+            self.l1_leaf.l1_info_tree_index,
+        ) {
             return Err(Error::InvalidMerklePathGERToL1Root);
         }
 
@@ -357,19 +344,6 @@ impl ImportedBridgeExit {
 }
 
 impl ImportedBridgeExit {
-    pub fn valid_claim(&self) -> bool {
-        match &self.claim_data {
-            Claim::Mainnet(claim) => {
-                claim.l1_leaf.inner.global_exit_root
-                    == keccak256_combine([claim.l1_leaf.mer, claim.l1_leaf.rer])
-            }
-            Claim::Rollup(claim) => {
-                claim.l1_leaf.inner.global_exit_root
-                    == keccak256_combine([claim.l1_leaf.mer, claim.l1_leaf.rer])
-            }
-        }
-    }
-
     /// Returns the global index and the underlying bridge exit leaf hash.
     pub fn to_indexed_exit_hash(&self) -> GlobalIndexWithLeafHash {
         GlobalIndexWithLeafHash {

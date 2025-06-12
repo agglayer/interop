@@ -14,8 +14,8 @@ pub use agglayer_primitives as primitives;
 pub use agglayer_primitives::{Address, Signature, B256, U256, U512};
 pub use unified_bridge::{
     BridgeExit, Claim, ClaimFromMainnet, ClaimFromRollup, GlobalIndex, GlobalIndexWithLeafHash,
-    ImportedBridgeExit, ImportedBridgeExitCommitmentValues, L1InfoTreeLeaf, L1InfoTreeLeafInner,
-    LeafType, MerkleProof, NetworkId, TokenInfo,
+    ImportedBridgeExit, ImportedBridgeExitCommitmentValues, L1InfoTreeLeaf, LeafType, MerkleProof,
+    NetworkId, TokenInfo,
 };
 
 #[derive(Debug, thiserror::Error, Clone, Serialize, Deserialize, PartialEq, Eq)]

@@ -1150,137 +1150,6 @@ impl<'de> serde::Deserialize<'de> for ImportedBridgeExit {
         deserializer.deserialize_struct("agglayer.interop.types.v1.ImportedBridgeExit", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for L1InfoTreeLeaf {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut len = 0;
-        if self.global_exit_root.is_some() {
-            len += 1;
-        }
-        if self.block_hash.is_some() {
-            len += 1;
-        }
-        if self.timestamp != 0 {
-            len += 1;
-        }
-        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.L1InfoTreeLeaf", len)?;
-        if let Some(v) = self.global_exit_root.as_ref() {
-            struct_ser.serialize_field("globalExitRoot", v)?;
-        }
-        if let Some(v) = self.block_hash.as_ref() {
-            struct_ser.serialize_field("blockHash", v)?;
-        }
-        if self.timestamp != 0 {
-            #[allow(clippy::needless_borrow)]
-            #[allow(clippy::needless_borrows_for_generic_args)]
-            struct_ser.serialize_field("timestamp", ToString::to_string(&self.timestamp).as_str())?;
-        }
-        struct_ser.end()
-    }
-}
-impl<'de> serde::Deserialize<'de> for L1InfoTreeLeaf {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-            "global_exit_root",
-            "globalExitRoot",
-            "block_hash",
-            "blockHash",
-            "timestamp",
-        ];
-
-        #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {
-            GlobalExitRoot,
-            BlockHash,
-            Timestamp,
-        }
-        impl<'de> serde::Deserialize<'de> for GeneratedField {
-            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct GeneratedVisitor;
-
-                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-                    type Value = GeneratedField;
-
-                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                        write!(formatter, "expected one of: {:?}", &FIELDS)
-                    }
-
-                    #[allow(unused_variables)]
-                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        match value {
-                            "globalExitRoot" | "global_exit_root" => Ok(GeneratedField::GlobalExitRoot),
-                            "blockHash" | "block_hash" => Ok(GeneratedField::BlockHash),
-                            "timestamp" => Ok(GeneratedField::Timestamp),
-                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
-                        }
-                    }
-                }
-                deserializer.deserialize_identifier(GeneratedVisitor)
-            }
-        }
-        struct GeneratedVisitor;
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = L1InfoTreeLeaf;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                formatter.write_str("struct agglayer.interop.types.v1.L1InfoTreeLeaf")
-            }
-
-            fn visit_map<V>(self, mut map_: V) -> std::result::Result<L1InfoTreeLeaf, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
-            {
-                let mut global_exit_root__ = None;
-                let mut block_hash__ = None;
-                let mut timestamp__ = None;
-                while let Some(k) = map_.next_key()? {
-                    match k {
-                        GeneratedField::GlobalExitRoot => {
-                            if global_exit_root__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("globalExitRoot"));
-                            }
-                            global_exit_root__ = map_.next_value()?;
-                        }
-                        GeneratedField::BlockHash => {
-                            if block_hash__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("blockHash"));
-                            }
-                            block_hash__ = map_.next_value()?;
-                        }
-                        GeneratedField::Timestamp => {
-                            if timestamp__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("timestamp"));
-                            }
-                            timestamp__ = 
-                                Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
-                    }
-                }
-                Ok(L1InfoTreeLeaf {
-                    global_exit_root: global_exit_root__,
-                    block_hash: block_hash__,
-                    timestamp: timestamp__.unwrap_or_default(),
-                })
-            }
-        }
-        deserializer.deserialize_struct("agglayer.interop.types.v1.L1InfoTreeLeaf", FIELDS, GeneratedVisitor)
-    }
-}
 impl serde::Serialize for L1InfoTreeLeafWithContext {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -1298,7 +1167,10 @@ impl serde::Serialize for L1InfoTreeLeafWithContext {
         if self.mer.is_some() {
             len += 1;
         }
-        if self.inner.is_some() {
+        if self.block_hash.is_some() {
+            len += 1;
+        }
+        if self.timestamp != 0 {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.L1InfoTreeLeafWithContext", len)?;
@@ -1311,8 +1183,13 @@ impl serde::Serialize for L1InfoTreeLeafWithContext {
         if let Some(v) = self.mer.as_ref() {
             struct_ser.serialize_field("mer", v)?;
         }
-        if let Some(v) = self.inner.as_ref() {
-            struct_ser.serialize_field("inner", v)?;
+        if let Some(v) = self.block_hash.as_ref() {
+            struct_ser.serialize_field("blockHash", v)?;
+        }
+        if self.timestamp != 0 {
+            #[allow(clippy::needless_borrow)]
+            #[allow(clippy::needless_borrows_for_generic_args)]
+            struct_ser.serialize_field("timestamp", ToString::to_string(&self.timestamp).as_str())?;
         }
         struct_ser.end()
     }
@@ -1328,7 +1205,9 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
             "l1InfoTreeIndex",
             "rer",
             "mer",
-            "inner",
+            "block_hash",
+            "blockHash",
+            "timestamp",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -1336,7 +1215,8 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
             L1InfoTreeIndex,
             Rer,
             Mer,
-            Inner,
+            BlockHash,
+            Timestamp,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -1361,7 +1241,8 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
                             "l1InfoTreeIndex" | "l1_info_tree_index" => Ok(GeneratedField::L1InfoTreeIndex),
                             "rer" => Ok(GeneratedField::Rer),
                             "mer" => Ok(GeneratedField::Mer),
-                            "inner" => Ok(GeneratedField::Inner),
+                            "blockHash" | "block_hash" => Ok(GeneratedField::BlockHash),
+                            "timestamp" => Ok(GeneratedField::Timestamp),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1384,7 +1265,8 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
                 let mut l1_info_tree_index__ = None;
                 let mut rer__ = None;
                 let mut mer__ = None;
-                let mut inner__ = None;
+                let mut block_hash__ = None;
+                let mut timestamp__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
                         GeneratedField::L1InfoTreeIndex => {
@@ -1407,11 +1289,19 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
                             }
                             mer__ = map_.next_value()?;
                         }
-                        GeneratedField::Inner => {
-                            if inner__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("inner"));
+                        GeneratedField::BlockHash => {
+                            if block_hash__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blockHash"));
                             }
-                            inner__ = map_.next_value()?;
+                            block_hash__ = map_.next_value()?;
+                        }
+                        GeneratedField::Timestamp => {
+                            if timestamp__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("timestamp"));
+                            }
+                            timestamp__ = 
+                                Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
                         }
                     }
                 }
@@ -1419,7 +1309,8 @@ impl<'de> serde::Deserialize<'de> for L1InfoTreeLeafWithContext {
                     l1_info_tree_index: l1_info_tree_index__.unwrap_or_default(),
                     rer: rer__,
                     mer: mer__,
-                    inner: inner__,
+                    block_hash: block_hash__,
+                    timestamp: timestamp__.unwrap_or_default(),
                 })
             }
         }
