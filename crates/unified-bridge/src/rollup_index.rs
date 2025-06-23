@@ -30,7 +30,7 @@ impl<'de> Deserialize<'de> for RollupIndex {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[error("Invalid rollup index")]
 pub struct InvalidRollupIndexError;
 

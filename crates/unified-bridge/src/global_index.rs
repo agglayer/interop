@@ -86,7 +86,7 @@ impl GlobalIndex {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error, Serialize, Deserialize)]
 pub enum InvalidGlobalIndexError {
     #[error(transparent)]
     InvalidRollupIndex(InvalidRollupIndexError),
