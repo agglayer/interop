@@ -23,6 +23,7 @@ agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
 agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
 unified-bridge = { path = "crates/unified-bridge", version = "0.6.0" }
 
+sp1-build = "=5.0.0"
 sp1-core-machine = "=5.0.0"
 sp1-sdk = "=5.0.3"
 sp1-primitives = "=5.0.0"

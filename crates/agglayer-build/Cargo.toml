@@ -1,0 +1,17 @@
+[package]
+name = "agglayer-build"
+description = "Building zkvm elf binaries, Agglayer-style."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+cargo_metadata = "0.18"
+clap.workspace = true
+shell-words = "1.1"
+
+sp1-build.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
