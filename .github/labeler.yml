@@ -3,3 +3,36 @@ bug:
 
 feature:
   - head-branch: ["^feature"]
+
+unified-bridge:
+  - changed-files:
+      - any-glob-to-any-file:
+          - crates/unified-bridge/**/*.rs
+          - crates/unified-bridge/**/*.toml
+
+protobuf:
+  - changed-files:
+      - any-glob-to-any-file:
+          - proto/**/*.proto
+
+agglayer-primitives:
+  - changed-files:
+      - any-glob-to-any-file:
+          - crates/agglayer-primitives/**/*.rs
+          - crates/agglayer-primitives/**/*.toml
+
+agglayer-interop:
+  - changed-files:
+      - any-glob-to-any-file:
+          - crates/agglayer-interop/**/*.rs
+          - crates/agglayer-interop/**/*.toml
+          - crates/agglayer-interop-types/**/*.rs
+          - crates/agglayer-interop-types/**/*.toml
+          - crates/agglayer-interop-grpc-types/**/*.rs
+          - crates/agglayer-interop-grpc-types/**/*.toml
+
+agglayer-interop-grpc:
+  - changed-files:
+      - any-glob-to-any-file:
+          - crates/agglayer-interop-grpc-types/**/*.rs
+          - crates/agglayer-interop-grpc-types/**/*.toml
