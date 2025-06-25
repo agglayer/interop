@@ -25,6 +25,9 @@ on:
 jobs:
   call-pr-reminder:
     uses: agglayer/reusable-workflows/.github/workflows/pr-review-reminder.yml@main
+    permissions:
+      contents: read
+      pull-requests: read
     with:
       min_days_old: ${{ inputs.min_days_old || 2 }}
       dry_run: ${{ inputs.dry_run || false }}
