@@ -17,6 +17,7 @@ pub use alloy_primitives::Address as AlloyAddress;
     derive_more::Into,
     derive_more::FromStr,
     derive_more::AsRef,
+    derive_more::AsMut,
     derive_more::Display,
     derive_more::LowerHex,
     derive_more::UpperHex,
@@ -60,11 +61,6 @@ impl Address {
     #[inline]
     pub const fn as_slice(&self) -> &[u8] {
         self.as_alloy().0.as_slice()
-    }
-
-    #[inline]
-    pub fn copy_from_slice(&mut self, slice: &[u8]) {
-        self.0.copy_from_slice(slice);
     }
 }
 

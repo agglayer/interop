@@ -22,7 +22,7 @@ impl Signature {
 
     #[inline]
     pub fn recover_address_from_prehash(&self, prehash: &B256) -> Result<Address, SignatureError> {
-        self.0.recover_address_from_prehash(prehash).map(Into::into)
+        self.0.recover_address_from_prehash(prehash).map(Address::from)
     }
 
     #[inline]
