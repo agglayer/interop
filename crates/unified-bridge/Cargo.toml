@@ -26,6 +26,5 @@ thiserror.workspace = true
 
 [dev-dependencies]
 unified-bridge = { workspace = true, features = ["testutils"] }
+
 hex.workspace = true
-rand.workspace = true
-rs_merkle.workspace = true
