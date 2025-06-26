@@ -29,8 +29,8 @@ jobs:
       contents: read
       pull-requests: read
     with:
-      min_days_old: ${{ inputs.min_days_old || 2 }}
-      dry_run: ${{ inputs.dry_run || false }}
-      include_drafts: ${{ inputs.include_drafts || false }}
+      min_days_old: ${{ fromJSON(inputs.min_days_old) }}
+      dry_run: ${{ inputs.dry_run }}
+      include_drafts: ${{ inputs.include_drafts }}
       repository: ${{ github.repository }}
     secrets: inherit
