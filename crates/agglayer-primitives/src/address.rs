@@ -6,7 +6,6 @@ pub use alloy_primitives::Address as AlloyAddress;
     Debug,
     Clone,
     Copy,
-    Default,
     PartialEq,
     Eq,
     PartialOrd,

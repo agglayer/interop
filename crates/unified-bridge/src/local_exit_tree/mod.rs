@@ -170,9 +170,9 @@ mod tests {
         let mut deposit = BridgeExit::new(
             LeafType::Transfer,
             0.into(),
-            Address::default(),
+            Address::ZERO,
             1.into(),
-            Address::default(),
+            Address::ZERO,
             U256::default(),
             vec![],
         );
