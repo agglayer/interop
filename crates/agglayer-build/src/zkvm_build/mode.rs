@@ -35,10 +35,10 @@ impl std::str::FromStr for Mode {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> anyhow::Result<Self> {
-        match s {
+        match s.trim() {
             "build" => Ok(Self::Build),
             "refresh" | "update" => Ok(Self::Refresh),
-            "cached" => Ok(Self::Cached),
+            "" | "cached" => Ok(Self::Cached),
             mode_str => anyhow::bail!("Unrecognized mode {mode_str:?}"),
         }
     }
