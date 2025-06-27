@@ -42,6 +42,7 @@ bolero = { version = "0.13.0", features = ["arbitrary"] }
 buildstructor = "0.5.4"
 byteorder = "1.5"
 clap = { version = "4.5", features = ["derive", "env"] }
+derive_more = { version = "2.0", features = ["from", "into", "from_str", "as_ref", "display"] }
 dirs = "5.0"
 dotenvy = "0.15.7"
 educe = "0.6.0"
