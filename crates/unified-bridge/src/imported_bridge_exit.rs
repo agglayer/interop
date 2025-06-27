@@ -6,7 +6,9 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{
-    bridge_exit::BridgeExit, global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof,
+    bridge_exit::BridgeExit,
+    global_index::{GlobalIndex, InvalidGlobalIndexError},
+    local_exit_tree::proof::LETMerkleProof,
     CommitmentVersion, RollupIndex,
 };
 
@@ -134,6 +136,10 @@ pub enum Error {
     /// network.
     #[error("Invalid imported bridge exit destination network.")]
     InvalidExitNetwork,
+
+    /// The received 32 bytes representing the global index are ill-formed.
+    #[error("Ill-formed 32bytes representing the global index.")]
+    InvalidGlobalIndex(#[source] InvalidGlobalIndexError),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -285,7 +291,7 @@ pub struct ImportedBridgeExit {
     pub claim_data: Claim,
 
     /// The global index of the imported bridge exit.
-    pub global_index: GlobalIndex,
+    pub global_index: U256,
 }
 
 impl ImportedBridgeExit {
@@ -293,22 +299,25 @@ impl ImportedBridgeExit {
     /// the provided LER
     #[inline]
     pub fn verify_path(&self, l1root: Digest) -> Result<(), Error> {
+        let global_index: GlobalIndex = self
+            .global_index
+            .try_into()
+            .map_err(Error::InvalidGlobalIndex)?;
+
         // Check that the inclusion proof and the global index both refer to mainnet or
         // rollup
-        if self.global_index.is_mainnet() != matches!(self.claim_data, Claim::Mainnet(_)) {
+        if global_index.is_mainnet() != matches!(self.claim_data, Claim::Mainnet(_)) {
             return Err(Error::MismatchGlobalIndexInclusionProof);
         }
 
         match &self.claim_data {
-            Claim::Mainnet(claim) => claim.verify(
-                self.bridge_exit.hash(),
-                self.global_index.leaf_index(),
-                l1root,
-            ),
+            Claim::Mainnet(claim) => {
+                claim.verify(self.bridge_exit.hash(), global_index.leaf_index(), l1root)
+            }
             Claim::Rollup(claim) => claim.verify(
                 self.bridge_exit.hash(),
-                self.global_index.leaf_index(),
-                self.global_index.rollup_index().unwrap(), // Checked just above
+                global_index.leaf_index(),
+                global_index.rollup_index().unwrap(), // Checked just above
                 l1root,
             ),
         }
@@ -322,10 +331,11 @@ impl ImportedBridgeExit {
     pub fn new(bridge_exit: BridgeExit, claim_data: Claim, global_index: GlobalIndex) -> Self {
         Self {
             bridge_exit,
-            global_index,
+            global_index: global_index.into(),
             claim_data,
         }
     }
+
     /// Returns the considered L1 Info Root against which the claim is done.
     #[inline]
     pub fn l1_info_root(&self) -> Digest {
@@ -349,9 +359,9 @@ impl ImportedBridgeExit {
     #[inline]
     pub fn hash(&self) -> Digest {
         keccak256_combine([
-            self.bridge_exit.hash(),
-            self.claim_data.hash(),
-            self.global_index.hash(),
+            self.bridge_exit.hash().0.as_slice(),
+            self.claim_data.hash().0.as_slice(),
+            self.global_index.as_le_slice(),
         ])
     }
 }
@@ -373,7 +383,7 @@ impl ImportedBridgeExit {
     /// Returns the global index and the underlying bridge exit leaf hash.
     pub fn to_indexed_exit_hash(&self) -> GlobalIndexWithLeafHash {
         GlobalIndexWithLeafHash {
-            global_index: self.global_index.into(),
+            global_index: self.global_index,
             bridge_exit_hash: self.bridge_exit.hash(),
         }
     }
