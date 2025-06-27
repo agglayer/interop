@@ -7,7 +7,7 @@ use cargo_metadata::{
 };
 use sp1_build::BuildArgs;
 
-use super::{Config, Mode};
+use super::Mode;
 
 pub struct ProgramBuilder {
     /// Directory with the zkvm program source.
@@ -143,19 +143,16 @@ impl ProgramBuilder {
     }
 
     /// Run with given mode or config.
-    pub fn run_with(self, config: impl Into<Config>) -> anyhow::Result<Utf8PathBuf> {
-        let Config { mode, extra_args } = config.into();
-        let this = self.add_args(extra_args);
-
+    pub fn run_mode(self, mode: Mode) -> anyhow::Result<Utf8PathBuf> {
         match mode {
-            Mode::Build => this.build_program(),
-            Mode::Refresh => this.build_and_refresh(),
-            Mode::Cached => this.take_from_cache(),
+            Mode::Build => self.build_program(),
+            Mode::Refresh => self.build_and_refresh(),
+            Mode::Cached => self.take_from_cache(),
         }
     }
 
     /// Run the zkvm ELF builder.
     pub fn run(self) -> anyhow::Result<Utf8PathBuf> {
-        self.run_with(Config::from_env()?)
+        self.run_mode(Mode::from_env()?)
     }
 }

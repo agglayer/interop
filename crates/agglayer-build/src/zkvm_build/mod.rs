@@ -70,12 +70,9 @@
 
 use cargo_metadata::camino::{Utf8Path, Utf8PathBuf};
 
-pub use self::{
-    config::{Config, Mode},
-    program_builder::ProgramBuilder,
-};
+pub use self::{mode::Mode, program_builder::ProgramBuilder};
 
-mod config;
+mod mode;
 mod program_builder;
 
 pub const DEFAULT_DOCKER_TAG: &str =
