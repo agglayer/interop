@@ -39,6 +39,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "agglayer-build"
+version = "0.6.0"
+dependencies = [
+ "anyhow",
+ "cargo_metadata",
+ "clap",
+ "rstest",
+ "sp1-build",
+]
+
+[[package]]
 name = "agglayer-evm-client"
 version = "0.6.0"
 dependencies = [
