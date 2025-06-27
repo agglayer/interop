@@ -76,7 +76,7 @@ impl ProgramBuilder {
         self
     }
 
-    /// Add argumets passed through to `rustc`.
+    /// Add arguments passed through to `rustc`.
     pub fn add_rustflags(mut self, extra_args: impl IntoIterator<Item = String>) -> Self {
         self.build_args.rustflags.extend(extra_args);
         self
@@ -121,25 +121,20 @@ impl ProgramBuilder {
 
     fn build_and_refresh(self) -> anyhow::Result<Utf8PathBuf> {
         let cached_elf_path = self.cached_elf_path.clone();
-        let elf_path = self.elf_path()?;
 
-        self.build_program()?;
+        let elf_path = self.build_program()?;
         Self::copy_elf(elf_path.as_path(), cached_elf_path).context("Copying zkvm ELF to cache")?;
 
         Ok(elf_path)
     }
 
     fn take_from_cache(self) -> anyhow::Result<Utf8PathBuf> {
-        let cached_elf_path = self.cached_elf_path.as_path();
-        let elf_path = self.elf_path()?;
+        let cached_elf_path = self.cached_elf_path;
 
         println!("cargo::rerun-if-changed={cached_elf_path}");
-        println!("cargo::rustc-env=AGGLAYER_ZKVM_ELF_PATH={elf_path}");
+        println!("cargo::rustc-env=AGGLAYER_ZKVM_ELF_PATH={cached_elf_path}");
 
-        Self::copy_elf(cached_elf_path, elf_path.as_path())
-            .context("Copying zkvm ELF from cache")?;
-
-        Ok(elf_path)
+        Ok(cached_elf_path)
     }
 
     /// Run with given mode or config.
