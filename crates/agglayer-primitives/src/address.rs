@@ -78,3 +78,15 @@ macro_rules! address {
         $crate::Address::from_alloy($crate::alloy_primitives::address!($($addr)*))
     };
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn address_macro() {
+        let address = address!("00112233445566778899aabbccddeeff00112233");
+        let alloy_address = alloy_primitives::address!("00112233445566778899aabbccddeeff00112233");
+        assert_eq!(address, Address::from_alloy(alloy_address));
+    }
+}
