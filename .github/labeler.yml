@@ -7,8 +7,7 @@ feature:
 unified-bridge:
   - changed-files:
       - any-glob-to-any-file:
-          - crates/unified-bridge/**/*.rs
-          - crates/unified-bridge/**/*.toml
+          - crates/unified-bridge/**/*.@(rs|toml)
 
 protobuf:
   - changed-files:
@@ -18,21 +17,14 @@ protobuf:
 agglayer-primitives:
   - changed-files:
       - any-glob-to-any-file:
-          - crates/agglayer-primitives/**/*.rs
-          - crates/agglayer-primitives/**/*.toml
+          - crates/agglayer-primitives/**/*.@(rs|toml)
 
 agglayer-interop:
   - changed-files:
       - any-glob-to-any-file:
-          - crates/agglayer-interop/**/*.rs
-          - crates/agglayer-interop/**/*.toml
-          - crates/agglayer-interop-types/**/*.rs
-          - crates/agglayer-interop-types/**/*.toml
-          - crates/agglayer-interop-grpc-types/**/*.rs
-          - crates/agglayer-interop-grpc-types/**/*.toml
+          - crates/agglayer-interop*(-*)/**/*.@(rs|toml)
 
 agglayer-interop-grpc:
   - changed-files:
       - any-glob-to-any-file:
-          - crates/agglayer-interop-grpc-types/**/*.rs
-          - crates/agglayer-interop-grpc-types/**/*.toml
+          - crates/agglayer-interop-grpc-types/**/*.@(rs|toml)
