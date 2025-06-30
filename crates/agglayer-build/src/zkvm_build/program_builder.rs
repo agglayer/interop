@@ -40,8 +40,8 @@ impl ProgramBuilder {
             "Program path is not a directory ({program_dir})",
         );
 
-        let cached_elf_path =
-            Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("elf/riscv32im-succinct-zkvm-elf");
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").context("Cannot obtain manifest dir")?;
+        let cached_elf_path = Utf8Path::new(&manifest_dir).join("elf/riscv32im-succinct-zkvm-elf");
 
         let program_metadata = MetadataCommand::new()
             .no_deps()
