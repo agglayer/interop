@@ -33,6 +33,13 @@ impl ProgramBuilder {
 
         let program_dir = host_metadata.workspace_root.join(program_dir);
 
+        let program_dir_meta = fs::metadata(&program_dir)
+            .with_context(|| format!("Checking the program dir ({program_dir})"))?;
+        anyhow::ensure!(
+            program_dir_meta.is_dir(),
+            "Program path is not a directory ({program_dir})",
+        );
+
         let cached_elf_path =
             Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("elf/riscv32im-succinct-zkvm-elf");
 
@@ -104,7 +111,9 @@ impl ProgramBuilder {
 
         // Copy to a temporary and move so it's less sensitive to partial writes when
         // the build is interrupted.
-        let source_tmp = source.as_ref().with_extension(".temp");
+        let source_tmp = Path::new(&env::var("OUT_DIR").context("Getting build OUT_DIR")?)
+            .join(source.as_ref().file_name().unwrap_or("zkvm-elf".as_ref()))
+            .with_extension(".temporary");
         fs::copy(source, source_tmp.as_path()).context("Failed to copy zkvm ELF")?;
         fs::rename(source_tmp, destination).context("Failed to move zkvm ELF")?;
 
@@ -112,6 +121,8 @@ impl ProgramBuilder {
     }
 
     fn build_program(self) -> anyhow::Result<Utf8PathBuf> {
+        eprintln!("Program dir: {}", self.program_dir.as_str());
+
         let elf_path = self.elf_path()?;
         sp1_build::build_program_with_args(self.program_dir.as_str(), self.build_args);
         println!("cargo::rustc-env=AGGLAYER_ZKVM_ELF_PATH={elf_path}");
