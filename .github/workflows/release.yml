@@ -52,7 +52,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
         run: |
           cargo install --locked release-plz
-          release-plz --dry-run
+          release-plz release --dry-run -v
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
