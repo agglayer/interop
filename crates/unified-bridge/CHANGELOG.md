@@ -2,11 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [0.7.1] - 2025-06-04
+
+### 🚀 Features
+
+- Expose the aggchain proof public values (#35)
+
+## [0.6.1] - 2025-05-28
 
 ### 🚀 Features
 
 - Use strong types for rollup indexes (#21)
+- Adding changelogs and configure agglayer-primitives' (#32)
+- Publish 0.6.0 (#33)
+- Add typed tree roots (#31)
 
 ### 📚 Documentation
 
@@ -16,9 +25,14 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
+- Introduce the traits from provers repo’s prover-alloy (#18)
+
+## [0.2.1] - 2025-04-14
+
+### 🚀 Features
+
 - Introduce fuzzer infra, make everything faster (#9)
 - Align imported bridge exits commitment (#12)
-- Introduce the traits from provers repo’s prover-alloy (#18)
 
 ### 🐛 Bug Fixes
 
@@ -32,10 +46,5 @@ All notable changes to this project will be documented in this file.
 ### 🚜 Refactor
 
 - Remove pessimistic-proof and split crates
-
-### ⚙️ Miscellaneous Tasks
-
-- Cleaning up pessimistic-proof
-- Cleanup cargo.toml files (#16)
 
 
