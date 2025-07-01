@@ -55,6 +55,10 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
         run: |
           cargo install --locked release-plz
+          if [ -n "${{ inputs.tag }}" ]; then
+            VERSION=$(echo "${{ inputs.tag }}" | sed 's/^v//')
+            sed -i "s/^version = .*/version = \"$VERSION\"/" ./Cargo.toml
+          fi
           release-plz release --dry-run -v
         env:
           GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
