@@ -57,7 +57,7 @@ jobs:
           cargo install --locked release-plz
           release-plz release --dry-run -v
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
       - name: Run release-plz (publish)
