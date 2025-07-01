@@ -4,6 +4,8 @@ description = "Agglayer Bincode utilities"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "agglayer-bincode contains bincode serialization and deserialization for agglayer protocol."
+repository.workspace = true
 
 [dependencies]
 bincode.workspace = true
