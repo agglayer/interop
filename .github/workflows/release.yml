@@ -34,7 +34,7 @@ jobs:
     if: |
       github.repository_owner == 'agglayer' && (
         (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-        github.event_name == 'workflow_call'
+        github.event_name == 'workflow_dispatch'
       )
     permissions:
       contents: write
@@ -49,7 +49,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Run release-plz (dry-run)
-        if: github.event_name == 'workflow_call' && inputs.dry-run
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run
         uses: release-plz/action@v0.5
         with:
           command: release
@@ -61,7 +61,7 @@ jobs:
       - name: Run release-plz (publish)
         if: |
           (github.event_name == 'workflow_run') ||
-          (github.event_name == 'workflow_call' && !inputs.dry-run)
+          (github.event_name == 'workflow_dispatch' && !inputs.dry-run)
         uses: release-plz/action@v0.5
         with:
           command: release
