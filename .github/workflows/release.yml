@@ -15,7 +15,7 @@ on:
   push:
     branches:
       - main
-  workflow_call:
+  workflow_dispatch:
     inputs:
       dry-run:
         description: "Run in dry-run mode (will not publish crates)"
