@@ -25,13 +25,13 @@ pub struct ProgramBuilder {
 
 impl ProgramBuilder {
     /// New zkvm ELF builder.
-    pub fn new(program_dir: impl AsRef<Utf8Path>) -> anyhow::Result<Self> {
+    pub fn new(relative_program_dir: impl AsRef<Utf8Path>) -> anyhow::Result<Self> {
         let host_metadata = MetadataCommand::new()
             .no_deps()
             .exec()
             .context("Host workspace metadata extraction failed")?;
 
-        let program_dir = host_metadata.workspace_root.join(program_dir);
+        let program_dir = host_metadata.workspace_root.join(relative_program_dir);
 
         let program_dir_meta = fs::metadata(&program_dir)
             .with_context(|| format!("Checking the program dir ({program_dir})"))?;
