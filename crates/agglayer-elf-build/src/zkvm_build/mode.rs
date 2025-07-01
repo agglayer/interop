@@ -15,7 +15,7 @@ pub enum Mode {
 }
 
 impl Mode {
-    pub const DEFAULT_ENV_VAR: &str = "AGGLAYER_ZKVM_BUILD";
+    pub const DEFAULT_ENV_VAR: &str = "AGGLAYER_ELF_BUILD";
 
     pub fn from_env_var(var: &str) -> anyhow::Result<Self> {
         println!("cargo::rerun-if-env-changed={var}");

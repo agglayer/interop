@@ -60,7 +60,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "agglayer-build"
+name = "agglayer-elf-build"
 version = "0.6.0"
 dependencies = [
  "anyhow",
@@ -71,14 +71,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "agglayer-build-sample-program-host"
+name = "agglayer-elf-build-sample-program-host"
 version = "0.1.0"
 dependencies = [
- "agglayer-build",
+ "agglayer-elf-build",
 ]
 
 [[package]]
-name = "agglayer-build-sample-program-zkvm"
+name = "agglayer-elf-build-sample-program-zkvm"
 version = "0.1.0"
 dependencies = [
  "sp1-zkvm",

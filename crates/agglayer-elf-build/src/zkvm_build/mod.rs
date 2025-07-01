@@ -12,20 +12,21 @@
 //! * By default, the checked in ELF is used so the project can be built without
 //!   the zkvm toolcahin.
 //!
-//! ## Controlling the build process using `AGGLAYER_BUILD`
+//! ## Controlling the build process using `AGGLAYER_ELF_BUILD`
 //!
-//! The build mode is specified using the `AGGLAYER_BUILD` environment variable.
+//! The build mode is specified using the `AGGLAYER_ELF_BUILD` environment
+//! variable.
 //!
 //! * Set it to 'build' to rebuild the program from source (requires docker).
 //! * Set it to 'refresh' to rebuild the program from source and update the
 //!   checked in binary (requires docker).
 //! * Set it to 'cached' to use the cached checked-in binary (default).
 //!
-//! After the build mode, the `AGGLAYER_BUILD` variable may contain extra
+//! After the build mode, the `AGGLAYER_ELF_BUILD` variable may contain extra
 //! arguments to be passed to the build. The accepted arguments are the same as
 //! what `cargo prove build` accepts.
 //!
-//! Example: `AGGLAYER_BUILD="refresh --warning-level=minimal" cargo build`.
+//! Example: `AGGLAYER_ELF_BUILD="refresh --warning-level=minimal" cargo build`.
 //!
 //! ## Building a zkvm ELF binary
 //!
@@ -36,7 +37,7 @@
 //!
 //! ```ignore
 //! fn main() {
-//!     agglayer_build::build_program("crates/whatever-proof-program").unwrap();
+//!     agglayer_elf_build::build_program("crates/whatever-proof-program").unwrap();
 //! }
 //! ```
 //!
@@ -45,7 +46,7 @@
 //! In the crate source, include the resulting binary like this:
 //!
 //! ```ignore
-//! pub const ELF: &[u8] = include_bytes!(env!("AGGLAYER_ZKVM_ELF_PATH"));
+//! pub const ELF: &[u8] = include_bytes!(env!("AGGLAYER_ELF_PATH"));
 //! ```
 //!
 //! ## Caveats

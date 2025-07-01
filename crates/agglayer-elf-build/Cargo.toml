@@ -1,5 +1,5 @@
 [package]
-name = "agglayer-build"
+name = "agglayer-elf-build"
 description = "Building zkvm elf binaries, Agglayer-style."
 version.workspace = true
 edition.workspace = true

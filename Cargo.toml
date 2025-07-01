@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
     "crates/*",
-    "crates/agglayer-build/sample-program/*",
+    "crates/agglayer-elf-build/sample-program/*",
 ]
 
 [workspace.package]
@@ -19,7 +19,7 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 
 [workspace.dependencies]
 agglayer-bincode = { path = "crates/agglayer-bincode" }
-agglayer-build = { path = "crates/agglayer-build" }
+agglayer-elf-build = { path = "crates/agglayer-elf-build" }
 agglayer-evm-client = { path = "crates/agglayer-evm-client" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.6.0" }
 agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.6.0" }

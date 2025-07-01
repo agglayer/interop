@@ -1,5 +1,5 @@
 [package]
-name = "agglayer-build-sample-program-zkvm"
+name = "agglayer-elf-build-sample-program-zkvm"
 version = "0.1.0"
 edition = "2021"
 

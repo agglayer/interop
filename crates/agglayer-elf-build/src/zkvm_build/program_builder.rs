@@ -90,7 +90,7 @@ impl ProgramBuilder {
     }
 
     /// Get the path to the produced zkvm ELF in the build folder.
-    fn elf_path(&self) -> anyhow::Result<Utf8PathBuf> {
+    fn built_elf_path(&self) -> anyhow::Result<Utf8PathBuf> {
         let args = &self.build_args;
         let mut paths_iter = sp1_build::generate_elf_paths(&self.program_metadata, Some(args))
             .context("Failed to extract zkvm ELF paths")?
@@ -123,9 +123,9 @@ impl ProgramBuilder {
     fn build_program(self) -> anyhow::Result<Utf8PathBuf> {
         eprintln!("Program dir: {}", self.program_dir.as_str());
 
-        let elf_path = self.elf_path()?;
+        let elf_path = self.built_elf_path()?;
         sp1_build::build_program_with_args(self.program_dir.as_str(), self.build_args);
-        println!("cargo::rustc-env=AGGLAYER_ZKVM_ELF_PATH={elf_path}");
+        println!("cargo::rustc-env=AGGLAYER_ELF_PATH={elf_path}");
 
         Ok(elf_path)
     }
@@ -143,7 +143,7 @@ impl ProgramBuilder {
         let cached_elf_path = self.cached_elf_path;
 
         println!("cargo::rerun-if-changed={cached_elf_path}");
-        println!("cargo::rustc-env=AGGLAYER_ZKVM_ELF_PATH={cached_elf_path}");
+        println!("cargo::rustc-env=AGGLAYER_ELF_PATH={cached_elf_path}");
 
         Ok(cached_elf_path)
     }
