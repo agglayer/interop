@@ -51,12 +51,22 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Run release-plz (dry-run)
+      - name: Set up rust cache
+        uses: Swatinem/rust-cache@v2
+      - name: Install release-plz (dry-run)
         if: github.event_name == 'workflow_dispatch' && inputs.dry-run
         run: |
           cargo install --locked release-plz
-          VERSION=$(echo "${{ inputs.tag }}" | sed 's/^v//')
-          sed -i "s/^version = .*/version = \"$VERSION\"/" ./Cargo.toml
+
+      - name: Run release-plz (dry-run)
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run
+        run: |
+          # if [ -n "${{ inputs.tag }}" ]; then
+          #   VERSION=$(echo "${{ inputs.tag }}" | sed 's/^v//')
+          #   sed -i "s/^version = .*/version = \"$VERSION\"/" ./Cargo.toml
+          # fi
+
+          release-plz update
           release-plz release --dry-run -v
         env:
           GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
