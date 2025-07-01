@@ -86,3 +86,10 @@ pub const CACHED_ELF_PATH: &str = "elf/riscv32im-succinct-zkvm-elf";
 pub fn build_program(program_dir: impl AsRef<Utf8Path>) -> anyhow::Result<Utf8PathBuf> {
     ProgramBuilder::new(program_dir)?.run()
 }
+
+#[macro_export]
+macro_rules! elf_bytes {
+    () => {
+        ::std::include_bytes!(::std::env!("AGGLAYER_ELF_PATH"))
+    };
+}

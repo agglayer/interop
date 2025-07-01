@@ -1,1 +1,1 @@
-pub const ELF: &[u8] = include_bytes!(env!("AGGLAYER_ELF_PATH"));
+pub const ELF: &[u8] = agglayer_elf_build::elf_bytes!();
