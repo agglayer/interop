@@ -28,7 +28,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Create local branch
+        run: git switch -c release-${{ github.run_id }} || git switch release-${{ github.run_id }}
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
