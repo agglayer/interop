@@ -4,17 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
-### 💼 Other
+### 🚀 Features
 
-- Update feature interop
+- Adding changelogs and configure agglayer-primitives' (#32)
+- Publish 0.6.0 (#33)
 
 ### 🚜 Refactor
 
 - Remove pessimistic-proof and split crates
 
-### ⚙️ Miscellaneous Tasks
+## [0.1.0] - 2025-03-18
 
-- Introduce agglayer-interop crate
-- Cleanup cargo.toml files (#16)
+### 💼 Other
+
+- Update feature interop
 
 

@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.6.0"
+version = "0.7.1"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/agglayer/interop"
@@ -18,14 +18,14 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 ] }
 
 [workspace.dependencies]
-agglayer-bincode = { path = "crates/agglayer-bincode" }
-agglayer-elf-build = { path = "crates/agglayer-elf-build" }
-agglayer-evm-client = { path = "crates/agglayer-evm-client" }
-agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.6.0" }
-agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.6.0" }
-agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.6.0" }
-agglayer-tries = { path = "crates/agglayer-tries", version = "0.6.0" }
-unified-bridge = { path = "crates/unified-bridge", version = "0.6.0" }
+agglayer-bincode = { path = "crates/agglayer-bincode", version = "0.7.1" }
+agglayer-elf-build = { path = "crates/agglayer-elf-build", version = "0.7.1" }
+agglayer-evm-client = { path = "crates/agglayer-evm-client", version = "0.7.1" }
+agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.7.1" }
+agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.7.1" }
+agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.7.1" }
+agglayer-tries = { path = "crates/agglayer-tries", version = "0.7.1" }
+unified-bridge = { path = "crates/unified-bridge", version = "0.7.1" }
 
 sp1-build = "=5.0.0"
 sp1-core-machine = "=5.0.0"
@@ -48,12 +48,10 @@ buildstructor = "0.5.4"
 byteorder = "1.5"
 cargo_metadata = "0.18"
 clap = { version = "4.5", features = ["derive", "env"] }
+derive_more = { version = "2.0", features = ["from", "into", "from_str", "as_ref", "display"] }
 dirs = "5.0"
 dotenvy = "0.15.7"
 educe = "0.6.0"
-ethers = "2.0"
-ethers-gcp-kms-signer = "0.1.5"
-ethers-signers = "2.0"
 fail = { version = "0.5.1", default-features = false }
 futures = "0.3.31"
 hex = "0.4.3"

@@ -1,6 +1,6 @@
 [env]
 # Define the list of folders to generate changelogs for
-CHANGELOG_FOLDERS = "proto,crates/unified-bridge,crates/agglayer-interop,crates/agglayer-primitives,crates/agglayer-tries"
+CHANGELOG_FOLDERS = "proto,crates/agglayer-bincode,crates/unified-bridge,crates/agglayer-interop,crates/agglayer-primitives,crates/agglayer-tries"
 
 [tasks.default]
 alias = "changelog-all"

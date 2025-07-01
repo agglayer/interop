@@ -1,5 +1,6 @@
 [package]
 name = "agglayer-bincode"
+description = "Agglayer Bincode utilities"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
