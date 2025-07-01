@@ -26,4 +26,4 @@ rand = { workspace = true, optional = true }
 tiny-keccak = { workspace = true, optional = true }
 
 [dev-dependencies]
-agglayer-primitives = { workspace = true, features = ["testutils"] }
+agglayer-primitives = { path = ".", features = ["testutils"] }
