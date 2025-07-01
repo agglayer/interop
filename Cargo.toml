@@ -1,6 +1,9 @@
 [workspace]
 resolver = "2"
-members = ["crates/*"]
+members = [
+    "crates/*",
+    "crates/agglayer-elf-build/sample-program/*",
+]
 
 [workspace.package]
 version = "0.7.1"
@@ -16,6 +19,7 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 
 [workspace.dependencies]
 agglayer-bincode = { path = "crates/agglayer-bincode", version = "0.7.1" }
+agglayer-elf-build = { path = "crates/agglayer-elf-build", version = "0.7.1" }
 agglayer-evm-client = { path = "crates/agglayer-evm-client", version = "0.7.1" }
 agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.7.1" }
 agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.7.1" }
@@ -23,6 +27,7 @@ agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.7.1" }
 agglayer-tries = { path = "crates/agglayer-tries", version = "0.7.1" }
 unified-bridge = { path = "crates/unified-bridge", version = "0.7.1" }
 
+sp1-build = "=5.0.0"
 sp1-core-machine = "=5.0.0"
 sp1-sdk = "=5.0.3"
 sp1-primitives = "=5.0.0"
@@ -41,6 +46,7 @@ bincode = "1.3"
 bolero = { version = "0.13.0", features = ["arbitrary"] }
 buildstructor = "0.5.4"
 byteorder = "1.5"
+cargo_metadata = "0.18"
 clap = { version = "4.5", features = ["derive", "env"] }
 derive_more = { version = "2.0", features = ["from", "into", "from_str", "as_ref", "display"] }
 dirs = "5.0"
