@@ -68,6 +68,9 @@ jobs:
       - name: Install cargo-make
         run: cargo install cargo-make
 
+      - name: Install cargo semver check
+        run: cargo install cargo-semver-checks --locked
+
       - name: Install release-plz
         run: cargo install --locked release-plz
 
