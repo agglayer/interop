@@ -1,3 +1,5 @@
 [workspace]
+allow_dirty = true
+changelog_update = false
 pr_labels = ["release"] # add the `release` label to the release Pull Request
 changelog_config = "cliff.toml"
