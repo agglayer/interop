@@ -29,6 +29,9 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Create local branch
+        run: git switch -c release-${{ github.run_id }} || git switch release-${{ github.run_id }}
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
@@ -59,8 +62,34 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-make
+        run: cargo install cargo-make
+
+      - name: Install release-plz
+        run: cargo install --locked release-plz
+
+      - name: Generate changelogs
+        run: |
+          set -e
+
+          # Run release-plz update to bump versions
+          release-plz update
+
+          # Generate changelogs with new versions
+          cargo make changelog-version-all
+
+          # Stage only CHANGELOG.md files
+          git add '**/CHANGELOG.md'
+
+          # Restore everything else to original state
+          git restore .
+
       - name: Run release-plz
         uses: release-plz/action@v0.5
+        id: release-plz
         with:
           command: release-pr
         env:
