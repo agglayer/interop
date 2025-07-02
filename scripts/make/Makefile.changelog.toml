@@ -95,6 +95,86 @@ script = [
     '''
 ]
 
+
+
+[tasks.changelog-version-all]
+description = "Generate version-specific changelogs for all crates and proto folder using their respective Cargo.toml versions"
+dependencies = ["check-git-cliff"]
+script = [
+    '''
+    # Get current date in ISO format
+    CURRENT_DATE=$(date +%Y-%m-%d)
+
+    echo "Generating version-specific changelogs for all crates and proto folder"
+    echo "Date: ${CURRENT_DATE}"
+    echo ""
+
+    # Get root workspace version for fallback
+    ROOT_VERSION=""
+    if [ -f "Cargo.toml" ]; then
+        ROOT_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+    fi
+
+    # Generate changelog for proto folder using root Cargo.toml version
+    if [ -d "proto" ]; then
+        if [ -f "Cargo.toml" ]; then
+            PROTO_VERSION="$ROOT_VERSION"
+            if [ -n "$PROTO_VERSION" ]; then
+                echo "Generating changelog for proto (version: v${PROTO_VERSION})..."
+                git cliff --include-path "proto/**" --tag "v${PROTO_VERSION}" --output "proto/CHANGELOG.md" || {
+                    echo "Warning: Failed to generate changelog for proto"
+                }
+                echo "✓ proto/CHANGELOG.md (v${PROTO_VERSION})"
+            else
+                echo "Warning: Could not extract version from root Cargo.toml for proto"
+            fi
+        else
+            echo "Warning: Root Cargo.toml not found, skipping proto changelog"
+        fi
+    else
+        echo "Warning: proto folder does not exist, skipping..."
+    fi
+
+    # Generate changelogs for all crates using their individual Cargo.toml versions
+    if [ -d "crates" ]; then
+        for crate_dir in crates/*/; do
+            if [ -d "$crate_dir" ]; then
+                crate_name=$(basename "$crate_dir")
+                cargo_toml="${crate_dir}Cargo.toml"
+
+                if [ -f "$cargo_toml" ]; then
+                    # Check if version uses workspace inheritance
+                    if grep -q '^version.*workspace.*=.*true' "$cargo_toml"; then
+                        CRATE_VERSION="$ROOT_VERSION"
+                        echo "Generating changelog for crate: $crate_name (version: v${CRATE_VERSION} - inherited from workspace)..."
+                    else
+                        CRATE_VERSION=$(grep '^version' "$cargo_toml" | head -1 | awk -F'"' '{print $2}')
+                        echo "Generating changelog for crate: $crate_name (version: v${CRATE_VERSION})..."
+                    fi
+
+                    if [ -n "$CRATE_VERSION" ]; then
+                        git cliff --include-path "${crate_dir}**" --tag "v${CRATE_VERSION}" --output "${crate_dir}CHANGELOG.md" || {
+                            echo "Warning: Failed to generate changelog for $crate_name"
+                        }
+                        echo "✓ ${crate_dir}CHANGELOG.md (v${CRATE_VERSION})"
+                    else
+                        echo "Warning: Could not extract version from $cargo_toml for $crate_name"
+                    fi
+                else
+                    echo "Warning: $cargo_toml not found, skipping $crate_name"
+                fi
+            fi
+        done
+    else
+        echo "Warning: crates folder does not exist, skipping..."
+    fi
+
+    echo ""
+    echo "All version-specific changelogs generated using respective Cargo.toml versions"
+    echo "Date used: ${CURRENT_DATE}"
+    '''
+]
+
 [tasks.changelog-custom-path]
 description = "Generate changelog for custom path pattern"
 dependencies = ["check-git-cliff"]
@@ -151,6 +231,8 @@ script = [
     echo "  cargo make changelog-unreleased    - Generate changelog for unreleased changes"
     echo "  cargo make changelog-since-tag     - Generate changelog since specific tag"
     echo "                                       Usage: --env TAG=v1.0.0"
+    echo "  cargo make changelog-version-all   - Generate version-specific changelogs for all crates and proto"
+    echo "                                       (uses versions from respective Cargo.toml files)"
     echo "  cargo make changelog-custom-path   - Generate changelog for custom path pattern"
     echo "                                       Usage: --env PATH_PATTERN='src/lib/**'"
     echo "  cargo make changelog-clean         - Clean generated changelog files"
