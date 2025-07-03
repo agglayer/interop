@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1] - 2025-07-03
+
+### 🚜 Refactor
+
+- Wrap `alloy_primitives::Address` and give data types specific `serde` names (#40)
+
 ## [0.6.1] - 2025-05-28
 
 ### 🚀 Features

@@ -2,12 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.8.1] - 2025-07-03
-
-### 🚜 Refactor
-
-- Wrap `alloy_primitives::Address` and give data types specific `serde` names (#40)
-
 ## [0.7.1] - 2025-06-04
 
 ### 🚀 Features
@@ -18,14 +12,29 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Use strong types for rollup indexes (#21)
 - Adding changelogs and configure agglayer-primitives' (#32)
 - Publish 0.6.0 (#33)
 - Add typed tree roots (#31)
 
-### 📚 Documentation
+### 🚜 Refactor
 
-- Precise lsb indexing for the mainnet flag (#30)
+- Bincode module (#26)
+
+## [0.6.0] - 2025-05-20
+
+### 🚀 Features
+
+- Use strong types for rollup indexes (#21)
+
+### 🐛 Bug Fixes
+
+- Make signature field in AggchainData optional (#29)
+
+## [0.4.0] - 2025-05-16
+
+### 🚀 Features
+
+- Add signature field to AggchainProof message (#24)
 
 ## [0.3.0] - 2025-04-30
 
@@ -37,20 +46,12 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Introduce fuzzer infra, make everything faster (#9)
 - Align imported bridge exits commitment (#12)
 
-### 🐛 Bug Fixes
+## [0.2.0] - 2025-04-02
 
-- Testutils features for agglayer-primitives
-- Add check on ger on agglayer side (#10)
+### 🚀 Features
 
-### 💼 Other
-
-- Fix the build of `unified-bridge` on zkvm (#7)
-
-### 🚜 Refactor
-
-- Remove pessimistic-proof and split crates
+- Updating aggchain-proof format (#11)
 
 
