@@ -11,6 +11,4 @@ bincode.workspace = true
 serde.workspace = true
 
 [dev-dependencies]
-unified-bridge.workspace = true
-
 sp1-sdk.workspace = true

@@ -35,7 +35,6 @@ dependencies = [
  "bincode",
  "serde",
  "sp1-sdk",
- "unified-bridge",
 ]
 
 [[package]]
