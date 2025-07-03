@@ -102,11 +102,11 @@ impl<Opts: Options> Codec<Opts> {
 
 #[cfg(test)]
 mod test {
-    use unified_bridge::NetworkId;
-
     #[test]
     fn sp1_endians() {
-        let network_id = NetworkId::new(0x00112233);
+        type NetworkId = u32;
+
+        let network_id: NetworkId = 0x00112233;
         let network_id_enc = super::sp1v4().serialize(&network_id).unwrap();
 
         let mut stdin0 = sp1_sdk::SP1Stdin::new();
