@@ -15,6 +15,18 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "Version bump level"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - major
+          - minor
+          - patch
 
 jobs:
   release-crates:
@@ -23,15 +35,15 @@ jobs:
     if: github.repository_owner == 'agglayer' && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha }}
-      - name: Create local branch
+      - name: Switch
         run: git switch -c release-${{ github.run_id }} || git switch release-${{ github.run_id }}
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
@@ -43,15 +55,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
-  release-create-pr:
-    name: Release - open PR
+  automated-release-pr:
+    name: Automated Release PR
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'agglayer' && github.event_name == 'push'
+    if: github.repository_owner == 'agglayer' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     permissions:
       contents: write
       pull-requests: write
     concurrency:
-      group: release-plz-${{ github.ref }}
+      group: automated-release-pr-${{ github.ref }}
       cancel-in-progress: false
     steps:
       - name: Checkout repository
@@ -68,33 +80,122 @@ jobs:
       - name: Install cargo-make
         run: cargo install cargo-make
 
-      - name: Install cargo semver check
-        run: cargo install cargo-semver-checks --locked
+      - name: Install cargo-edit
+        run: cargo install cargo-edit
 
-      - name: Install release-plz
-        run: cargo install --locked release-plz
+      - name: Install cargo-semver-checks
+        run: cargo install cargo-semver-checks
+
+      - name: Get current version
+        id: current_version
+        run: |
+          CURRENT_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+
+      - name: Bump version and check for breaking changes
+        id: version_bump
+        run: |
+          set -e
+
+          # Manual version bump if specified via workflow_dispatch
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.version_bump }}" != "auto" ]; then
+            echo "Manual version bump specified: ${{ github.event.inputs.version_bump }}"
+
+            # Bump versions based on manual input
+            case "${{ github.event.inputs.version_bump }}" in
+              major)
+                cargo set-version --bump major
+                BUMP_TYPE="major"
+                ;;
+              minor)
+                cargo set-version --bump minor
+                BUMP_TYPE="minor"
+                ;;
+              patch)
+                cargo set-version --bump patch
+                BUMP_TYPE="patch"
+                ;;
+            esac
+
+            NEW_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+            echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+            echo "Final version: $NEW_VERSION"
+          else
+            # Automatic version bump with semver-checks
+            echo "Starting with minor version bump"
+            cargo set-version --bump minor
+
+            # Get the new version after minor bump
+            NEW_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+            echo "After minor bump: $NEW_VERSION"
+
+            # Check for breaking changes using semver-checks
+            echo "Running cargo semver-checks to detect breaking changes..."
+            if ! cargo semver-checks --baseline-version ${{ steps.current_version.outputs.current_version }}; then
+              echo "Breaking changes detected! Bumping to major version"
+              # Reset to original version and do major bump
+              git checkout HEAD -- Cargo.toml
+              cargo set-version --bump major
+              NEW_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+              echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+              echo "bump_type=major" >> $GITHUB_OUTPUT
+            else
+              echo "No breaking changes detected, keeping minor bump"
+              echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+              echo "bump_type=minor" >> $GITHUB_OUTPUT
+            fi
+
+            echo "Final version: $NEW_VERSION"
+          fi
 
       - name: Generate changelogs
         run: |
           set -e
-
-          # Run release-plz update to bump versions
-          release-plz update
-
-          # Generate changelogs with new versions
+          echo "Generating changelogs with version ${{ steps.version_bump.outputs.final_version }}"
           cargo make changelog-version-all
 
-          # Stage only CHANGELOG.md files
-          git add '**/CHANGELOG.md'
+      - name: Extract major.minor version
+        id: major_minor
+        run: |
+          MAJOR_MINOR=$(echo "${{ steps.version_bump.outputs.final_version }}" | cut -d. -f1-2)
+          echo "version=$MAJOR_MINOR" >> $GITHUB_OUTPUT
 
-          # Restore everything else to original state
-          git restore .
-
-      - name: Run release-plz
-        uses: release-plz/action@v0.5
-        id: release-plz
+      - name: Create Release PR
+        uses: peter-evans/create-pull-request@v7
         with:
-          command: release-pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore(release): prepare v${{ steps.version_bump.outputs.final_version }}
+
+            Version bump type: ${{ steps.version_bump.outputs.bump_type }}
+            Previous version: ${{ steps.current_version.outputs.current_version }}
+            New version: ${{ steps.version_bump.outputs.final_version }}
+          title: "chore(release): prepare v${{ steps.version_bump.outputs.final_version }}"
+          signoff: true
+          sign-commits: true
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          body: |
+            ## Release v${{ steps.version_bump.outputs.final_version }}
+
+            **Version bump type:** ${{ steps.version_bump.outputs.bump_type }}
+            **Previous version:** ${{ steps.current_version.outputs.current_version }}
+            **New version:** ${{ steps.version_bump.outputs.final_version }}
+
+            ## Next Steps 📋
+
+            ### For Codeowners
+            1. **Review** this PR to ensure version bump and changelog updates are correct
+            2. **Verify** that all breaking changes (if any) are properly documented
+            3. **Merge** this PR when ready to proceed with the release
+
+          branch: release/v${{ steps.major_minor.outputs.version }}
+          base: main
+          delete-branch: false
+          draft: false
+          assignees: ${{ github.actor }}
+          pull-request-commits-verified: true
+          labels: |
+            release
