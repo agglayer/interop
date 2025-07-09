@@ -23,18 +23,22 @@ impl ToBits<32> for u32 {
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,
+)]
 pub struct SmtMerkleProof<H, const DEPTH: usize>
 where
     H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
+    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + rkyv::Archive,
 {
     #[serde_as(as = "[_; DEPTH]")]
     pub siblings: [H::Digest; DEPTH],
 }
 
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,
+)]
 pub struct SmtNonInclusionProof<H, const DEPTH: usize>
 where
     H: Hasher,
@@ -47,7 +51,7 @@ where
 impl<H, const DEPTH: usize> SmtMerkleProof<H, DEPTH>
 where
     H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
+    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + rkyv::Archive,
 {
     pub fn verify<K>(&self, key: K, value: H::Digest, root: H::Digest) -> bool
     where

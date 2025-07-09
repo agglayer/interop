@@ -11,17 +11,42 @@ pub const L1_ETH: TokenInfo = TokenInfo {
 
 /// Encapsulates the information to uniquely identify a token on the origin
 /// network.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Copy)]
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    Copy,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct TokenInfo {
     /// Network which the token originates from
     pub origin_network: NetworkId,
 
     /// The address of the token on the origin network
+    #[rkyv(with = crate::bridge_exit::AddressDef)]
     pub origin_token_address: Address,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub enum LeafType {
     Transfer = 0,

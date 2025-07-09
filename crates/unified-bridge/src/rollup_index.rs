@@ -5,7 +5,20 @@ use crate::{NetworkId, RollupId};
 /// A rollup index.
 ///
 /// Rollups are numbered from 0 to `u32::MAX - 1`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Hash,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct RollupIndex(
     #[cfg_attr(feature = "testutils", arbitrary(with = |u: &mut arbitrary::Unstructured| u.int_in_range(0..=u32::MAX - 1)))]

@@ -9,7 +9,20 @@ use crate::{InvalidRollupIndexError, NetworkId, RollupIndex};
 /// Further defined by the LXLY specifications.
 /// | 191 bits |    1 bit      |    32 bits   |    32 bits   |
 /// |    0     |  mainnet flag | rollup index |  leaf index  |
-#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, PartialOrd, Ord, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Ord,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 pub struct GlobalIndex {
     mainnet_flag: bool,
     rollup_index: RollupIndex,

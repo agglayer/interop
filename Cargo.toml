@@ -64,6 +64,7 @@ pbjson = "0.7.0"
 pin-project = "1.1"
 prost = "0.13.4"
 rand = "0.9.0"
+rkyv = { version = "0.8", features = ["hashbrown-0_15", "std", "bytecheck"] }
 rs_merkle = { version = "1.4", default-features = false }
 rstest = "0.25.0"
 serde = { version = "1.0", features = ["derive"] }

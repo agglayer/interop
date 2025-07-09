@@ -19,6 +19,7 @@ alloy-primitives.workspace = true
 arbitrary = { workspace = true, optional = true }
 byteorder.workspace = true
 k256.workspace = true
+rkyv.workspace = true
 serde.workspace = true
 hex.workspace = true
 rand = { workspace = true, optional = true }

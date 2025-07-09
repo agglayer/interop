@@ -7,11 +7,13 @@ pub mod proof;
 
 /// Represents a local exit tree as defined by the LxLy bridge.
 #[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize,
+)]
 pub struct LocalExitTree<H, const TREE_DEPTH: usize = 32>
 where
     H: Hasher,
-    H::Digest: Serialize + for<'a> Deserialize<'a>,
+    H::Digest: Serialize + for<'a> Deserialize<'a> + rkyv::Archive,
 {
     /// The number of inserted (non-empty) leaves.
     pub leaf_count: u32,
@@ -41,7 +43,7 @@ pub enum LocalExitTreeError {
 impl<H, const TREE_DEPTH: usize> Default for LocalExitTree<H, TREE_DEPTH>
 where
     H: Hasher,
-    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
+    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a> + rkyv::Archive,
 {
     #[inline]
     fn default() -> Self {
@@ -55,7 +57,7 @@ where
 impl<H, const TREE_DEPTH: usize> LocalExitTree<H, TREE_DEPTH>
 where
     H: Hasher,
-    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
+    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a> + rkyv::Archive,
 {
     const MAX_NUM_LEAVES: u32 = ((1u64 << TREE_DEPTH) - 1) as u32;
 

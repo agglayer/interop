@@ -56,7 +56,17 @@ impl Hashable for ClaimFromRollup {
         ])
     }
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeafInner {
     pub global_exit_root: Digest,
@@ -75,7 +85,17 @@ impl L1InfoTreeLeafInner {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeaf {
     pub l1_info_tree_index: u32,
@@ -136,7 +156,17 @@ pub enum Error {
     InvalidExitNetwork,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct MerkleProof {
     pub proof: LETMerkleProof<Keccak256Hasher>,
@@ -163,14 +193,34 @@ impl MerkleProof {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub enum Claim {
     Mainnet(Box<ClaimFromMainnet>),
     Rollup(Box<ClaimFromRollup>),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ClaimFromMainnet {
     /// Proof from bridge exit leaf to MER
@@ -213,7 +263,17 @@ impl ClaimFromMainnet {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ClaimFromRollup {
     /// Proof from bridge exit leaf to LER
@@ -272,7 +332,17 @@ impl ClaimFromRollup {
 
 /// Represents a token bridge exit originating on another network but claimed on
 /// the current network.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct ImportedBridgeExit {
     /// The bridge exit initiated on another network, called the "sending"

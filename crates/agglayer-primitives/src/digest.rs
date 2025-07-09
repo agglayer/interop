@@ -9,7 +9,19 @@ use crate::{
     U256,
 };
 
-#[derive(Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[derive(
+    Default,
+    Hash,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Clone,
+    Copy,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct Digest(pub [u8; 32]);
 

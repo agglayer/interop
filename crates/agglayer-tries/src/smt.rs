@@ -39,7 +39,7 @@ where
 impl<H, const DEPTH: usize> Default for Smt<H, DEPTH>
 where
     H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + Default,
+    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + Default + rkyv::Archive,
 {
     #[inline]
     fn default() -> Self {
@@ -50,7 +50,7 @@ where
 impl<H, const DEPTH: usize> Smt<H, DEPTH>
 where
     H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
+    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + rkyv::Archive,
 {
     #[inline]
     pub fn new() -> Self

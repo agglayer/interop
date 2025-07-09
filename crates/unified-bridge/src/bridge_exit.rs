@@ -21,9 +21,46 @@ impl Hashable for TokenInfo {
     }
 }
 
+// TODO: Repeated code (crates/agglayer-primitives/src/signature.rs), consider
+// refactoring
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[rkyv(remote = U256)]
+pub struct U256Def {
+    #[rkyv(getter = U256::as_limbs)]
+    limbs: [u64; 4],
+}
+
+impl From<U256Def> for U256 {
+    #[inline]
+    fn from(value: U256Def) -> Self {
+        U256::from_limbs(value.limbs)
+    }
+}
+
+#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+#[rkyv(remote = Address)]
+pub struct AddressDef([u8; 20]);
+
+impl From<AddressDef> for Address {
+    #[inline]
+    fn from(value: AddressDef) -> Self {
+        Address::from_slice(&value.0)
+    }
+}
+
 /// Represents a token bridge exit from the network.
 // TODO: Change it to an enum depending on `leaf_type`.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    rkyv::Archive,
+    rkyv::Serialize,
+    rkyv::Deserialize,
+)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct BridgeExit {
     pub leaf_type: LeafType,
@@ -34,9 +71,11 @@ pub struct BridgeExit {
     /// Network which the token is transferred to
     pub dest_network: NetworkId,
     /// Address which will own the received token
+    #[rkyv(with = AddressDef)]
     pub dest_address: Address,
 
     /// Token amount sent
+    #[rkyv(with = U256Def)]
     pub amount: U256,
 
     pub metadata: Option<Digest>,
