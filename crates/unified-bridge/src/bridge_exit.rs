@@ -37,17 +37,6 @@ impl From<U256Def> for U256 {
     }
 }
 
-#[derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
-#[rkyv(remote = Address)]
-pub struct AddressDef([u8; 20]);
-
-impl From<AddressDef> for Address {
-    #[inline]
-    fn from(value: AddressDef) -> Self {
-        Address::from_slice(&value.0)
-    }
-}
-
 /// Represents a token bridge exit from the network.
 // TODO: Change it to an enum depending on `leaf_type`.
 #[derive(
@@ -71,7 +60,6 @@ pub struct BridgeExit {
     /// Network which the token is transferred to
     pub dest_network: NetworkId,
     /// Address which will own the received token
-    #[rkyv(with = AddressDef)]
     pub dest_address: Address,
 
     /// Token amount sent

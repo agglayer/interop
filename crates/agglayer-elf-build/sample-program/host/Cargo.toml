@@ -1,0 +1,11 @@
+[package]
+name = "agglayer-elf-build-sample-program-host"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+agglayer-elf-build.workspace = true
+
+[build-dependencies]
+agglayer-elf-build.workspace = true

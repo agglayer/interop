@@ -172,9 +172,9 @@ mod tests {
         let mut deposit = BridgeExit::new(
             LeafType::Transfer,
             0.into(),
-            Address::default(),
+            Address::ZERO,
             1.into(),
-            Address::default(),
+            Address::ZERO,
             U256::default(),
             vec![],
         );
@@ -183,7 +183,7 @@ mod tests {
         deposit.amount = U256::try_from_be_slice(amount_bytes.as_slice()).unwrap();
 
         let dest_addr = hex::decode("c949254d682d8c9ad5682521675b8f43b102aec4").unwrap_or_default();
-        deposit.dest_address.copy_from_slice(&dest_addr);
+        deposit.dest_address.as_mut().copy_from_slice(&dest_addr);
 
         let leaf_hash = deposit.hash();
         assert_eq!(

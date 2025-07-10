@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2025-05-28
+
+### 🚀 Features
+
+- Adding changelogs and configure agglayer-primitives' (#32)
+- Add typed tree roots (#31)
+
 ## [0.5.0] - 2025-05-20
 
 ### 🚀 Features
@@ -26,12 +33,5 @@ All notable changes to this project will be documented in this file.
 ### 🚜 Refactor
 
 - Switch vkey to big endian (agglayer/agglayer#715)
-
-### ⚙️ Miscellaneous Tasks
-
-- Import from agglayer
-- Sync fuzzing feature
-- Cleaning up pessimistic-proof
-- Cleanup cargo.toml files (#16)
 
 

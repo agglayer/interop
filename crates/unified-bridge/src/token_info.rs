@@ -31,7 +31,6 @@ pub struct TokenInfo {
     pub origin_network: NetworkId,
 
     /// The address of the token on the origin network
-    #[rkyv(with = crate::bridge_exit::AddressDef)]
     pub origin_token_address: Address,
 }
 
@@ -73,7 +72,7 @@ impl TryFrom<u8> for LeafType {
 impl ToBits<192> for TokenInfo {
     #[inline]
     fn to_bits(&self) -> [bool; 192] {
-        let address_bytes = self.origin_token_address.0;
+        let address_bytes = self.origin_token_address.as_slice();
         // Security: We assume here that `address_bytes` is a fixed-size array of
         // 20 bytes. The following code could panic otherwise.
         std::array::from_fn(|i| {

@@ -64,11 +64,11 @@ impl From<U256Def> for U256 {
 )]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 #[serde(from = "compat::Signature", into = "compat::Signature")]
-pub struct Signature {
+pub struct Signature(
     #[serde(with = "AlloySignatureDef")]
     #[rkyv(with = AlloySignatureDef)]
-    inner: AlloySignature,
-}
+    AlloySignature,
+);
 
 impl Signature {
     #[inline]
@@ -83,47 +83,49 @@ impl Signature {
 
     #[inline]
     pub fn recover_address_from_prehash(&self, prehash: &B256) -> Result<Address, SignatureError> {
-        let signature: AlloySignature = self.inner.into();
-        signature.recover_address_from_prehash(prehash)
+        let signature: AlloySignature = self.0.into();
+        signature
+            .recover_address_from_prehash(prehash)
+            .map(Address::from)
     }
 
     #[inline]
     pub fn as_primitive_signature(&self) -> &AlloySignature {
-        &self.inner
+        &self.0
     }
 
     #[inline]
     pub fn as_bytes(&self) -> [u8; 65] {
-        self.inner.as_bytes()
+        self.0.as_bytes()
     }
 
     #[inline]
     pub fn r(&self) -> U256 {
-        self.inner.r()
+        self.0.r()
     }
 
     #[inline]
     pub fn s(&self) -> U256 {
-        self.inner.s()
+        self.0.s()
     }
 
     #[inline]
     pub fn v(&self) -> bool {
-        self.inner.v()
+        self.0.v()
     }
 }
 
 impl From<AlloySignature> for Signature {
     #[inline]
     fn from(ps: AlloySignature) -> Self {
-        Self { inner: ps.into() }
+        Self(ps)
     }
 }
 
 impl From<Signature> for AlloySignature {
     #[inline]
     fn from(value: Signature) -> Self {
-        value.inner
+        value.0
     }
 }
 
@@ -132,7 +134,7 @@ impl TryFrom<&[u8]> for Signature {
 
     #[inline]
     fn try_from(sig: &[u8]) -> Result<Self, Self::Error> {
-        sig.try_into().map(|inner| Self { inner })
+        sig.try_into().map(Self)
     }
 }
 
@@ -141,7 +143,7 @@ impl std::str::FromStr for Signature {
 
     #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.parse().map(|inner| Self { inner })
+        s.parse().map(Self)
     }
 }
 
@@ -166,7 +168,7 @@ mod compat {
     impl From<super::Signature> for Signature {
         #[inline]
         fn from(sig: super::Signature) -> Self {
-            Self::new(sig.inner.r(), sig.inner.s(), sig.inner.v())
+            Self::new(sig.0.r(), sig.0.s(), sig.0.v())
         }
     }
 
