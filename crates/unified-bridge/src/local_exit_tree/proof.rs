@@ -1,7 +1,7 @@
 #![allow(clippy::needless_range_loop)]
 use std::fmt::Debug;
 
-use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 

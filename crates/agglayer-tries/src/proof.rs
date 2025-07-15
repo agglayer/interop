@@ -1,4 +1,4 @@
-use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
@@ -83,12 +83,7 @@ impl<const DEPTH: usize> SmtMerkleProof<DEPTH> {
 }
 
 impl<const DEPTH: usize> SmtNonInclusionProof<DEPTH> {
-    pub fn verify<K>(
-        &self,
-        key: K,
-        root: Digest,
-        empty_hash_at_height: &[Digest; DEPTH],
-    ) -> bool
+    pub fn verify<K>(&self, key: K, root: Digest, empty_hash_at_height: &[Digest; DEPTH]) -> bool
     where
         K: ToBits<DEPTH>,
     {

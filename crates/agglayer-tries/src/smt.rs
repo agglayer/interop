@@ -3,7 +3,7 @@ use std::{
     hash::Hash,
 };
 
-use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
@@ -228,10 +228,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     /// update it. If the token is not already in the tree, we still want an
     /// inclusion proof, so we use this function.
     #[inline]
-    pub fn get_inclusion_proof_zero<K>(
-        &mut self,
-        key: K,
-    ) -> Result<SmtMerkleProof<DEPTH>, SmtError>
+    pub fn get_inclusion_proof_zero<K>(&mut self, key: K) -> Result<SmtMerkleProof<DEPTH>, SmtError>
     where
         K: Copy + ToBits<DEPTH>,
     {

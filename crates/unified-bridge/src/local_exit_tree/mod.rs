@@ -1,4 +1,4 @@
-use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use thiserror::Error;
@@ -65,9 +65,7 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
 
     /// Creates a new [`LocalExitTree`] and populates its leaves.
     #[inline]
-    pub fn from_leaves(
-        leaves: impl Iterator<Item = Digest>,
-    ) -> Result<Self, LocalExitTreeError> {
+    pub fn from_leaves(leaves: impl Iterator<Item = Digest>) -> Result<Self, LocalExitTreeError> {
         let mut tree = Self::new();
 
         for leaf in leaves {
@@ -134,7 +132,8 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
                 root = keccak256_combine([&root, &empty_hash_at_height]);
             }
 
-            empty_hash_at_height = keccak256_combine([&empty_hash_at_height, &empty_hash_at_height]);
+            empty_hash_at_height =
+                keccak256_combine([&empty_hash_at_height, &empty_hash_at_height]);
         }
 
         root

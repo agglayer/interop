@@ -1,4 +1,4 @@
-use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
 
 /// Returns an array whose `i`th element is the root of an empty Merkle tree of
 /// depth `i`.
