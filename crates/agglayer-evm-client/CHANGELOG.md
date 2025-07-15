@@ -9,14 +9,10 @@ All notable changes to this project will be documented in this file.
 - Adding changelogs and configure agglayer-primitives' (#32)
 - Publish 0.6.0 (#33)
 
-### 🚜 Refactor
+## [0.3.0] - 2025-04-30
 
-- Remove pessimistic-proof and split crates
+### 🚀 Features
 
-## [0.1.0] - 2025-03-18
-
-### 💼 Other
-
-- Update feature interop
+- Introduce the traits from provers repo’s prover-alloy (#18)
 
 
