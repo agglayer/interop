@@ -1,7 +1,5 @@
-use std::hash::Hash;
-
-use agglayer_primitives::keccak::Hasher;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use agglayer_primitives::{Digest, keccak::keccak256_combine};
+use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
 pub trait ToBits<const NUM_BITS: usize> {
@@ -24,32 +22,20 @@ impl ToBits<32> for u32 {
 
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SmtMerkleProof<H, const DEPTH: usize>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
-{
+pub struct SmtMerkleProof<const DEPTH: usize> {
     #[serde_as(as = "[_; DEPTH]")]
-    pub siblings: [H::Digest; DEPTH],
+    pub siblings: [Digest; DEPTH],
 }
 
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SmtNonInclusionProof<H, const DEPTH: usize>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Serialize + DeserializeOwned,
-{
+pub struct SmtNonInclusionProof<const DEPTH: usize> {
     #[serde_as(as = "Vec<_>")]
-    pub siblings: Vec<H::Digest>,
+    pub siblings: Vec<Digest>,
 }
 
-impl<H, const DEPTH: usize> SmtMerkleProof<H, DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
-{
-    pub fn verify<K>(&self, key: K, value: H::Digest, root: H::Digest) -> bool
+impl<const DEPTH: usize> SmtMerkleProof<DEPTH> {
+    pub fn verify<K>(&self, key: K, value: Digest, root: Digest) -> bool
     where
         K: ToBits<DEPTH>,
     {
@@ -57,9 +43,9 @@ where
         let mut hash = value;
         for i in 0..DEPTH {
             hash = if bits[DEPTH - i - 1] {
-                H::merge(&self.siblings[i], &hash)
+                keccak256_combine([&self.siblings[i], &hash])
             } else {
-                H::merge(&hash, &self.siblings[i])
+                keccak256_combine([&hash, &self.siblings[i]])
             };
         }
 
@@ -72,10 +58,10 @@ where
     pub fn verify_and_update<K>(
         &self,
         key: K,
-        old_value: H::Digest,
-        new_value: H::Digest,
-        root: H::Digest,
-    ) -> Option<H::Digest>
+        old_value: Digest,
+        new_value: Digest,
+        root: Digest,
+    ) -> Option<Digest>
     where
         K: ToBits<DEPTH> + Copy,
     {
@@ -86,9 +72,9 @@ where
         let mut hash = new_value;
         for i in 0..DEPTH {
             hash = if bits[DEPTH - i - 1] {
-                H::merge(&self.siblings[i], &hash)
+                keccak256_combine([&self.siblings[i], &hash])
             } else {
-                H::merge(&hash, &self.siblings[i])
+                keccak256_combine([&hash, &self.siblings[i]])
             };
         }
 
@@ -96,16 +82,12 @@ where
     }
 }
 
-impl<H, const DEPTH: usize> SmtNonInclusionProof<H, DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Serialize + DeserializeOwned,
-{
+impl<const DEPTH: usize> SmtNonInclusionProof<DEPTH> {
     pub fn verify<K>(
         &self,
         key: K,
-        root: H::Digest,
-        empty_hash_at_height: &[H::Digest; DEPTH],
+        root: Digest,
+        empty_hash_at_height: &[Digest; DEPTH],
     ) -> bool
     where
         K: ToBits<DEPTH>,
@@ -114,10 +96,10 @@ where
             return false;
         }
         if self.siblings.is_empty() {
-            let empty_root = H::merge(
+            let empty_root = keccak256_combine([
                 &empty_hash_at_height[DEPTH - 1],
                 &empty_hash_at_height[DEPTH - 1],
-            );
+            ]);
             return root == empty_root;
         }
         let bits = key.to_bits();
@@ -125,9 +107,9 @@ where
         for i in (0..self.siblings.len()).rev() {
             let sibling = self.siblings[i];
             entry = if bits[i] {
-                H::merge(&sibling, &entry)
+                keccak256_combine([&sibling, &entry])
             } else {
-                H::merge(&entry, &sibling)
+                keccak256_combine([&entry, &sibling])
             };
         }
 
@@ -140,10 +122,10 @@ where
     pub fn verify_and_update<K>(
         &self,
         key: K,
-        new_value: H::Digest,
-        root: H::Digest,
-        empty_hash_at_height: &[H::Digest; DEPTH],
-    ) -> Option<H::Digest>
+        new_value: Digest,
+        root: Digest,
+        empty_hash_at_height: &[Digest; DEPTH],
+    ) -> Option<Digest>
     where
         K: Copy + ToBits<DEPTH>,
     {
@@ -156,17 +138,17 @@ where
         for i in (self.siblings.len()..DEPTH).rev() {
             let sibling = empty_hash_at_height[DEPTH - i - 1];
             entry = if bits[i] {
-                H::merge(&sibling, &entry)
+                keccak256_combine([&sibling, &entry])
             } else {
-                H::merge(&entry, &sibling)
+                keccak256_combine([&entry, &sibling])
             };
         }
         for i in (0..self.siblings.len()).rev() {
             let sibling = self.siblings[i];
             entry = if bits[i] {
-                H::merge(&sibling, &entry)
+                keccak256_combine([&sibling, &entry])
             } else {
-                H::merge(&entry, &sibling)
+                keccak256_combine([&entry, &sibling])
             };
         }
 

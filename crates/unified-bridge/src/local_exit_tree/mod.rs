@@ -1,4 +1,4 @@
-use agglayer_primitives::keccak::Hasher;
+use agglayer_primitives::{Digest, keccak::keccak256_combine};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use thiserror::Error;
@@ -8,11 +8,7 @@ pub mod proof;
 /// Represents a local exit tree as defined by the LxLy bridge.
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LocalExitTree<H, const TREE_DEPTH: usize = 32>
-where
-    H: Hasher,
-    H::Digest: Serialize + for<'a> Deserialize<'a>,
-{
+pub struct LocalExitTree<const TREE_DEPTH: usize = 32> {
     /// The number of inserted (non-empty) leaves.
     pub leaf_count: u32,
 
@@ -23,7 +19,7 @@ where
     /// It contains meaningful values only up to the current root of the tree,
     /// computed by log2(leaf_count). After that, all values are zeroed out.
     #[serde_as(as = "[_; TREE_DEPTH]")]
-    pub frontier: [H::Digest; TREE_DEPTH],
+    pub frontier: [Digest; TREE_DEPTH],
 }
 
 #[derive(Clone, Debug, Error, Serialize, Deserialize, PartialEq, Eq)]
@@ -38,25 +34,17 @@ pub enum LocalExitTreeError {
     FrontierIndexOutOfBounds,
 }
 
-impl<H, const TREE_DEPTH: usize> Default for LocalExitTree<H, TREE_DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
-{
+impl<const TREE_DEPTH: usize> Default for LocalExitTree<TREE_DEPTH> {
     #[inline]
     fn default() -> Self {
         Self {
             leaf_count: 0,
-            frontier: [H::Digest::default(); TREE_DEPTH],
+            frontier: [Digest::default(); TREE_DEPTH],
         }
     }
 }
 
-impl<H, const TREE_DEPTH: usize> LocalExitTree<H, TREE_DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Default + Serialize + for<'a> Deserialize<'a>,
-{
+impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
     const MAX_NUM_LEAVES: u32 = ((1u64 << TREE_DEPTH) - 1) as u32;
 
     /// Creates a new empty [`LocalExitTree`].
@@ -71,14 +59,14 @@ where
     }
 
     #[inline]
-    pub fn frontier(&self) -> [H::Digest; TREE_DEPTH] {
+    pub fn frontier(&self) -> [Digest; TREE_DEPTH] {
         self.frontier
     }
 
     /// Creates a new [`LocalExitTree`] and populates its leaves.
     #[inline]
     pub fn from_leaves(
-        leaves: impl Iterator<Item = H::Digest>,
+        leaves: impl Iterator<Item = Digest>,
     ) -> Result<Self, LocalExitTreeError> {
         let mut tree = Self::new();
 
@@ -92,7 +80,7 @@ where
     /// Creates a new [`LocalExitTree`] from its parts: leaf count, and
     /// frontier.
     #[inline]
-    pub fn from_parts(leaf_count: u32, frontier: [H::Digest; TREE_DEPTH]) -> Self {
+    pub fn from_parts(leaf_count: u32, frontier: [Digest; TREE_DEPTH]) -> Self {
         Self {
             leaf_count,
             frontier,
@@ -100,7 +88,7 @@ where
     }
     /// Appends a leaf to the tree.
     #[inline]
-    pub fn add_leaf(&mut self, leaf: H::Digest) -> Result<u32, LocalExitTreeError> {
+    pub fn add_leaf(&mut self, leaf: Digest) -> Result<u32, LocalExitTreeError> {
         if self.leaf_count >= Self::MAX_NUM_LEAVES {
             return Err(LocalExitTreeError::LeafIndexOverflow);
         }
@@ -115,7 +103,7 @@ where
         let new_frontier_entry = {
             let mut entry = leaf;
             for frontier_ele in &self.frontier[0..frontier_insertion_index] {
-                entry = H::merge(frontier_ele, &entry);
+                entry = keccak256_combine([frontier_ele, &entry]);
             }
 
             entry
@@ -133,20 +121,20 @@ where
 
     /// Computes and returns the root of the tree.
     #[inline]
-    pub fn get_root(&self) -> H::Digest {
+    pub fn get_root(&self) -> Digest {
         // `root` is the hash of the node we’re going to fill next.
         // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
-        let mut root = H::Digest::default();
-        let mut empty_hash_at_height = H::Digest::default();
+        let mut root = Digest::default();
+        let mut empty_hash_at_height = Digest::default();
 
         for height in 0..TREE_DEPTH {
             if get_bit_at(self.leaf_count, height) == 1 {
-                root = H::merge(&self.frontier[height], &root);
+                root = keccak256_combine([&self.frontier[height], &root]);
             } else {
-                root = H::merge(&root, &empty_hash_at_height);
+                root = keccak256_combine([&root, &empty_hash_at_height]);
             }
 
-            empty_hash_at_height = H::merge(&empty_hash_at_height, &empty_hash_at_height);
+            empty_hash_at_height = keccak256_combine([&empty_hash_at_height, &empty_hash_at_height]);
         }
 
         root
@@ -161,7 +149,7 @@ fn get_bit_at(target: u32, bit_idx: usize) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use agglayer_primitives::{keccak::Keccak256Hasher, Address, Hashable, U256};
+    use agglayer_primitives::{Address, Hashable, U256};
 
     use crate::{bridge_exit::BridgeExit, local_exit_tree::LocalExitTree, token_info::LeafType};
 
@@ -189,7 +177,7 @@ mod tests {
             hex::encode(leaf_hash)
         );
 
-        let mut dm = LocalExitTree::<Keccak256Hasher>::new();
+        let mut dm = LocalExitTree::<32>::new();
         dm.add_leaf(leaf_hash).unwrap();
         let dm_root = dm.get_root();
         assert_eq!(
