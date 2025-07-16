@@ -4,7 +4,7 @@ use serde_with::serde_as;
 
 /// A node in an SMT
 #[serde_as]
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Node {
     #[serde_as(as = "_")]
     pub left: Digest,
@@ -12,15 +12,6 @@ pub struct Node {
     #[serde_as(as = "_")]
     pub right: Digest,
 }
-
-impl Clone for Node {
-    #[inline]
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-
-impl Copy for Node {}
 
 impl Node {
     #[inline]

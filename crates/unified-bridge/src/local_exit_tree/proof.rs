@@ -7,18 +7,10 @@ use serde_with::serde_as;
 
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct LETMerkleProof<const TREE_DEPTH: usize = 32> {
     #[serde_as(as = "[_; TREE_DEPTH]")]
     pub siblings: [Digest; TREE_DEPTH],
-}
-
-#[cfg(feature = "testutils")]
-impl<'a, const TREE_DEPTH: usize> arbitrary::Arbitrary<'a> for LETMerkleProof<TREE_DEPTH> {
-    #[inline]
-    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-        let siblings = <[Digest; TREE_DEPTH]>::arbitrary(u)?;
-        Ok(Self { siblings })
-    }
 }
 
 impl<const TREE_DEPTH: usize> LETMerkleProof<TREE_DEPTH> {

@@ -4,7 +4,7 @@ use agglayer_primitives::{keccak::keccak256_combine, Digest};
 /// depth `i`.
 #[inline]
 pub fn empty_hash_at_height<const DEPTH: usize>() -> [Digest; DEPTH] {
-    let mut empty_hash_at_height = [Digest::default(); DEPTH];
+    let mut empty_hash_at_height = [Digest::ZERO; DEPTH];
     for height in 1..DEPTH {
         empty_hash_at_height[height] = keccak256_combine([
             &empty_hash_at_height[height - 1],
