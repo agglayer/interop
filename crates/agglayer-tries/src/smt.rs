@@ -3,8 +3,8 @@ use std::{
     hash::Hash,
 };
 
-use agglayer_primitives::keccak::Hasher;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use agglayer_primitives::{keccak::keccak256_combine, Digest};
+use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
 use crate::{
@@ -17,47 +17,32 @@ use crate::{
 /// An SMT consistent with a zero-initialized Merkle tree
 #[serde_as]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Smt<H, const DEPTH: usize>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
-{
+pub struct Smt<const DEPTH: usize> {
     /// The SMT root
     #[serde_as(as = "_")]
-    pub root: H::Digest,
+    pub root: Digest,
 
     /// A map from node hash to node
     #[serde_as(as = "HashMap<_, _>")]
-    pub tree: HashMap<H::Digest, Node<H>>,
+    pub tree: HashMap<Digest, Node>,
 
     /// `empty_hash_at_height[i]` is the root of an empty Merkle tree of depth
     /// `i`.
     #[serde_as(as = "[_; DEPTH]")]
-    empty_hash_at_height: [H::Digest; DEPTH],
+    empty_hash_at_height: [Digest; DEPTH],
 }
 
-impl<H, const DEPTH: usize> Default for Smt<H, DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned + Default,
-{
+impl<const DEPTH: usize> Default for Smt<DEPTH> {
     #[inline]
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<H, const DEPTH: usize> Smt<H, DEPTH>
-where
-    H: Hasher,
-    H::Digest: Copy + Eq + Hash + Serialize + DeserializeOwned,
-{
+impl<const DEPTH: usize> Smt<DEPTH> {
     #[inline]
-    pub fn new() -> Self
-    where
-        H::Digest: Default,
-    {
-        let empty_hash_at_height = empty_hash_at_height::<H, DEPTH>();
+    pub fn new() -> Self {
+        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
         let root = Node {
             left: empty_hash_at_height[DEPTH - 1],
             right: empty_hash_at_height[DEPTH - 1],
@@ -66,11 +51,8 @@ where
     }
 
     #[inline]
-    pub fn new_with_nodes(root: H::Digest, nodes: &[Node<H>]) -> Self
-    where
-        H::Digest: Default,
-    {
-        let empty_hash_at_height = empty_hash_at_height::<H, DEPTH>();
+    pub fn new_with_nodes(root: Digest, nodes: &[Node]) -> Self {
+        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
         Smt {
             root,
             tree: nodes.iter().map(|n| (n.hash(), *n)).collect(),
@@ -81,14 +63,14 @@ where
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.root
-            == H::merge(
+            == keccak256_combine([
                 &self.empty_hash_at_height[DEPTH - 1],
                 &self.empty_hash_at_height[DEPTH - 1],
-            )
+            ])
     }
 
     #[inline]
-    pub fn get<K>(&self, key: K) -> Option<H::Digest>
+    pub fn get<K>(&self, key: K) -> Option<Digest>
     where
         K: ToBits<DEPTH>,
     {
@@ -106,14 +88,14 @@ where
 
     fn insert_helper(
         &mut self,
-        hash: H::Digest,
+        hash: Digest,
         depth: usize,
         bits: &[bool; DEPTH],
-        value: H::Digest,
+        value: Digest,
         // If true, update the value at the key.
         // If false, insert the value at the key and error if the key is present.
         update: bool,
-    ) -> Result<H::Digest, SmtError> {
+    ) -> Result<Digest, SmtError> {
         if depth > DEPTH {
             return Err(SmtError::DepthOutOfBounds);
         }
@@ -147,7 +129,7 @@ where
     }
 
     #[inline]
-    pub fn insert<K>(&mut self, key: K, value: H::Digest) -> Result<(), SmtError>
+    pub fn insert<K>(&mut self, key: K, value: Digest) -> Result<(), SmtError>
     where
         K: ToBits<DEPTH>,
     {
@@ -158,7 +140,7 @@ where
     }
 
     #[inline]
-    pub fn update<K>(&mut self, key: K, value: H::Digest) -> Result<(), SmtError>
+    pub fn update<K>(&mut self, key: K, value: Digest) -> Result<(), SmtError>
     where
         K: ToBits<DEPTH>,
     {
@@ -170,9 +152,9 @@ where
 
     fn traverse_helper(
         &self,
-        hash: H::Digest,
+        hash: Digest,
         depth: usize,
-        nodes: &mut HashSet<H::Digest>,
+        nodes: &mut HashSet<Digest>,
     ) -> Result<(), SmtError> {
         nodes.insert(hash);
 
@@ -199,7 +181,7 @@ where
     #[inline]
     pub fn traverse_and_prune(&mut self) -> Result<(), SmtError>
     where
-        H::Digest: Eq + Hash,
+        Digest: Eq + Hash,
     {
         let mut seen_nodes = HashSet::new();
         self.traverse_helper(self.root, 0, &mut seen_nodes)?;
@@ -212,7 +194,7 @@ where
         &self,
         key: K,
         zero_allowed: bool,
-    ) -> Result<SmtMerkleProof<H, DEPTH>, SmtError>
+    ) -> Result<SmtMerkleProof<DEPTH>, SmtError>
     where
         K: ToBits<DEPTH>,
     {
@@ -232,7 +214,7 @@ where
     }
 
     #[inline]
-    pub fn get_inclusion_proof<K>(&self, key: K) -> Result<SmtMerkleProof<H, DEPTH>, SmtError>
+    pub fn get_inclusion_proof<K>(&self, key: K) -> Result<SmtMerkleProof<DEPTH>, SmtError>
     where
         K: ToBits<DEPTH>,
     {
@@ -246,10 +228,7 @@ where
     /// update it. If the token is not already in the tree, we still want an
     /// inclusion proof, so we use this function.
     #[inline]
-    pub fn get_inclusion_proof_zero<K>(
-        &mut self,
-        key: K,
-    ) -> Result<SmtMerkleProof<H, DEPTH>, SmtError>
+    pub fn get_inclusion_proof_zero<K>(&mut self, key: K) -> Result<SmtMerkleProof<DEPTH>, SmtError>
     where
         K: Copy + ToBits<DEPTH>,
     {
@@ -262,7 +241,7 @@ where
     pub fn get_non_inclusion_proof<K>(
         &self,
         key: K,
-    ) -> Result<SmtNonInclusionProof<H, DEPTH>, SmtError>
+    ) -> Result<SmtNonInclusionProof<DEPTH>, SmtError>
     where
         K: ToBits<DEPTH>,
     {
@@ -296,7 +275,6 @@ where
 mod tests {
     use std::hash::Hash;
 
-    use agglayer_primitives::keccak::Keccak256Hasher;
     use rand::{
         prelude::{IndexedRandom as _, SliceRandom as _},
         random, rng, Rng,
@@ -307,7 +285,6 @@ mod tests {
     use crate::{error::SmtError, smt::Smt};
 
     const DEPTH: usize = 32;
-    type H = Keccak256Hasher;
 
     #[derive(Clone, Debug)]
     pub struct TestKeccak256;
@@ -336,7 +313,7 @@ mod tests {
         const DEPTH: usize = 8;
         let mut rng = rng();
         let num_keys = rng.random_range(0..=1 << DEPTH);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let mut kvs: Vec<_> = (0..=u8::MAX).map(|i| (i, random())).collect();
         kvs.shuffle(&mut rng);
         for (key, value) in &kvs[..num_keys] {
@@ -356,13 +333,13 @@ mod tests {
     fn test_order_consistency() {
         let mut rng = rng();
         let num_keys = rng.random_range(0..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let mut kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
             smt.insert(*key, *value).unwrap();
         }
-        let mut shuffled_smt = Smt::<H, DEPTH>::new();
+        let mut shuffled_smt = Smt::<DEPTH>::new();
         kvs.shuffle(&mut rng);
         for (key, value) in kvs.iter() {
             shuffled_smt.insert(*key, *value).unwrap();
@@ -375,7 +352,7 @@ mod tests {
     fn test_inclusion_proof() {
         let mut rng = rng();
         let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -390,7 +367,7 @@ mod tests {
     fn test_inclusion_proof_wrong_value() {
         let mut rng = rng();
         let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -407,7 +384,7 @@ mod tests {
     fn test_non_inclusion_proof() {
         let mut rng = rng();
         let num_keys = rng.random_range(0..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -423,7 +400,7 @@ mod tests {
     fn test_non_inclusion_proof_failing() {
         let mut rng = rng();
         let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -435,7 +412,7 @@ mod tests {
     }
 
     fn test_non_inclusion_proof_and_update(num_keys: usize) {
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -467,7 +444,7 @@ mod tests {
     #[test]
     fn test_inclusion_proof_and_update() {
         let num_keys = rng().random_range(1..100);
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
         for (key, value) in kvs.iter() {
@@ -486,7 +463,7 @@ mod tests {
 
     #[test]
     fn test_inclusion_proof_zero_doesnt_update() {
-        let mut smt = Smt::<H, DEPTH>::new();
+        let mut smt = Smt::<DEPTH>::new();
         let num_keys = rng().random_range(1..100);
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
@@ -508,8 +485,8 @@ mod tests {
         let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
         check_no_duplicates(&kvs);
 
-        let mut smt0 = Smt::<H, DEPTH>::new();
-        let mut smt1 = Smt::<H, DEPTH>::new();
+        let mut smt0 = Smt::<DEPTH>::new();
+        let mut smt1 = Smt::<DEPTH>::new();
         for (key, value) in kvs {
             smt0.insert(key, value).unwrap();
             smt1.insert(key, value).unwrap();
