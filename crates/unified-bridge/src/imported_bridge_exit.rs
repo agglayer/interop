@@ -1,5 +1,5 @@
 use agglayer_primitives::{
-    keccak::{keccak256, keccak256_combine, Hasher, Keccak256Hasher},
+    keccak::{keccak256, keccak256_combine},
     Digest, Hashable, U256,
 };
 use serde::{Deserialize, Serialize};
@@ -140,13 +140,13 @@ pub enum Error {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct MerkleProof {
-    pub proof: LETMerkleProof<Keccak256Hasher>,
+    pub proof: LETMerkleProof,
     pub root: Digest,
 }
 
 impl MerkleProof {
     #[inline]
-    pub fn new(root: Digest, siblings: [<Keccak256Hasher as Hasher>::Digest; 32]) -> Self {
+    pub fn new(root: Digest, siblings: [Digest; 32]) -> Self {
         Self {
             proof: LETMerkleProof { siblings },
             root,
@@ -159,7 +159,7 @@ impl MerkleProof {
     }
 
     #[inline]
-    pub fn siblings(&self) -> &[<Keccak256Hasher as Hasher>::Digest; 32] {
+    pub fn siblings(&self) -> &[Digest; 32] {
         &self.proof.siblings
     }
 }
