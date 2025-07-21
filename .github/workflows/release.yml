@@ -84,7 +84,7 @@ jobs:
         run: cargo install cargo-edit
 
       - name: Install cargo-semver-checks
-        run: cargo install cargo-semver-checks
+        run: cargo install cargo-semver-checks --locked
 
       - name: Get current version
         id: current_version
@@ -156,11 +156,27 @@ jobs:
           echo "Generating changelogs with version ${{ steps.version_bump.outputs.final_version }}"
           cargo make changelog-version-all
 
-      - name: Extract major.minor version
-        id: major_minor
+      - name: Determine branch strategy
+        id: branch_strategy
         run: |
           MAJOR_MINOR=$(echo "${{ steps.version_bump.outputs.final_version }}" | cut -d. -f1-2)
-          echo "version=$MAJOR_MINOR" >> $GITHUB_OUTPUT
+          FULL_VERSION="${{ steps.version_bump.outputs.final_version }}"
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+
+          # Use chore/prepare-release-vX.X.X format for all automated PR branches
+          BRANCH_NAME="chore/prepare-release-v$FULL_VERSION"
+
+          if [ "$BUMP_TYPE" = "patch" ]; then
+            BASE_BRANCH="release/v$MAJOR_MINOR"
+            echo "Using patch PR branch: $BRANCH_NAME with base: $BASE_BRANCH"
+          else
+            BASE_BRANCH="main"
+            echo "Using major/minor PR branch: $BRANCH_NAME with base: $BASE_BRANCH"
+          fi
+
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "major_minor=$MAJOR_MINOR" >> $GITHUB_OUTPUT
 
       - name: Create Release PR
         uses: peter-evans/create-pull-request@v7
@@ -191,8 +207,8 @@ jobs:
             2. **Verify** that all breaking changes (if any) are properly documented
             3. **Merge** this PR when ready to proceed with the release
 
-          branch: release/v${{ steps.major_minor.outputs.version }}
-          base: main
+          branch: ${{ steps.branch_strategy.outputs.branch_name }}
+          base: ${{ steps.branch_strategy.outputs.base_branch }}
           delete-branch: false
           draft: false
           assignees: ${{ github.actor }}
