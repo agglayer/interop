@@ -22,4 +22,4 @@ mockall = { workspace = true, optional = true }
 thiserror.workspace = true
 
 [dev-dependencies]
-agglayer-evm-client = { workspace = true, features = ["testutils"] }
+agglayer-evm-client = { path = ".", features = ["testutils"] }
