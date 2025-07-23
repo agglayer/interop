@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### 🚜 Refactor
 
 - Wrap `alloy_primitives::Address` and give data types specific `serde` names (#40)
-- [**breaking**] Remove the Hasher trait from agglayer-primitives (#68)
 
 ## [0.7.1] - 2025-06-04
 
@@ -19,36 +18,36 @@ All notable changes to this project will be documented in this file.
 
 ### 🚀 Features
 
-- Use strong types for rollup indexes (#21)
 - Adding changelogs and configure agglayer-primitives' (#32)
 - Publish 0.6.0 (#33)
 - Add typed tree roots (#31)
 
-### 📚 Documentation
-
-- Precise lsb indexing for the mainnet flag (#30)
-
-## [0.3.0] - 2025-04-30
+## [0.6.0] - 2025-05-20
 
 ### 🚀 Features
 
-- Introduce the traits from provers repo’s prover-alloy (#18)
+- Use strong types for rollup indexes (#21)
 
-## [0.2.1] - 2025-04-14
+### 🐛 Bug Fixes
+
+- Make signature field in AggchainData optional (#29)
+
+## [0.4.0] - 2025-05-16
+
+### 🚀 Features
+
+- Add signature field to AggchainProof message (#24)
+
+### 🐛 Bug Fixes
+
+- Do run all tests in ci (#22)
+
+## [0.2.0] - 2025-04-02
 
 ### 🚀 Features
 
 - Introduce fuzzer infra, make everything faster (#9)
-- Align imported bridge exits commitment (#12)
-
-### 🐛 Bug Fixes
-
-- Testutils features for agglayer-primitives
-- Add check on ger on agglayer side (#10)
-
-### 💼 Other
-
-- Fix the build of `unified-bridge` on zkvm (#7)
+- Updating aggchain-proof format (#11)
 
 ### 🚜 Refactor
 
