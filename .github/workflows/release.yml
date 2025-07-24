@@ -134,13 +134,24 @@ jobs:
             # Check for breaking changes using semver-checks
             echo "Running cargo semver-checks to detect breaking changes..."
             if ! cargo semver-checks --baseline-version ${{ steps.current_version.outputs.current_version }}; then
-              echo "Breaking changes detected! Bumping to major version"
-              # Reset to original version and do major bump
-              git checkout HEAD -- Cargo.toml
-              cargo set-version --bump major
-              NEW_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
-              echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-              echo "bump_type=major" >> $GITHUB_OUTPUT
+              echo "Breaking changes detected!"
+
+              # Check if current major version is 0 (0.x.y)
+              CURRENT_MAJOR=$(echo "${{ steps.current_version.outputs.current_version }}" | cut -d. -f1)
+              if [ "$CURRENT_MAJOR" = "0" ]; then
+                echo "Major version is 0.x.y - bumping minor for breaking changes (as per semver spec)"
+                # Keep the minor bump we already did - no need to change anything
+                echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+                echo "bump_type=minor" >> $GITHUB_OUTPUT
+              else
+                echo "Major version is >=1 - bumping major for breaking changes"
+                # Reset to original version and do major bump
+                git checkout HEAD -- Cargo.toml
+                cargo set-version --bump major
+                NEW_VERSION=$(grep '^version' Cargo.toml | head -1 | awk -F'"' '{print $2}')
+                echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+                echo "bump_type=major" >> $GITHUB_OUTPUT
+              fi
             else
               echo "No breaking changes detected, keeping minor bump"
               echo "final_version=$NEW_VERSION" >> $GITHUB_OUTPUT
