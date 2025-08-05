@@ -11,7 +11,7 @@ use crate::{
     error::SmtError,
     node::Node,
     proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits},
-    utils::empty_hash_at_height,
+    utils::empty_hash_array_at_height,
 };
 
 /// An SMT consistent with a zero-initialized Merkle tree
@@ -42,7 +42,7 @@ impl<const DEPTH: usize> Default for Smt<DEPTH> {
 impl<const DEPTH: usize> Smt<DEPTH> {
     #[inline]
     pub fn new() -> Self {
-        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
+        let empty_hash_at_height = empty_hash_array_at_height::<DEPTH>();
         let root = Node {
             left: empty_hash_at_height[DEPTH - 1],
             right: empty_hash_at_height[DEPTH - 1],
@@ -52,7 +52,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
 
     #[inline]
     pub fn new_with_nodes(root: Digest, nodes: &[Node]) -> Self {
-        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
+        let empty_hash_at_height = empty_hash_array_at_height::<DEPTH>();
         Smt {
             root,
             tree: nodes.iter().map(|n| (n.hash(), *n)).collect(),
