@@ -10,26 +10,22 @@ pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> [Digest; DEPTH]
     let mut empty_hash_at_height = [Digest::ZERO; DEPTH];
     let mut i = 1; // 0 is already set to Digest::ZERO
     while i < DEPTH {
-        empty_hash_at_height[i] = EMPTY_HASH_AT_192[i];
+        empty_hash_at_height[i] = EMPTY_HASH_ARRAY_AT_192[i];
         i += 1;
     }
     empty_hash_at_height
 }
 
 /// Returns the root of an empty Merkle tree of depth `DEPTH`.
-///
-/// Callers should use this over referencing `EMPTY_HASH_AT_192` directly as
-/// this function contains a bounds check.
 #[inline]
 pub const fn empty_hash_at_height<const DEPTH: usize>() -> Digest {
     const {
         assert!(DEPTH <= 192, "Only a depth of up to 192 is supported");
     }
-    EMPTY_HASH_AT_192[DEPTH - 1]
+    EMPTY_HASH_ARRAY_AT_192[DEPTH - 1]
 }
 
-/// The roots of empty Merkle trees of depths 0 to 191.
-pub const EMPTY_HASH_AT_192: [Digest; 192] = [
+const EMPTY_HASH_ARRAY_AT_192: [Digest; 192] = [
     Digest([
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1007,7 +1003,7 @@ mod tests {
                 &empty_hash_at_height[height - 1],
             ]);
         }
-        assert_eq!(empty_hash_at_height, EMPTY_HASH_AT_192);
+        assert_eq!(empty_hash_at_height, EMPTY_HASH_ARRAY_AT_192);
         assert_eq!(
             empty_hash_at_height,
             super::empty_hash_array_at_height::<192>()
