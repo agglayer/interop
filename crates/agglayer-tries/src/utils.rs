@@ -5,12 +5,12 @@ use agglayer_primitives::Digest;
 #[inline]
 pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> [Digest; DEPTH] {
     const {
-        assert!(DEPTH <= 192, "Only a depth of up to 192 is supported");
+        assert!(DEPTH <= 193, "Only a depth of up to 193 is supported");
     }
     let mut empty_hash_at_height = [Digest::ZERO; DEPTH];
     let mut i = 1; // 0 is already set to Digest::ZERO
     while i < DEPTH {
-        empty_hash_at_height[i] = EMPTY_HASH_ARRAY_AT_192[i];
+        empty_hash_at_height[i] = EMPTY_HASH_ARRAY_AT_193[i];
         i += 1;
     }
     empty_hash_at_height
@@ -20,12 +20,12 @@ pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> [Digest; DEPTH]
 #[inline]
 pub const fn empty_hash_at_height<const DEPTH: usize>() -> Digest {
     const {
-        assert!(DEPTH <= 192, "Only a depth of up to 192 is supported");
+        assert!(DEPTH <= 193, "Only a depth of up to 193 is supported");
     }
-    EMPTY_HASH_ARRAY_AT_192[DEPTH - 1]
+    EMPTY_HASH_ARRAY_AT_193[DEPTH - 1]
 }
 
-const EMPTY_HASH_ARRAY_AT_192: [Digest; 192] = [
+const EMPTY_HASH_ARRAY_AT_193: [Digest; 193] = [
     Digest([
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -986,6 +986,11 @@ const EMPTY_HASH_ARRAY_AT_192: [Digest; 192] = [
         0x94, 0xbe, 0x89, 0x41, 0x84, 0x23, 0xda, 0xb2, 0x83, 0x78, 0xe6, 0xc8, 0x7e, 0x66, 0x6f,
         0x28, 0xb0,
     ]),
+    Digest([
+        0xb8, 0x99, 0x31, 0xf7, 0x38, 0x4a, 0xed, 0xdb, 0x5c, 0x13, 0x6a, 0x67, 0x9d, 0x54, 0x46,
+        0x40, 0x07, 0xe2, 0xd8, 0x28, 0xd4, 0x74, 0x1b, 0xec, 0x62, 0x6f, 0xf9, 0x2a, 0xeb, 0x4b,
+        0x12, 0xd4,
+    ]),
 ];
 
 #[cfg(test)]
@@ -995,18 +1000,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_const_empty_hash_at_192() {
-        let mut empty_hash_at_height = [Digest::ZERO; 192];
-        for height in 1..192 {
+    fn test_const_empty_hash_at_193() {
+        let mut empty_hash_at_height = [Digest::ZERO; 193];
+        for height in 1..193 {
             empty_hash_at_height[height] = keccak256_combine([
                 &empty_hash_at_height[height - 1],
                 &empty_hash_at_height[height - 1],
             ]);
         }
-        assert_eq!(empty_hash_at_height, EMPTY_HASH_ARRAY_AT_192);
+        assert_eq!(empty_hash_at_height, EMPTY_HASH_ARRAY_AT_193);
         assert_eq!(
             empty_hash_at_height,
-            super::empty_hash_array_at_height::<192>()
+            super::empty_hash_array_at_height::<193>()
         );
     }
 }
