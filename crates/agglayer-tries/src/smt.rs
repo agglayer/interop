@@ -15,20 +15,16 @@ use crate::{
 };
 
 /// An SMT consistent with a zero-initialized Merkle tree
-#[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct Smt<const DEPTH: usize> {
     /// The SMT root
-    #[serde_as(as = "_")]
     pub root: Digest,
 
     /// A map from node hash to node
-    #[serde_as(as = "HashMap<_, _>")]
     pub tree: HashMap<Digest, Node>,
 
     /// `empty_hash_at_height[i]` is the root of an empty Merkle tree of depth
     /// `i`.
-    #[serde_as(as = "[_; DEPTH]")]
     empty_hash_at_height: [Digest; DEPTH],
 }
 
