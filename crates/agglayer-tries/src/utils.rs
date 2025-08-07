@@ -7,13 +7,7 @@ pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> [Digest; DEPTH]
     const {
         assert!(DEPTH <= 193, "Only a depth of up to 193 is supported");
     }
-    let mut empty_hash_at_height = [Digest::ZERO; DEPTH];
-    let mut i = 1; // 0 is already set to Digest::ZERO
-    while i < DEPTH {
-        empty_hash_at_height[i] = EMPTY_HASH_ARRAY_AT_193[i];
-        i += 1;
-    }
-    empty_hash_at_height
+    *EMPTY_HASH_ARRAY_AT_193.first_chunk::<DEPTH>().unwrap()
 }
 
 /// Returns the root of an empty Merkle tree of depth `DEPTH`.
