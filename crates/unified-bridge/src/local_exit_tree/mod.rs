@@ -126,12 +126,11 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
         let mut root = Digest::default();
         let empty_hash_array = empty_hash_array_at_height::<TREE_DEPTH>();
 
-        for height in 0..TREE_DEPTH {
-            let empty_hash_at_height = empty_hash_array[height];
+        for (height, empty_hash_at_height) in empty_hash_array.iter().enumerate() {
             if get_bit_at(self.leaf_count, height) == 1 {
                 root = keccak256_combine([&self.frontier[height], &root]);
             } else {
-                root = keccak256_combine([&root, &empty_hash_at_height]);
+                root = keccak256_combine([&root, empty_hash_at_height]);
             }
         }
 
