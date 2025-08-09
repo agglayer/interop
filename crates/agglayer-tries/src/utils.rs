@@ -3,14 +3,14 @@ use agglayer_primitives::{alloy_primitives::hex, Digest};
 /// Returns an array whose `i`th element is the root of an empty Merkle tree of
 /// depth `i`.
 #[inline]
-pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> [Digest; DEPTH] {
+pub const fn empty_hash_array_at_height<const DEPTH: usize>() -> &'static [Digest; DEPTH] {
     const {
         assert!(DEPTH <= 193, "Only a depth of up to 193 is supported");
     }
-    *EMPTY_HASH_ARRAY_AT_193.first_chunk::<DEPTH>().unwrap()
+    EMPTY_HASH_ARRAY_AT_193.first_chunk::<DEPTH>().unwrap()
 }
 
-/// Returns the root of an empty Merkle tree of depth `DEPTH`.
+/// Returns the root hash of an empty Merkle tree of depth `DEPTH`.
 #[inline]
 pub const fn empty_hash_at_height<const DEPTH: usize>() -> Digest {
     const {
@@ -19,7 +19,7 @@ pub const fn empty_hash_at_height<const DEPTH: usize>() -> Digest {
     EMPTY_HASH_ARRAY_AT_193[DEPTH - 1]
 }
 
-const EMPTY_HASH_ARRAY_AT_193: [Digest; 193] = [
+pub(crate) const EMPTY_HASH_ARRAY_AT_193: [Digest; 193] = [
     Digest(hex!(
         "0000000000000000000000000000000000000000000000000000000000000000"
     )),
@@ -618,7 +618,7 @@ mod tests {
         }
         assert_eq!(empty_hash_at_height, EMPTY_HASH_ARRAY_AT_193);
         assert_eq!(
-            empty_hash_at_height,
+            &empty_hash_at_height,
             super::empty_hash_array_at_height::<193>()
         );
     }
