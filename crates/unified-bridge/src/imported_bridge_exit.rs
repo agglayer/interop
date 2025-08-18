@@ -7,7 +7,7 @@ use thiserror::Error;
 
 use crate::{
     bridge_exit::BridgeExit, global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof,
-    CommitmentVersion, RollupIndex,
+    ImportedBridgeExitCommitmentVersion, RollupIndex,
 };
 
 impl Hashable for MerkleProof {
@@ -399,6 +399,7 @@ impl GlobalIndexWithLeafHash {
 }
 
 /// The values which compose the commitment on the imported bridge exits.
+#[derive(Debug, Clone)]
 pub struct ImportedBridgeExitCommitmentValues {
     pub claims: Vec<GlobalIndexWithLeafHash>,
 }
@@ -406,9 +407,9 @@ pub struct ImportedBridgeExitCommitmentValues {
 impl ImportedBridgeExitCommitmentValues {
     /// Returns the expected signed commitment for the provided version.
     #[inline]
-    pub fn commitment(&self, version: CommitmentVersion) -> Digest {
+    pub fn commitment(&self, version: ImportedBridgeExitCommitmentVersion) -> Digest {
         match version {
-            CommitmentVersion::V2 => {
+            ImportedBridgeExitCommitmentVersion::V2 => {
                 // Commits solely to the global index of each imported bridge exit. Designed
                 // prior to having any notion of aggchain proof.
                 keccak256_combine(
@@ -417,7 +418,7 @@ impl ImportedBridgeExitCommitmentValues {
                         .map(|ibe| keccak256(ibe.global_index.as_le_slice())),
                 )
             }
-            CommitmentVersion::V3 => {
+            ImportedBridgeExitCommitmentVersion::V3 => {
                 // Adds the bridge exit hashes in the commitment to ensure that the aggchain
                 // proof and PP talk about the exact same set of imported bridge exits.
                 keccak256_combine(self.claims.iter().map(|ibe| {
