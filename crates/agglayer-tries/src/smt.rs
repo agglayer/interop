@@ -3,13 +3,13 @@ use std::{
     hash::Hash,
 };
 
-use agglayer_primitives::{keccak::keccak256_combine, Digest};
+use agglayer_primitives::Digest;
 
 use crate::{
     error::SmtError,
     node::Node,
     proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits},
-    utils::{empty_hash_array_at_height, empty_hash_at_height},
+    utils::{empty_hash_array_at_height, empty_hash_at_height, EMPTY_HASH_ARRAY_AT_193},
 };
 
 /// An SMT consistent with a zero-initialized Merkle tree
@@ -51,11 +51,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.root
-            == keccak256_combine([
-                &empty_hash_at_height::<DEPTH>(),
-                &empty_hash_at_height::<DEPTH>(),
-            ])
+        self.root == EMPTY_HASH_ARRAY_AT_193[DEPTH]
     }
 
     #[inline]
@@ -85,9 +81,6 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         // If false, insert the value at the key and error if the key is present.
         update: bool,
     ) -> Result<Digest, SmtError> {
-        if depth > DEPTH {
-            return Err(SmtError::DepthOutOfBounds);
-        }
         if depth == DEPTH {
             return if !update && hash != Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0] {
                 Err(SmtError::KeyAlreadyPresent)
@@ -97,8 +90,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
         let node = self.tree.get(&hash);
         let mut node = node.copied().unwrap_or(Node {
-            left: Self::EMPTY_HASH_ARRAY_AT_HEIGHT[DEPTH - depth - 1],
-            right: Self::EMPTY_HASH_ARRAY_AT_HEIGHT[DEPTH - depth - 1],
+            left: Self::empty_hash_at_depth(depth)?,
+            right: Self::empty_hash_at_depth(depth)?,
         });
         let child_hash = if bits[depth] {
             self.insert_helper(node.right, depth + 1, bits, value, update)
@@ -147,23 +140,30 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     ) -> Result<(), SmtError> {
         nodes.insert(hash);
 
-        #[allow(clippy::comparison_chain)] // Cleaner as an if-else.
-        if depth > DEPTH {
-            return Err(SmtError::DepthOutOfBounds);
-        } else if depth == DEPTH {
+        if depth == DEPTH {
             // We've reached a leaf.
             return Ok(());
         }
 
         let node = self.tree.get(&hash).ok_or(SmtError::KeyNotPresent)?;
-        if node.left != Self::EMPTY_HASH_ARRAY_AT_HEIGHT[DEPTH - depth - 1] {
+        if node.left != Self::empty_hash_at_depth(depth)? {
             self.traverse_helper(node.left, depth + 1, nodes)?;
         }
-        if node.right != Self::EMPTY_HASH_ARRAY_AT_HEIGHT[DEPTH - depth - 1] {
+        if node.right != Self::empty_hash_at_depth(depth)? {
             self.traverse_helper(node.right, depth + 1, nodes)?;
         }
 
         Ok(())
+    }
+
+    #[inline]
+    const fn empty_hash_at_depth(depth: usize) -> Result<Digest, SmtError> {
+        if depth > DEPTH {
+            return Err(SmtError::DepthOutOfBounds);
+        }
+        // We are calculating the depth from the leaf to the root,
+        // hence we need to subtract the depth from the tree height.
+        Ok(Self::EMPTY_HASH_ARRAY_AT_HEIGHT[(DEPTH - 1) - depth])
     }
 
     /// Traverse the SMT and prune all stale nodes.
