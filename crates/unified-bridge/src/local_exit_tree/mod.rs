@@ -124,9 +124,11 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
         // `root` is the hash of the node we’re going to fill next.
         // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
         let mut root = Digest::default();
-        let empty_hash_array = empty_hash_array_at_height::<TREE_DEPTH>();
 
-        for (height, empty_hash_at_height) in empty_hash_array.iter().enumerate() {
+        for (height, empty_hash_at_height) in empty_hash_array_at_height::<TREE_DEPTH>()
+            .iter()
+            .enumerate()
+        {
             if get_bit_at(self.leaf_count, height) == 1 {
                 root = keccak256_combine([&self.frontier[height], &root]);
             } else {
