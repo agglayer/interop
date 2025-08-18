@@ -4,8 +4,6 @@ use std::{
 };
 
 use agglayer_primitives::{keccak::keccak256_combine, Digest};
-use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
 
 use crate::{
     error::SmtError,
@@ -15,15 +13,12 @@ use crate::{
 };
 
 /// An SMT consistent with a zero-initialized Merkle tree
-#[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct Smt<const DEPTH: usize> {
     /// The SMT root
-    #[serde_as(as = "_")]
     pub root: Digest,
 
     /// A map from node hash to node
-    #[serde_as(as = "HashMap<_, _>")]
     pub tree: HashMap<Digest, Node>,
 }
 
