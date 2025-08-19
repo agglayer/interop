@@ -90,8 +90,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
         let node = self.tree.get(&hash);
         let mut node = node.copied().unwrap_or(Node {
-            left: Self::empty_hash_at_depth(depth)?,
-            right: Self::empty_hash_at_depth(depth)?,
+            left: Self::empty_hash_at_depth_from_leaves(depth)?,
+            right: Self::empty_hash_at_depth_from_leaves(depth)?,
         });
         let child_hash = if bits[depth] {
             self.insert_helper(node.right, depth + 1, bits, value, update)
@@ -146,10 +146,10 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
 
         let node = self.tree.get(&hash).ok_or(SmtError::KeyNotPresent)?;
-        if node.left != Self::empty_hash_at_depth(depth)? {
+        if node.left != Self::empty_hash_at_depth_from_leaves(depth)? {
             self.traverse_helper(node.left, depth + 1, nodes)?;
         }
-        if node.right != Self::empty_hash_at_depth(depth)? {
+        if node.right != Self::empty_hash_at_depth_from_leaves(depth)? {
             self.traverse_helper(node.right, depth + 1, nodes)?;
         }
 
@@ -157,7 +157,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     }
 
     #[inline]
-    const fn empty_hash_at_depth(depth: usize) -> Result<Digest, SmtError> {
+    const fn empty_hash_at_depth_from_leaves(depth: usize) -> Result<Digest, SmtError> {
         if depth > DEPTH {
             return Err(SmtError::DepthOutOfBounds);
         }
@@ -242,12 +242,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
             if Self::EMPTY_HASH_ARRAY_AT_HEIGHT.contains(&hash) {
                 return Ok(SmtNonInclusionProof { siblings });
             }
-            let node = self.tree.get(&hash);
-            let node = match node {
-                Some(node) => node,
-                None => {
-                    return Ok(SmtNonInclusionProof { siblings });
-                }
+            let Some(node) = self.tree.get(&hash) else {
+                return Ok(SmtNonInclusionProof { siblings });
             };
             siblings.push(if *bit { node.left } else { node.right });
             hash = if *bit { node.right } else { node.left };
