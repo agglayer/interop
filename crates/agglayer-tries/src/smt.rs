@@ -90,8 +90,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
         let node = self.tree.get(&hash);
         let mut node = node.copied().unwrap_or(Node {
-            left: Self::empty_hash_at_depth_from_leaves(depth)?,
-            right: Self::empty_hash_at_depth_from_leaves(depth)?,
+            left: Self::empty_hash_at_depth_from_root(depth)?,
+            right: Self::empty_hash_at_depth_from_root(depth)?,
         });
         let child_hash = if bits[depth] {
             self.insert_helper(node.right, depth + 1, bits, value, update)
@@ -146,10 +146,10 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
 
         let node = self.tree.get(&hash).ok_or(SmtError::KeyNotPresent)?;
-        if node.left != Self::empty_hash_at_depth_from_leaves(depth)? {
+        if node.left != Self::empty_hash_at_depth_from_root(depth)? {
             self.traverse_helper(node.left, depth + 1, nodes)?;
         }
-        if node.right != Self::empty_hash_at_depth_from_leaves(depth)? {
+        if node.right != Self::empty_hash_at_depth_from_root(depth)? {
             self.traverse_helper(node.right, depth + 1, nodes)?;
         }
 
@@ -157,7 +157,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     }
 
     #[inline]
-    const fn empty_hash_at_depth_from_leaves(depth: usize) -> Result<Digest, SmtError> {
+    const fn empty_hash_at_depth_from_root(depth: usize) -> Result<Digest, SmtError> {
         if depth > DEPTH {
             return Err(SmtError::DepthOutOfBounds);
         }
