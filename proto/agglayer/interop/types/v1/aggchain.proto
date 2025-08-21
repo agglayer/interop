@@ -8,10 +8,39 @@ import "agglayer/interop/types/v1/bytes.proto";
 message AggchainData {
   // The data of the aggchain.
   oneof data {
-    // Signature committed to the bridge exits and imported bridge exits.
+    // Legacy ECDSA signature on a commitment to the state transition.
     FixedBytes65 signature = 1;
-    // Generic Aggchain proof.
+
+    // Aggchain proof with single ECDSA verified by the agglayer only.
     AggchainProof generic = 2;
+
+    // Multisig only performed by the chain's committee.
+    Multisig multisig = 3;
+
+    // Multisig and aggchain proof.
+    AggchainProofWithMultisig multisig_and_aggchain_proof = 4;
+  }
+}
+
+// Multisig
+message Multisig {
+   repeated FixedBytes65 signatures = 1;
+}
+
+// Multisig and aggchain proof
+message AggchainProofWithMultisig {
+  // Multisig
+  Multisig multisig = 1;
+
+  // Aggchain params.
+  FixedBytes32 aggchain_params = 2;
+
+  // Aggchain proof context to share non-sensitive data.
+  map<string, bytes> context = 3;
+  // The proof for the aggchain.
+  oneof proof {
+    // SP1 stark proof.
+    SP1StarkProof sp1_stark = 4;
   }
 }
 
