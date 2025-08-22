@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.9.0] - 2025-07-21
+## [unified-bridge-v0.9.0] - 2025-07-23
+
+### 🐛 Bug Fixes
+
+- Ensure self-referential crates use path dependencies (#71)
+
+## [agglayer-primitives-v0.9.0] - 2025-07-23
 
 ### 🚀 Features
 
