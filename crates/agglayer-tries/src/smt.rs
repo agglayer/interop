@@ -3,33 +3,23 @@ use std::{
     hash::Hash,
 };
 
-use agglayer_primitives::{keccak::keccak256_combine, Digest};
-use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
+use agglayer_primitives::Digest;
 
 use crate::{
     error::SmtError,
     node::Node,
     proof::{SmtMerkleProof, SmtNonInclusionProof, ToBits},
-    utils::empty_hash_at_height,
+    utils::{empty_hash_array_at_height, empty_hash_at_height, EMPTY_HASH_ARRAY_AT_193},
 };
 
 /// An SMT consistent with a zero-initialized Merkle tree
-#[serde_as]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct Smt<const DEPTH: usize> {
     /// The SMT root
-    #[serde_as(as = "_")]
     pub root: Digest,
 
     /// A map from node hash to node
-    #[serde_as(as = "HashMap<_, _>")]
     pub tree: HashMap<Digest, Node>,
-
-    /// `empty_hash_at_height[i]` is the root of an empty Merkle tree of depth
-    /// `i`.
-    #[serde_as(as = "[_; DEPTH]")]
-    empty_hash_at_height: [Digest; DEPTH],
 }
 
 impl<const DEPTH: usize> Default for Smt<DEPTH> {
@@ -40,33 +30,28 @@ impl<const DEPTH: usize> Default for Smt<DEPTH> {
 }
 
 impl<const DEPTH: usize> Smt<DEPTH> {
+    const EMPTY_HASH_ARRAY_AT_HEIGHT: &[Digest; DEPTH] = empty_hash_array_at_height::<DEPTH>();
+
     #[inline]
     pub fn new() -> Self {
-        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
         let root = Node {
-            left: empty_hash_at_height[DEPTH - 1],
-            right: empty_hash_at_height[DEPTH - 1],
+            left: empty_hash_at_height::<DEPTH>(),
+            right: empty_hash_at_height::<DEPTH>(),
         };
         Self::new_with_nodes(root.hash(), &[root])
     }
 
     #[inline]
     pub fn new_with_nodes(root: Digest, nodes: &[Node]) -> Self {
-        let empty_hash_at_height = empty_hash_at_height::<DEPTH>();
         Smt {
             root,
             tree: nodes.iter().map(|n| (n.hash(), *n)).collect(),
-            empty_hash_at_height,
         }
     }
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.root
-            == keccak256_combine([
-                &self.empty_hash_at_height[DEPTH - 1],
-                &self.empty_hash_at_height[DEPTH - 1],
-            ])
+        self.root == EMPTY_HASH_ARRAY_AT_193[DEPTH]
     }
 
     #[inline]
@@ -96,11 +81,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         // If false, insert the value at the key and error if the key is present.
         update: bool,
     ) -> Result<Digest, SmtError> {
-        if depth > DEPTH {
-            return Err(SmtError::DepthOutOfBounds);
-        }
         if depth == DEPTH {
-            return if !update && hash != self.empty_hash_at_height[0] {
+            return if !update && hash != Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0] {
                 Err(SmtError::KeyAlreadyPresent)
             } else {
                 Ok(value)
@@ -108,8 +90,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
         let node = self.tree.get(&hash);
         let mut node = node.copied().unwrap_or(Node {
-            left: self.empty_hash_at_height[DEPTH - depth - 1],
-            right: self.empty_hash_at_height[DEPTH - depth - 1],
+            left: Self::empty_hash_at_depth_from_root(depth)?,
+            right: Self::empty_hash_at_depth_from_root(depth)?,
         });
         let child_hash = if bits[depth] {
             self.insert_helper(node.right, depth + 1, bits, value, update)
@@ -158,23 +140,30 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     ) -> Result<(), SmtError> {
         nodes.insert(hash);
 
-        #[allow(clippy::comparison_chain)] // Cleaner as an if-else.
-        if depth > DEPTH {
-            return Err(SmtError::DepthOutOfBounds);
-        } else if depth == DEPTH {
+        if depth == DEPTH {
             // We've reached a leaf.
             return Ok(());
         }
 
         let node = self.tree.get(&hash).ok_or(SmtError::KeyNotPresent)?;
-        if node.left != self.empty_hash_at_height[DEPTH - depth - 1] {
+        if node.left != Self::empty_hash_at_depth_from_root(depth)? {
             self.traverse_helper(node.left, depth + 1, nodes)?;
         }
-        if node.right != self.empty_hash_at_height[DEPTH - depth - 1] {
+        if node.right != Self::empty_hash_at_depth_from_root(depth)? {
             self.traverse_helper(node.right, depth + 1, nodes)?;
         }
 
         Ok(())
+    }
+
+    #[inline]
+    const fn empty_hash_at_depth_from_root(depth: usize) -> Result<Digest, SmtError> {
+        if depth > DEPTH {
+            return Err(SmtError::DepthOutOfBounds);
+        }
+        // We are calculating the depth from the leaf to the root,
+        // hence we need to subtract the depth from the tree height.
+        Ok(Self::EMPTY_HASH_ARRAY_AT_HEIGHT[(DEPTH - 1) - depth])
     }
 
     /// Traverse the SMT and prune all stale nodes.
@@ -198,7 +187,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     where
         K: ToBits<DEPTH>,
     {
-        let mut siblings = [self.empty_hash_at_height[0]; DEPTH];
+        let mut siblings = [Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0]; DEPTH];
         let mut hash = self.root;
         let bits = key.to_bits();
         for i in 0..DEPTH {
@@ -206,7 +195,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
             siblings[DEPTH - i - 1] = if bits[i] { node.left } else { node.right };
             hash = if bits[i] { node.right } else { node.left };
         }
-        if !zero_allowed && hash == self.empty_hash_at_height[0] {
+        if !zero_allowed && hash == Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0] {
             return Err(SmtError::KeyNotPresent);
         }
 
@@ -234,7 +223,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     {
         // Hack: We use `insert` to insert all the necessary nodes in the SMT.
         // This will return an error if the key is in the SMT.
-        self.insert(key, self.empty_hash_at_height[0])?;
+        self.insert(key, Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0])?;
         self.get_inclusion_proof_helper(key, true)
     }
 
@@ -250,20 +239,16 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         let bits = key.to_bits();
 
         for bit in bits.iter().take(DEPTH) {
-            if self.empty_hash_at_height.contains(&hash) {
+            if Self::EMPTY_HASH_ARRAY_AT_HEIGHT.contains(&hash) {
                 return Ok(SmtNonInclusionProof { siblings });
             }
-            let node = self.tree.get(&hash);
-            let node = match node {
-                Some(node) => node,
-                None => {
-                    return Ok(SmtNonInclusionProof { siblings });
-                }
+            let Some(node) = self.tree.get(&hash) else {
+                return Ok(SmtNonInclusionProof { siblings });
             };
             siblings.push(if *bit { node.left } else { node.right });
             hash = if *bit { node.right } else { node.left };
         }
-        if hash != self.empty_hash_at_height[0] {
+        if hash != Self::EMPTY_HASH_ARRAY_AT_HEIGHT[0] {
             return Err(SmtError::KeyPresent);
         }
 
@@ -393,7 +378,7 @@ mod tests {
         let key: u32 = random();
         assert!(!kvs.iter().any(|(k, _)| k == &key), "Check your rng");
         let proof = smt.get_non_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, smt.root, &smt.empty_hash_at_height));
+        assert!(proof.verify(key, smt.root));
     }
 
     #[test]
@@ -421,11 +406,9 @@ mod tests {
         let key: u32 = random();
         assert!(!kvs.iter().any(|(k, _)| k == &key), "Check your rng");
         let proof = smt.get_non_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, smt.root, &smt.empty_hash_at_height));
+        assert!(proof.verify(key, smt.root));
         let value = random();
-        let new_root = proof
-            .verify_and_update(key, value, smt.root, &smt.empty_hash_at_height)
-            .unwrap();
+        let new_root = proof.verify_and_update(key, value, smt.root).unwrap();
         smt.insert(key, value).unwrap();
         assert_eq!(smt.root, new_root);
     }
@@ -471,7 +454,11 @@ mod tests {
             smt.insert(*key, *value).unwrap();
         }
         let (key, value) = kvs[rng().random_range(0..num_keys)];
-        assert_ne!(value, smt.empty_hash_at_height[0], "Check your rng");
+        assert_ne!(
+            value,
+            Smt::<DEPTH>::EMPTY_HASH_ARRAY_AT_HEIGHT[0],
+            "Check your rng"
+        );
         let root = smt.root;
         let proof = smt.get_inclusion_proof_zero(key);
         assert!(proof.is_err(), "The key is in the SMT");

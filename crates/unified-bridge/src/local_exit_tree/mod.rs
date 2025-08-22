@@ -1,4 +1,5 @@
 use agglayer_primitives::{keccak::keccak256_combine, Digest};
+use agglayer_tries::utils::empty_hash_array_at_height;
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 use thiserror::Error;
@@ -123,17 +124,16 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
         // `root` is the hash of the node we’re going to fill next.
         // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
         let mut root = Digest::default();
-        let mut empty_hash_at_height = Digest::default();
 
-        for height in 0..TREE_DEPTH {
+        for (height, empty_hash_at_height) in empty_hash_array_at_height::<TREE_DEPTH>()
+            .iter()
+            .enumerate()
+        {
             if get_bit_at(self.leaf_count, height) == 1 {
                 root = keccak256_combine([&self.frontier[height], &root]);
             } else {
-                root = keccak256_combine([&root, &empty_hash_at_height]);
+                root = keccak256_combine([&root, empty_hash_at_height]);
             }
-
-            empty_hash_at_height =
-                keccak256_combine([&empty_hash_at_height, &empty_hash_at_height]);
         }
 
         root
