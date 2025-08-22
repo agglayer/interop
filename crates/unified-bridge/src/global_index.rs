@@ -142,8 +142,6 @@ mod tests {
 
     fn check(raw: &str, expected: GlobalIndex) {
         let global_index_u256 = U256::from_str_radix(raw, 10).unwrap();
-        let gi: GlobalIndex = GlobalIndex::try_from(global_index_u256).unwrap();
-        println!("{gi:?}");
         assert_eq!(
             global_index_u256,
             GlobalIndex::try_from(global_index_u256).unwrap().into()
@@ -155,7 +153,7 @@ mod tests {
     fn test_global_index() {
         // https://bridge-api.zkevm-g-mainnet.com/bridges/0xa1D5E9CB4f6a09fcF8b938435b0DE63270C67537
         check(
-            "3402823669209384634652192818391391666177",
+            "18446744073709748107",
             GlobalIndex {
                 mainnet_flag: true,
                 rollup_index: RollupIndex::new(0).unwrap(),
