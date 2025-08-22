@@ -223,6 +223,5 @@ jobs:
           delete-branch: false
           draft: false
           assignees: ${{ github.actor }}
-          pull-request-commits-verified: true
           labels: |
             release
