@@ -142,7 +142,7 @@ mod tests {
 
     fn check(raw: &str, expected: GlobalIndex) {
         let global_index_u256 = U256::from_str_radix(raw, 10).unwrap();
-        let gi: GlobalIndex = GlobalIndex::try_from(global_index_u256).unwrap().into();
+        let gi: GlobalIndex = GlobalIndex::try_from(global_index_u256).unwrap();
         println!("{gi:?}");
         assert_eq!(
             global_index_u256,

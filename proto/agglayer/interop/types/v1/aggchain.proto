@@ -24,6 +24,7 @@ message AggchainData {
 
 // Multisig
 message Multisig {
+  // Signatures from the committee members.
   repeated FixedBytes65 signatures = 1;
 }
 
