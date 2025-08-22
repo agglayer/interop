@@ -22,7 +22,7 @@ pub use rollup_index::{InvalidRollupIndexError, RollupIndex};
 pub use token_info::{LeafType, TokenInfo, L1_ETH};
 
 #[derive(Debug, Clone, Copy)]
-pub enum CommitmentVersion {
+pub enum ImportedBridgeExitCommitmentVersion {
     V2,
     V3,
 }
