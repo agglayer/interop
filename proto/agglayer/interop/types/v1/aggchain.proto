@@ -24,7 +24,7 @@ message AggchainData {
 
 // Multisig
 message Multisig {
-   repeated FixedBytes65 signatures = 1;
+  repeated FixedBytes65 signatures = 1;
 }
 
 // Multisig and aggchain proof

@@ -30,4 +30,3 @@ anyhow.workspace = true
 bolero.workspace = true
 insta.workspace = true
 rstest.workspace = true
-

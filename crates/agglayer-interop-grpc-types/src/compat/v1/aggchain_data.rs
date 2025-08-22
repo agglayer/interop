@@ -52,14 +52,14 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
     type Error = Error;
 
     fn try_from(v1::Multisig { signatures }: v1::Multisig) -> Result<Self, Self::Error> {
-        Ok(signatures
+        signatures
             .iter()
             .map(|signature| {
                 (&*signature.value)
                     .try_into()
                     .map_err(Error::parsing_signature)
             })
-            .collect())
+            .collect::<Result<_, _>>()
     }
 }
 
@@ -75,10 +75,14 @@ impl TryFrom<v1::AggchainProofWithMultisig> for AggchainData {
         }: v1::AggchainProofWithMultisig,
     ) -> Result<Self, Self::Error> {
         Ok(AggchainData::MultisigAndAggchainProof {
-            multisig: multisig.try_into()?,
+            multisig: multisig
+                .ok_or(Error::missing_field("multisig").inside_field("data"))?
+                .try_into()?,
             aggchain_proof: AggchainProof {
                 proof: match proof {
-                    Some(proof) => proof.try_into()?,
+                    Some(v1::aggchain_proof_with_multisig::Proof::Sp1Stark(proof)) => {
+                        proof.try_into()?
+                    }
                     None => return Err(Error::missing_field("proof").inside_field("data")),
                 },
                 public_values: context
@@ -86,7 +90,9 @@ impl TryFrom<v1::AggchainProofWithMultisig> for AggchainData {
                     .map(|b| bincode::deserialize(b).map(Box::new))
                     .transpose()
                     .map_err(Error::deserializing_aggchain_proof_public_values)?,
-                aggchain_params: required_field!(proof, aggchain_params),
+                aggchain_params: aggchain_params
+                    .ok_or(Error::missing_field("aggchain_params"))?
+                    .try_into()?,
             },
         })
     }
@@ -120,14 +126,16 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                     .transpose()?
                     .map(Box::new),
                 proof: match proof.proof {
-                    Some(proof) => proof.try_into()?,
+                    Some(v1::aggchain_proof::Proof::Sp1Stark(proof)) => proof.try_into()?,
                     None => return Err(Error::missing_field("proof").inside_field("data")),
                 },
             },
-            Some(v1::aggchain_data::Data::Multisig(multisig)) => multisig.try_into()?,
+            Some(v1::aggchain_data::Data::Multisig(multisig)) => {
+                AggchainData::MultisigOnly(multisig.try_into()?)
+            }
             Some(v1::aggchain_data::Data::MultisigAndAggchainProof(
                 multisig_and_aggchain_proof,
-            )) => multisig_and_aggchain_proof.try_into(),
+            )) => multisig_and_aggchain_proof.try_into()?,
             None => return Err(Error::missing_field("data")),
         })
     }
@@ -186,7 +194,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                         },
                 } => v1::aggchain_data::Data::MultisigAndAggchainProof(
                     v1::AggchainProofWithMultisig {
-                        multisig: multisig.into(),
+                        multisig: Some(multisig.into()),
                         context: HashMap::from([(
                             "public_values".to_owned(),
                             Bytes::from(
@@ -195,17 +203,19 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                             ),
                         )]),
                         aggchain_params: Some(aggchain_params.into()),
-                        proof: Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
-                            version: proof.version,
-                            proof: sp1v4_bincode_options()
-                                .serialize(&proof.proof)
-                                .map_err(Error::serializing_proof)?
-                                .into(),
-                            vkey: sp1v4_bincode_options()
-                                .serialize(&proof.vkey)
-                                .map_err(Error::serializing_vkey)?
-                                .into(),
-                        })),
+                        proof: Some(v1::aggchain_proof_with_multisig::Proof::Sp1Stark(
+                            v1::Sp1StarkProof {
+                                version: proof.version,
+                                proof: sp1v4_bincode_options()
+                                    .serialize(&proof.proof)
+                                    .map_err(Error::serializing_proof)?
+                                    .into(),
+                                vkey: sp1v4_bincode_options()
+                                    .serialize(&proof.vkey)
+                                    .map_err(Error::serializing_vkey)?
+                                    .into(),
+                            },
+                        )),
                     },
                 ),
             }),
