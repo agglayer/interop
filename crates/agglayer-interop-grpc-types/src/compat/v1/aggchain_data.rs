@@ -19,13 +19,13 @@ fn sp1v4_bincode_options() -> impl bincode::Options {
 impl TryFrom<v1::Sp1StarkProof> for Proof {
     type Error = Error;
 
-    fn try_from(
-        v1::Sp1StarkProof {
+    fn try_from(value: v1::Sp1StarkProof) -> Result<Self, Self::Error> {
+        let v1::Sp1StarkProof {
             version,
             proof,
             vkey,
-        }: v1::Sp1StarkProof,
-    ) -> Result<Self, Self::Error> {
+        } = value;
+
         Ok(Proof::SP1Stark(SP1StarkWithContext {
             proof: Box::new(
                 std::panic::catch_unwind(|| sp1v4_bincode_options().deserialize(&proof))
@@ -162,7 +162,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                         "public_values".to_owned(),
                         Bytes::from(
                             bincode::serialize(&public_values)
-                                .unwrap_or_else(|_| b"bincode serialization failed".to_vec()),
+                                .map_err(Error::serializing_context)?,
                         ),
                     )]),
                     aggchain_params: Some(aggchain_params.into()),
@@ -199,7 +199,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                             "public_values".to_owned(),
                             Bytes::from(
                                 bincode::serialize(&public_values)
-                                    .unwrap_or_else(|_| b"bincode serialization failed".to_vec()),
+                                    .map_err(Error::serializing_context)?,
                             ),
                         )]),
                         aggchain_params: Some(aggchain_params.into()),
