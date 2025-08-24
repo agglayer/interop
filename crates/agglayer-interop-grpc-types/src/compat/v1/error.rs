@@ -100,6 +100,16 @@ impl Error {
     }
 
     #[inline]
+    pub fn serializing_context(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to serialize context".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
     pub fn deserializing_proof(e: bincode::Error) -> Self {
         Error {
             kind: ErrorKind::InvalidData,

@@ -19,6 +19,12 @@ impl serde::Serialize for AggchainData {
                 aggchain_data::Data::Generic(v) => {
                     struct_ser.serialize_field("generic", v)?;
                 }
+                aggchain_data::Data::Multisig(v) => {
+                    struct_ser.serialize_field("multisig", v)?;
+                }
+                aggchain_data::Data::MultisigAndAggchainProof(v) => {
+                    struct_ser.serialize_field("multisigAndAggchainProof", v)?;
+                }
             }
         }
         struct_ser.end()
@@ -33,12 +39,17 @@ impl<'de> serde::Deserialize<'de> for AggchainData {
         const FIELDS: &[&str] = &[
             "signature",
             "generic",
+            "multisig",
+            "multisig_and_aggchain_proof",
+            "multisigAndAggchainProof",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Signature,
             Generic,
+            Multisig,
+            MultisigAndAggchainProof,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -62,6 +73,8 @@ impl<'de> serde::Deserialize<'de> for AggchainData {
                         match value {
                             "signature" => Ok(GeneratedField::Signature),
                             "generic" => Ok(GeneratedField::Generic),
+                            "multisig" => Ok(GeneratedField::Multisig),
+                            "multisigAndAggchainProof" | "multisig_and_aggchain_proof" => Ok(GeneratedField::MultisigAndAggchainProof),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -96,6 +109,20 @@ impl<'de> serde::Deserialize<'de> for AggchainData {
                                 return Err(serde::de::Error::duplicate_field("generic"));
                             }
                             data__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_data::Data::Generic)
+;
+                        }
+                        GeneratedField::Multisig => {
+                            if data__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("multisig"));
+                            }
+                            data__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_data::Data::Multisig)
+;
+                        }
+                        GeneratedField::MultisigAndAggchainProof => {
+                            if data__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("multisigAndAggchainProof"));
+                            }
+                            data__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_data::Data::MultisigAndAggchainProof)
 ;
                         }
                     }
@@ -260,6 +287,160 @@ impl<'de> serde::Deserialize<'de> for AggchainProof {
             }
         }
         deserializer.deserialize_struct("agglayer.interop.types.v1.AggchainProof", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for AggchainProofWithMultisig {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.multisig.is_some() {
+            len += 1;
+        }
+        if self.aggchain_params.is_some() {
+            len += 1;
+        }
+        if !self.context.is_empty() {
+            len += 1;
+        }
+        if self.proof.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.AggchainProofWithMultisig", len)?;
+        if let Some(v) = self.multisig.as_ref() {
+            struct_ser.serialize_field("multisig", v)?;
+        }
+        if let Some(v) = self.aggchain_params.as_ref() {
+            struct_ser.serialize_field("aggchainParams", v)?;
+        }
+        if !self.context.is_empty() {
+            let v: std::collections::HashMap<_, _> = self.context.iter()
+                .map(|(k, v)| (k, pbjson::private::base64::encode(v))).collect();
+            struct_ser.serialize_field("context", &v)?;
+        }
+        if let Some(v) = self.proof.as_ref() {
+            match v {
+                aggchain_proof_with_multisig::Proof::Sp1Stark(v) => {
+                    struct_ser.serialize_field("sp1Stark", v)?;
+                }
+            }
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for AggchainProofWithMultisig {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "multisig",
+            "aggchain_params",
+            "aggchainParams",
+            "context",
+            "sp1_stark",
+            "sp1Stark",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Multisig,
+            AggchainParams,
+            Context,
+            Sp1Stark,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "multisig" => Ok(GeneratedField::Multisig),
+                            "aggchainParams" | "aggchain_params" => Ok(GeneratedField::AggchainParams),
+                            "context" => Ok(GeneratedField::Context),
+                            "sp1Stark" | "sp1_stark" => Ok(GeneratedField::Sp1Stark),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = AggchainProofWithMultisig;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct agglayer.interop.types.v1.AggchainProofWithMultisig")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<AggchainProofWithMultisig, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut multisig__ = None;
+                let mut aggchain_params__ = None;
+                let mut context__ = None;
+                let mut proof__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::Multisig => {
+                            if multisig__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("multisig"));
+                            }
+                            multisig__ = map_.next_value()?;
+                        }
+                        GeneratedField::AggchainParams => {
+                            if aggchain_params__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("aggchainParams"));
+                            }
+                            aggchain_params__ = map_.next_value()?;
+                        }
+                        GeneratedField::Context => {
+                            if context__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("context"));
+                            }
+                            context__ = Some(
+                                map_.next_value::<std::collections::HashMap<_, ::pbjson::private::BytesDeserialize<_>>>()?
+                                    .into_iter().map(|(k,v)| (k, v.0)).collect()
+                            );
+                        }
+                        GeneratedField::Sp1Stark => {
+                            if proof__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("sp1Stark"));
+                            }
+                            proof__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_proof_with_multisig::Proof::Sp1Stark)
+;
+                        }
+                    }
+                }
+                Ok(AggchainProofWithMultisig {
+                    multisig: multisig__,
+                    aggchain_params: aggchain_params__,
+                    context: context__.unwrap_or_default(),
+                    proof: proof__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("agglayer.interop.types.v1.AggchainProofWithMultisig", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for BridgeExit {
@@ -1606,6 +1787,97 @@ impl<'de> serde::Deserialize<'de> for MerkleProof {
             }
         }
         deserializer.deserialize_struct("agglayer.interop.types.v1.MerkleProof", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for Multisig {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.signatures.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.Multisig", len)?;
+        if !self.signatures.is_empty() {
+            struct_ser.serialize_field("signatures", &self.signatures)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for Multisig {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "signatures",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Signatures,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "signatures" => Ok(GeneratedField::Signatures),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = Multisig;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct agglayer.interop.types.v1.Multisig")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<Multisig, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut signatures__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::Signatures => {
+                            if signatures__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("signatures"));
+                            }
+                            signatures__ = Some(map_.next_value()?);
+                        }
+                    }
+                }
+                Ok(Multisig {
+                    signatures: signatures__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("agglayer.interop.types.v1.Multisig", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for Sp1StarkProof {
