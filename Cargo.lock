@@ -72,7 +72,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "mockall",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -96,7 +96,7 @@ dependencies = [
  "prost",
  "rstest",
  "serde",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tonic-types",
 ]
 
@@ -116,7 +116,7 @@ dependencies = [
  "sp1-core-machine",
  "sp1-prover",
  "sp1-sdk",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "unified-bridge",
 ]
 
@@ -146,7 +146,7 @@ dependencies = [
  "rs_merkle",
  "serde",
  "serde_with",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tiny-keccak",
 ]
 
@@ -233,7 +233,7 @@ dependencies = [
  "rand 0.8.5",
  "serde",
  "serde_with",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -269,7 +269,7 @@ dependencies = [
  "alloy-transport",
  "futures",
  "futures-util",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -312,7 +312,7 @@ dependencies = [
  "alloy-rlp",
  "crc",
  "serde",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -336,7 +336,7 @@ dependencies = [
  "alloy-rlp",
  "k256",
  "serde",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -394,7 +394,7 @@ dependencies = [
  "alloy-sol-types",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tracing",
 ]
 
@@ -421,7 +421,7 @@ dependencies = [
  "futures-utils-wasm",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -505,7 +505,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tokio",
  "tracing",
  "url",
@@ -666,7 +666,7 @@ dependencies = [
  "itertools 0.13.0",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -680,7 +680,7 @@ dependencies = [
  "alloy-serde",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -718,7 +718,7 @@ dependencies = [
  "either",
  "elliptic-curve",
  "k256",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -734,7 +734,7 @@ dependencies = [
  "async-trait",
  "k256",
  "rand 0.8.5",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
@@ -825,7 +825,7 @@ dependencies = [
  "parking_lot",
  "serde",
  "serde_json",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tokio",
  "tower 0.5.2",
  "tracing",
@@ -4217,7 +4217,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "198db74531d58c70a361c42201efde7e2591e976d518caf7662a47dc5720e7b6"
 dependencies = [
  "memchr",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "ucd-trie",
 ]
 
@@ -4504,7 +4504,7 @@ dependencies = [
  "rustc-hash 2.1.1",
  "rustls",
  "socket2 0.5.9",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tokio",
  "tracing",
  "web-time",
@@ -4524,7 +4524,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "slab",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "tinyvec",
  "tracing",
  "web-time",
@@ -5282,9 +5282,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.142"
+version = "1.0.143"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "030fedb782600dcbd6f02d479bf0d817ac3bb40d644745b769d6a96bc3afc5a7"
+checksum = "d401abef1d108fbd9cbaebc3e46611f4b1021f714a0597a71f41ee463f5f4a5a"
 dependencies = [
  "itoa",
  "memchr",
@@ -6176,11 +6176,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.15"
+version = "2.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80d76d3f064b981389ecb4b6b7f45a0bf9fdac1d5b9204c7bd6714fecc302850"
+checksum = "3467d614147380f2e4e374161426ff399c91084acd2363eaf549172b3d5e60c0"
 dependencies = [
- "thiserror-impl 2.0.15",
+ "thiserror-impl 2.0.16",
 ]
 
 [[package]]
@@ -6196,9 +6196,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.15"
+version = "2.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44d29feb33e986b6ea906bd9c3559a856983f92371b3eaa5e83782a351623de0"
+checksum = "6c5e1be1c48b9172ee610da68fd9cd2770e7a4056cb3fc98710ee6906f0c7960"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6684,7 +6684,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "sha1",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "utf-8",
 ]
 
@@ -6770,7 +6770,7 @@ dependencies = [
  "serde",
  "serde_with",
  "sha2",
- "thiserror 2.0.15",
+ "thiserror 2.0.16",
  "unified-bridge",
 ]
 
