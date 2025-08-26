@@ -9,7 +9,7 @@ pub use unified_bridge::AggchainProofPublicValues;
 use crate::Digest;
 
 // Aggchain data submitted via the [`Certificate`].
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 #[serde(untagged)]
 pub enum AggchainData {
