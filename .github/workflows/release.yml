@@ -222,6 +222,5 @@ jobs:
           base: ${{ steps.branch_strategy.outputs.base_branch }}
           delete-branch: false
           draft: false
-          assignees: ${{ github.actor }}
           labels: |
             release
