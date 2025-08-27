@@ -14,7 +14,7 @@ message AggchainData {
     // Aggchain proof with the single ECDSA verified by the agglayer only.
     AggchainProof generic = 2;
 
-    // Multisig only performed by the chain's committee.
+    // Only multisig performed by the chain's committee.
     Multisig multisig = 3;
 
     // Multisig combined with an aggchain proof.
