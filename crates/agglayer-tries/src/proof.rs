@@ -2,6 +2,8 @@ use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
+use crate::utils::EMPTY_HASH_ARRAY_AT_193;
+
 pub trait ToBits<const NUM_BITS: usize> {
     fn to_bits(&self) -> [bool; NUM_BITS];
 }
@@ -83,7 +85,7 @@ impl<const DEPTH: usize> SmtMerkleProof<DEPTH> {
 }
 
 impl<const DEPTH: usize> SmtNonInclusionProof<DEPTH> {
-    pub fn verify<K>(&self, key: K, root: Digest, empty_hash_at_height: &[Digest; DEPTH]) -> bool
+    pub fn verify<K>(&self, key: K, root: Digest) -> bool
     where
         K: ToBits<DEPTH>,
     {
@@ -91,14 +93,11 @@ impl<const DEPTH: usize> SmtNonInclusionProof<DEPTH> {
             return false;
         }
         if self.siblings.is_empty() {
-            let empty_root = keccak256_combine([
-                &empty_hash_at_height[DEPTH - 1],
-                &empty_hash_at_height[DEPTH - 1],
-            ]);
+            let empty_root = EMPTY_HASH_ARRAY_AT_193[DEPTH];
             return root == empty_root;
         }
         let bits = key.to_bits();
-        let mut entry = empty_hash_at_height[DEPTH - self.siblings.len()];
+        let mut entry = EMPTY_HASH_ARRAY_AT_193[DEPTH - self.siblings.len()];
         for i in (0..self.siblings.len()).rev() {
             let sibling = self.siblings[i];
             entry = if bits[i] {
@@ -114,24 +113,18 @@ impl<const DEPTH: usize> SmtNonInclusionProof<DEPTH> {
     /// Verify the non-inclusion proof (i.e. that `key` is not in the SMT) and
     /// return the updated root of the SMT with `(key, value)` inserted, or
     /// `None` if the inclusion proof is invalid.
-    pub fn verify_and_update<K>(
-        &self,
-        key: K,
-        new_value: Digest,
-        root: Digest,
-        empty_hash_at_height: &[Digest; DEPTH],
-    ) -> Option<Digest>
+    pub fn verify_and_update<K>(&self, key: K, new_value: Digest, root: Digest) -> Option<Digest>
     where
         K: Copy + ToBits<DEPTH>,
     {
-        if !self.verify(key, root, empty_hash_at_height) {
+        if !self.verify(key, root) {
             return None;
         }
 
         let mut entry = new_value;
         let bits = key.to_bits();
         for i in (self.siblings.len()..DEPTH).rev() {
-            let sibling = empty_hash_at_height[DEPTH - i - 1];
+            let sibling = EMPTY_HASH_ARRAY_AT_193[DEPTH - i - 1];
             entry = if bits[i] {
                 keccak256_combine([&sibling, &entry])
             } else {
