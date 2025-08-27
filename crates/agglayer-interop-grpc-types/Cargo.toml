@@ -7,7 +7,7 @@ description = "agglayer-interop-grpc-types contains structs and traits for the g
 repository.workspace = true
 
 [features]
-default = ["compat"]
+default = []
 compat = ["dep:agglayer-interop-types", "dep:bincode", "dep:thiserror"]
 
 [lints]
