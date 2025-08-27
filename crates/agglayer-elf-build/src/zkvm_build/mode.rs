@@ -1,4 +1,4 @@
-use anyhow::Context;
+use eyre::Context;
 
 /// Zkvm ELF build mode.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -17,29 +17,29 @@ pub enum Mode {
 impl Mode {
     pub const DEFAULT_ENV_VAR: &str = "AGGLAYER_ELF_BUILD";
 
-    pub fn from_env_var(var: &str) -> anyhow::Result<Self> {
+    pub fn from_env_var(var: &str) -> eyre::Result<Self> {
         println!("cargo::rerun-if-env-changed={var}");
         match std::env::var(var) {
             Ok(mode_str) => mode_str.parse().context("Parsing mode env var"),
             Err(std::env::VarError::NotPresent) => Ok(Self::default()),
-            Err(err) => anyhow::bail!("Malformed mode (from {var}): {err}"),
+            Err(err) => eyre::bail!("Malformed mode (from {var}): {err}"),
         }
     }
 
-    pub fn from_env() -> anyhow::Result<Self> {
+    pub fn from_env() -> eyre::Result<Self> {
         Self::from_env_var(Self::DEFAULT_ENV_VAR)
     }
 }
 
 impl std::str::FromStr for Mode {
-    type Err = anyhow::Error;
+    type Err = eyre::Error;
 
-    fn from_str(s: &str) -> anyhow::Result<Self> {
+    fn from_str(s: &str) -> eyre::Result<Self> {
         match s.trim() {
             "build" => Ok(Self::Build),
             "refresh" | "update" => Ok(Self::Refresh),
             "" | "cached" => Ok(Self::Cached),
-            mode_str => anyhow::bail!("Unrecognized mode {mode_str:?}"),
+            mode_str => eyre::bail!("Unrecognized mode {mode_str:?}"),
         }
     }
 }

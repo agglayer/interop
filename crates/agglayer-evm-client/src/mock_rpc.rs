@@ -9,13 +9,13 @@ mock! {
 
     #[async_trait]
     impl GetBlockHash for Rpc {
-        type Error = anyhow::Error;
-        async fn get_block_hash(&self, block_number: u64) -> anyhow::Result<Digest>;
+        type Error = eyre::Error;
+        async fn get_block_hash(&self, block_number: u64) -> eyre::Result<Digest>;
     }
 
     #[async_trait]
     impl GetBlockNumber for Rpc {
-        type Error = anyhow::Error;
-        async fn get_block_number(&self, block_hash: Digest) -> anyhow::Result<u64>;
+        type Error = eyre::Error;
+        async fn get_block_number(&self, block_hash: Digest) -> eyre::Result<u64>;
     }
 }

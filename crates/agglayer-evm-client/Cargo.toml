@@ -16,8 +16,8 @@ workspace = true
 agglayer-primitives.workspace = true
 
 alloy.workspace = true
-anyhow.workspace = true
 async-trait.workspace = true
+eyre.workspace = true
 mockall = { workspace = true, optional = true }
 thiserror.workspace = true
 

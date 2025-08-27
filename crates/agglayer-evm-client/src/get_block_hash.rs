@@ -19,7 +19,7 @@ pub enum GetBlockHashError {
     #[error("Getting information for block number {block_number}")]
     GettingBlock {
         block_number: u64,
-        source: anyhow::Error,
+        source: eyre::Error,
     },
 }
 
