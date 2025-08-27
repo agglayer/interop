@@ -140,6 +140,16 @@ impl Error {
     }
 
     #[inline]
+    pub fn serializing_aggchain_proof_public_values(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to serialize aggchain proof public values".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
     pub fn parsing_signature(e: SignatureError) -> Self {
         Error {
             kind: ErrorKind::InvalidData,

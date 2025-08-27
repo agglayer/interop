@@ -16,9 +16,17 @@ impl TryFrom<v1::AggchainProof> for AggchainProof {
             public_values: value
                 .context
                 .get("public_values")
-                .map(|b| bincode::deserialize(b).map(Box::new))
-                .transpose()
-                .map_err(Error::deserializing_aggchain_proof_public_values)?,
+                .map(|b| {
+                    std::panic::catch_unwind(|| bincode::deserialize(b))
+                        .map_err(|_| {
+                            Error::deserializing_aggchain_proof_public_values(Box::new(
+                                bincode::ErrorKind::Custom(String::from("panic")),
+                            ))
+                        })?
+                        .map_err(Error::deserializing_aggchain_proof_public_values)
+                        .map(Box::new)
+                })
+                .transpose()?,
         })
     }
 }
