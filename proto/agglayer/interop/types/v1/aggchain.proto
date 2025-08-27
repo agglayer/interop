@@ -33,8 +33,11 @@ message Multisig {
 
 // ECDSA multisig scheme with signatures from the committee members.
 message ECDSAMultisig {
+  // Represents the key-value pair of a committee member signature entry.
   message ECDSAMultisigEntry {
+    // The key is the place of the signer in the list of multisig signer on L1.
     uint64 key = 1;
+    // The value is the signature made by the commitee member.
     FixedBytes65 value = 2;
   }
   // Signatures from the committee members.
