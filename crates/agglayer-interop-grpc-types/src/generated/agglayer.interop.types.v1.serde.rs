@@ -300,33 +300,15 @@ impl serde::Serialize for AggchainProofWithMultisig {
         if self.multisig.is_some() {
             len += 1;
         }
-        if self.aggchain_params.is_some() {
-            len += 1;
-        }
-        if !self.context.is_empty() {
-            len += 1;
-        }
-        if self.proof.is_some() {
+        if self.aggchain_proof.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.AggchainProofWithMultisig", len)?;
         if let Some(v) = self.multisig.as_ref() {
             struct_ser.serialize_field("multisig", v)?;
         }
-        if let Some(v) = self.aggchain_params.as_ref() {
-            struct_ser.serialize_field("aggchainParams", v)?;
-        }
-        if !self.context.is_empty() {
-            let v: std::collections::HashMap<_, _> = self.context.iter()
-                .map(|(k, v)| (k, pbjson::private::base64::encode(v))).collect();
-            struct_ser.serialize_field("context", &v)?;
-        }
-        if let Some(v) = self.proof.as_ref() {
-            match v {
-                aggchain_proof_with_multisig::Proof::Sp1Stark(v) => {
-                    struct_ser.serialize_field("sp1Stark", v)?;
-                }
-            }
+        if let Some(v) = self.aggchain_proof.as_ref() {
+            struct_ser.serialize_field("aggchainProof", v)?;
         }
         struct_ser.end()
     }
@@ -339,19 +321,14 @@ impl<'de> serde::Deserialize<'de> for AggchainProofWithMultisig {
     {
         const FIELDS: &[&str] = &[
             "multisig",
-            "aggchain_params",
-            "aggchainParams",
-            "context",
-            "sp1_stark",
-            "sp1Stark",
+            "aggchain_proof",
+            "aggchainProof",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
             Multisig,
-            AggchainParams,
-            Context,
-            Sp1Stark,
+            AggchainProof,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -374,9 +351,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProofWithMultisig {
                     {
                         match value {
                             "multisig" => Ok(GeneratedField::Multisig),
-                            "aggchainParams" | "aggchain_params" => Ok(GeneratedField::AggchainParams),
-                            "context" => Ok(GeneratedField::Context),
-                            "sp1Stark" | "sp1_stark" => Ok(GeneratedField::Sp1Stark),
+                            "aggchainProof" | "aggchain_proof" => Ok(GeneratedField::AggchainProof),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -397,9 +372,7 @@ impl<'de> serde::Deserialize<'de> for AggchainProofWithMultisig {
                     V: serde::de::MapAccess<'de>,
             {
                 let mut multisig__ = None;
-                let mut aggchain_params__ = None;
-                let mut context__ = None;
-                let mut proof__ = None;
+                let mut aggchain_proof__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
                         GeneratedField::Multisig => {
@@ -408,35 +381,17 @@ impl<'de> serde::Deserialize<'de> for AggchainProofWithMultisig {
                             }
                             multisig__ = map_.next_value()?;
                         }
-                        GeneratedField::AggchainParams => {
-                            if aggchain_params__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("aggchainParams"));
+                        GeneratedField::AggchainProof => {
+                            if aggchain_proof__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("aggchainProof"));
                             }
-                            aggchain_params__ = map_.next_value()?;
-                        }
-                        GeneratedField::Context => {
-                            if context__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("context"));
-                            }
-                            context__ = Some(
-                                map_.next_value::<std::collections::HashMap<_, ::pbjson::private::BytesDeserialize<_>>>()?
-                                    .into_iter().map(|(k,v)| (k, v.0)).collect()
-                            );
-                        }
-                        GeneratedField::Sp1Stark => {
-                            if proof__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("sp1Stark"));
-                            }
-                            proof__ = map_.next_value::<::std::option::Option<_>>()?.map(aggchain_proof_with_multisig::Proof::Sp1Stark)
-;
+                            aggchain_proof__ = map_.next_value()?;
                         }
                     }
                 }
                 Ok(AggchainProofWithMultisig {
                     multisig: multisig__,
-                    aggchain_params: aggchain_params__,
-                    context: context__.unwrap_or_default(),
-                    proof: proof__,
+                    aggchain_proof: aggchain_proof__,
                 })
             }
         }
@@ -899,6 +854,209 @@ impl<'de> serde::Deserialize<'de> for ClaimFromRollup {
             }
         }
         deserializer.deserialize_struct("agglayer.interop.types.v1.ClaimFromRollup", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for EcdsaMultisig {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if !self.signatures.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.ECDSAMultisig", len)?;
+        if !self.signatures.is_empty() {
+            struct_ser.serialize_field("signatures", &self.signatures)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for EcdsaMultisig {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "signatures",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Signatures,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "signatures" => Ok(GeneratedField::Signatures),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = EcdsaMultisig;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct agglayer.interop.types.v1.ECDSAMultisig")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<EcdsaMultisig, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut signatures__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::Signatures => {
+                            if signatures__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("signatures"));
+                            }
+                            signatures__ = Some(map_.next_value()?);
+                        }
+                    }
+                }
+                Ok(EcdsaMultisig {
+                    signatures: signatures__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("agglayer.interop.types.v1.ECDSAMultisig", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for ecdsa_multisig::EcdsaMultisigEntry {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if self.key != 0 {
+            len += 1;
+        }
+        if self.value.is_some() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.ECDSAMultisig.ECDSAMultisigEntry", len)?;
+        if self.key != 0 {
+            #[allow(clippy::needless_borrow)]
+            #[allow(clippy::needless_borrows_for_generic_args)]
+            struct_ser.serialize_field("key", ToString::to_string(&self.key).as_str())?;
+        }
+        if let Some(v) = self.value.as_ref() {
+            struct_ser.serialize_field("value", v)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for ecdsa_multisig::EcdsaMultisigEntry {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "key",
+            "value",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            Key,
+            Value,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "key" => Ok(GeneratedField::Key),
+                            "value" => Ok(GeneratedField::Value),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = ecdsa_multisig::EcdsaMultisigEntry;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct agglayer.interop.types.v1.ECDSAMultisig.ECDSAMultisigEntry")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<ecdsa_multisig::EcdsaMultisigEntry, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut key__ = None;
+                let mut value__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::Key => {
+                            if key__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("key"));
+                            }
+                            key__ = 
+                                Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::Value => {
+                            if value__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("value"));
+                            }
+                            value__ = map_.next_value()?;
+                        }
+                    }
+                }
+                Ok(ecdsa_multisig::EcdsaMultisigEntry {
+                    key: key__.unwrap_or_default(),
+                    value: value__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("agglayer.interop.types.v1.ECDSAMultisig.ECDSAMultisigEntry", FIELDS, GeneratedVisitor)
     }
 }
 impl serde::Serialize for FixedBytes20 {
@@ -1797,12 +1955,16 @@ impl serde::Serialize for Multisig {
     {
         use serde::ser::SerializeStruct;
         let mut len = 0;
-        if !self.signatures.is_empty() {
+        if self.data.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.Multisig", len)?;
-        if !self.signatures.is_empty() {
-            struct_ser.serialize_field("signatures", &self.signatures)?;
+        if let Some(v) = self.data.as_ref() {
+            match v {
+                multisig::Data::Ecdsa(v) => {
+                    struct_ser.serialize_field("ecdsa", v)?;
+                }
+            }
         }
         struct_ser.end()
     }
@@ -1814,12 +1976,12 @@ impl<'de> serde::Deserialize<'de> for Multisig {
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "signatures",
+            "ecdsa",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Signatures,
+            Ecdsa,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -1841,7 +2003,7 @@ impl<'de> serde::Deserialize<'de> for Multisig {
                         E: serde::de::Error,
                     {
                         match value {
-                            "signatures" => Ok(GeneratedField::Signatures),
+                            "ecdsa" => Ok(GeneratedField::Ecdsa),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1861,19 +2023,20 @@ impl<'de> serde::Deserialize<'de> for Multisig {
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut signatures__ = None;
+                let mut data__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
-                        GeneratedField::Signatures => {
-                            if signatures__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("signatures"));
+                        GeneratedField::Ecdsa => {
+                            if data__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("ecdsa"));
                             }
-                            signatures__ = Some(map_.next_value()?);
+                            data__ = map_.next_value::<::std::option::Option<_>>()?.map(multisig::Data::Ecdsa)
+;
                         }
                     }
                 }
                 Ok(Multisig {
-                    signatures: signatures__.unwrap_or_default(),
+                    data: data__,
                 })
             }
         }

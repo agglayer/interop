@@ -33,7 +33,9 @@ pub enum AggchainData {
     },
 }
 
-pub type MultisigPayload = Vec<Signature>;
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+pub struct MultisigPayload(pub Vec<Option<Signature>>);
 
 // Aggchain proof data submitted via the Certificate.
 #[derive(Serialize, Deserialize, Clone, Debug)]

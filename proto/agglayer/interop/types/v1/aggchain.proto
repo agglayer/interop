@@ -24,8 +24,21 @@ message AggchainData {
 
 // Multisig
 message Multisig {
+  // Multisig scheme.
+  oneof data {
+    // ECDSA multisig scheme.
+    ECDSAMultisig ecdsa = 1;
+  }
+}
+
+// ECDSA multisig scheme with signatures from the committee members.
+message ECDSAMultisig {
+  message ECDSAMultisigEntry {
+    uint64 key = 1;
+    FixedBytes65 value = 2;
+  }
   // Signatures from the committee members.
-  repeated FixedBytes65 signatures = 1;
+  repeated ECDSAMultisigEntry signatures = 3;
 }
 
 // Multisig and aggchain proof
@@ -33,16 +46,8 @@ message AggchainProofWithMultisig {
   // Multisig
   Multisig multisig = 1;
 
-  // Aggchain params.
-  FixedBytes32 aggchain_params = 2;
-
-  // Aggchain proof context to share non-sensitive data.
-  map<string, bytes> context = 3;
-  // The proof for the aggchain.
-  oneof proof {
-    // SP1 stark proof.
-    SP1StarkProof sp1_stark = 4;
-  }
+  // AggchainProof
+  AggchainProof aggchain_proof = 2;
 }
 
 // Aggchain proof.
@@ -50,6 +55,7 @@ message AggchainProof {
   // Aggchain params.
   FixedBytes32 aggchain_params = 1;
 
+  // Important: The signature is ignored if the aggchain proof is part of a AggchainProofWithMultisig.
   // The signature linked to the aggchain-proof.
   // This signature is used to verify the authenticity of the aggchain-proof.
   // It represents a commitment to:
