@@ -95,9 +95,47 @@ fn fuzz_round_trip_aggchain_data() {
         .with_arbitrary::<AggchainData>()
         .for_each(|input| {
             let proto: v1::AggchainData = input.clone().try_into().unwrap();
-            let _output = AggchainData::try_from(proto).unwrap();
-            // There's no good way to check equality of two stark proofs:
-            // assert_eq!(input, &output);
+
+            // Check if input has empty multisig signatures
+            let has_empty_multisig = match &input {
+                AggchainData::MultisigOnly(multisig) => multisig.0.is_empty(),
+                AggchainData::MultisigAndAggchainProof { multisig, .. } => multisig.0.is_empty(),
+                _ => false,
+            };
+
+            match AggchainData::try_from(proto) {
+                Ok(output) => {
+                    // If we had empty multisig, this should not have succeeded
+                    assert!(
+                        !has_empty_multisig,
+                        "Expected error for empty multisig signatures, but conversion succeeded"
+                    );
+
+                    // For most cases, we can't check equality due to stark proofs,
+                    // but we can at least verify the conversion succeeded
+                    if let (
+                        AggchainData::ECDSA { signature: sig1 },
+                        AggchainData::ECDSA { signature: sig2 },
+                    ) = (&input, &output)
+                    {
+                        assert_eq!(sig1, sig2);
+                    }
+                }
+                Err(err) => {
+                    if has_empty_multisig {
+                        // This error is expected for empty multisig cases
+                        let err_msg = err.to_string();
+                        assert!(
+                            err_msg.contains("Multisig ECDSA doesn't have any signature"),
+                            "Expected empty multisig error, got: {}",
+                            err
+                        );
+                    } else {
+                        // Any other error should cause the test to fail
+                        panic!("Unexpected conversion error: {}", err);
+                    }
+                }
+            }
         })
 }
 make_round_trip_fuzzers!(fuzz_round_trip_bridge_exit, v1::BridgeExit, BridgeExit);

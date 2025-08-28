@@ -8,11 +8,49 @@ import "agglayer/interop/types/v1/bytes.proto";
 message AggchainData {
   // The data of the aggchain.
   oneof data {
-    // Signature committed to the bridge exits and imported bridge exits.
+    // Legacy ECDSA signature on a commitment to the state transition.
     FixedBytes65 signature = 1;
-    // Generic Aggchain proof.
+
+    // Aggchain proof with the single ECDSA verified by the agglayer only.
     AggchainProof generic = 2;
+
+    // Only multisig performed by the chain's committee.
+    Multisig multisig = 3;
+
+    // Multisig combined with an aggchain proof.
+    AggchainProofWithMultisig multisig_and_aggchain_proof = 4;
   }
+}
+
+// Multisig
+message Multisig {
+  // Multisig scheme.
+  oneof data {
+    // ECDSA multisig scheme.
+    ECDSAMultisig ecdsa = 1;
+  }
+}
+
+// ECDSA multisig scheme with signatures from the committee members.
+message ECDSAMultisig {
+  // Represents the key-value pair of a committee member signature entry.
+  message ECDSAMultisigEntry {
+    // The key is the place of the signer in the list of multisig signer on L1.
+    uint32 index = 1;
+    // The value is the signature made by the commitee member.
+    FixedBytes65 signature = 2;
+  }
+  // Signatures from the committee members.
+  repeated ECDSAMultisigEntry signatures = 3;
+}
+
+// Multisig and aggchain proof
+message AggchainProofWithMultisig {
+  // Multisig
+  Multisig multisig = 1;
+
+  // AggchainProof
+  AggchainProof aggchain_proof = 2;
 }
 
 // Aggchain proof.
@@ -20,6 +58,7 @@ message AggchainProof {
   // Aggchain params.
   FixedBytes32 aggchain_params = 1;
 
+  // Important: The signature is ignored if the aggchain proof is part of a AggchainProofWithMultisig.
   // The signature linked to the aggchain-proof.
   // This signature is used to verify the authenticity of the aggchain-proof.
   // It represents a commitment to:

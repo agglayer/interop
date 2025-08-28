@@ -26,6 +26,27 @@ pub enum AggchainData {
         /// Optional aggchain proof public values.
         public_values: Option<Box<AggchainProofPublicValues>>,
     },
+    MultisigOnly(MultisigPayload),
+    MultisigAndAggchainProof {
+        multisig: MultisigPayload,
+        aggchain_proof: AggchainProof,
+    },
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+pub struct MultisigPayload(pub Vec<Option<Signature>>);
+
+// Aggchain proof data submitted via the Certificate.
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+pub struct AggchainProof {
+    /// proof of the aggchain proof.
+    pub proof: Proof,
+    /// Chain-specific commitment forwarded through the PP.
+    pub aggchain_params: Digest,
+    /// Optional aggchain proof public values.
+    pub public_values: Option<Box<AggchainProofPublicValues>>,
 }
 
 pub type SP1StarkProof = SP1ReduceProof<InnerSC>;

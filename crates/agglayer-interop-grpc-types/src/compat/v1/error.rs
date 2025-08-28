@@ -100,6 +100,16 @@ impl Error {
     }
 
     #[inline]
+    pub fn serializing_context(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to serialize context".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
     pub fn deserializing_proof(e: bincode::Error) -> Self {
         Error {
             kind: ErrorKind::InvalidData,
@@ -124,6 +134,16 @@ impl Error {
         Error {
             kind: ErrorKind::InvalidData,
             message: "failed to deserialize aggchain proof public values".to_string(),
+            field: vec![],
+            source: Some(SourceError::Bincode(e)),
+        }
+    }
+
+    #[inline]
+    pub fn serializing_aggchain_proof_public_values(e: bincode::Error) -> Self {
+        Error {
+            kind: ErrorKind::InvalidData,
+            message: "failed to serialize aggchain proof public values".to_string(),
             field: vec![],
             source: Some(SourceError::Bincode(e)),
         }
