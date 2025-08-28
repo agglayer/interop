@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.9.0] - 2025-07-21
+## [0.10.0] - 2025-08-28
+
+### 🚜 Refactor
+
+- [**breaking**] Make empty_hash_at_height const (#73)
+
+## [0.9.0] - 2025-07-23
 
 ### 🚜 Refactor
 

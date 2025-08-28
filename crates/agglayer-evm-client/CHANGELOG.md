@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.9.0] - 2025-07-21
+## [0.10.0] - 2025-08-28
+
+### 🚀 Features
+
+- [**breaking**] Move all dynamic error types to eyre (#88)
+
+## [0.9.0] - 2025-07-23
+
+### 🐛 Bug Fixes
+
+- Ensure self-referential crates use path dependencies (#71)
+
+## [0.9.0] - 2025-07-23
 
 ### 🚀 Features
 
