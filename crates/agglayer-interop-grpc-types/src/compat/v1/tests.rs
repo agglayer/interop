@@ -113,15 +113,12 @@ fn fuzz_round_trip_aggchain_data() {
 
                     // For most cases, we can't check equality due to stark proofs,
                     // but we can at least verify the conversion succeeded
-                    match (&input, &output) {
-                        (
-                            AggchainData::ECDSA { signature: sig1 },
-                            AggchainData::ECDSA { signature: sig2 },
-                        ) => {
-                            assert_eq!(sig1, sig2);
-                        }
-                        // For other variants, we just check that the conversion succeeded
-                        _ => {}
+                    if let (
+                        AggchainData::ECDSA { signature: sig1 },
+                        AggchainData::ECDSA { signature: sig2 },
+                    ) = (&input, &output)
+                    {
+                        assert_eq!(sig1, sig2);
                     }
                 }
                 Err(err) => {
