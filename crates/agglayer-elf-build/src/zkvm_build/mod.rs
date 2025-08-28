@@ -36,8 +36,10 @@
 //! crate. Note the path is relative to the workspace root:
 //!
 //! ```ignore
-//! fn main() {
-//!     agglayer_elf_build::build_program("crates/whatever-proof-program").unwrap();
+//! fn main() -> eyre::Result<()> {
+//!     color_eyre::install()?;
+//!     agglayer_elf_build::build_program("crates/whatever-proof-program")?;
+//!     Ok(())
 //! }
 //! ```
 //!
@@ -83,7 +85,7 @@ pub const DEFAULT_DOCKER_TAG: &str =
 pub const CACHED_ELF_PATH: &str = "elf/riscv32im-succinct-zkvm-elf";
 
 /// Convenience function to build the zkvm ELF if no customization is needed.
-pub fn build_program(program_dir: impl AsRef<Utf8Path>) -> anyhow::Result<Utf8PathBuf> {
+pub fn build_program(program_dir: impl AsRef<Utf8Path>) -> eyre::Result<Utf8PathBuf> {
     ProgramBuilder::new(program_dir)?.run()
 }
 

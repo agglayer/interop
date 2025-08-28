@@ -6,9 +6,9 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-anyhow.workspace = true
 cargo_metadata.workspace = true
 clap.workspace = true
+eyre.workspace = true
 
 sp1-build.workspace = true
 

@@ -8,4 +8,7 @@ publish = false
 agglayer-elf-build.workspace = true
 
 [build-dependencies]
+color-eyre.workspace = true
+eyre.workspace = true
+
 agglayer-elf-build.workspace = true

@@ -1,10 +1,10 @@
 use std::{env, fs, path::Path};
 
-use anyhow::Context;
 use cargo_metadata::{
     camino::{Utf8Path, Utf8PathBuf},
     Metadata, MetadataCommand,
 };
+use eyre::{eyre, Context, OptionExt};
 use sp1_build::BuildArgs;
 
 use super::Mode;
@@ -25,7 +25,7 @@ pub struct ProgramBuilder {
 
 impl ProgramBuilder {
     /// New zkvm ELF builder.
-    pub fn new(relative_program_dir: impl AsRef<Utf8Path>) -> anyhow::Result<Self> {
+    pub fn new(relative_program_dir: impl AsRef<Utf8Path>) -> eyre::Result<Self> {
         let host_metadata = MetadataCommand::new()
             .no_deps()
             .exec()
@@ -35,7 +35,7 @@ impl ProgramBuilder {
 
         let program_dir_meta = fs::metadata(&program_dir)
             .with_context(|| format!("Checking the program dir ({program_dir})"))?;
-        anyhow::ensure!(
+        eyre::ensure!(
             program_dir_meta.is_dir(),
             "Program path is not a directory ({program_dir})",
         );
@@ -90,19 +90,20 @@ impl ProgramBuilder {
     }
 
     /// Get the path to the produced zkvm ELF in the build folder.
-    fn built_elf_path(&self) -> anyhow::Result<Utf8PathBuf> {
+    fn built_elf_path(&self) -> eyre::Result<Utf8PathBuf> {
         let args = &self.build_args;
         let mut paths_iter = sp1_build::generate_elf_paths(&self.program_metadata, Some(args))
+            .map_err(|e| eyre!(e))
             .context("Failed to extract zkvm ELF paths")?
             .into_iter();
 
-        let (_package, path) = paths_iter.next().context("No zkvm ELF paths")?;
-        anyhow::ensure!(paths_iter.next().is_none(), "Too many zkvm ELF paths");
+        let (_package, path) = paths_iter.next().ok_or_eyre("No zkvm ELF paths")?;
+        eyre::ensure!(paths_iter.next().is_none(), "Too many zkvm ELF paths");
 
         Ok(path)
     }
 
-    fn copy_elf(source: impl AsRef<Path>, destination: impl AsRef<Path>) -> anyhow::Result<()> {
+    fn copy_elf(source: impl AsRef<Path>, destination: impl AsRef<Path>) -> eyre::Result<()> {
         // Create all the necessary directories first
         if let Some(cached_elf_dir) = destination.as_ref().parent() {
             fs::create_dir_all(cached_elf_dir)
@@ -120,7 +121,7 @@ impl ProgramBuilder {
         Ok(())
     }
 
-    fn build_program(self) -> anyhow::Result<Utf8PathBuf> {
+    fn build_program(self) -> eyre::Result<Utf8PathBuf> {
         eprintln!("Program dir: {}", self.program_dir.as_str());
 
         let elf_path = self.built_elf_path()?;
@@ -130,7 +131,7 @@ impl ProgramBuilder {
         Ok(elf_path)
     }
 
-    fn build_and_refresh(self) -> anyhow::Result<Utf8PathBuf> {
+    fn build_and_refresh(self) -> eyre::Result<Utf8PathBuf> {
         let cached_elf_path = self.cached_elf_path.clone();
 
         let elf_path = self.build_program()?;
@@ -139,7 +140,7 @@ impl ProgramBuilder {
         Ok(elf_path)
     }
 
-    fn take_from_cache(self) -> anyhow::Result<Utf8PathBuf> {
+    fn take_from_cache(self) -> eyre::Result<Utf8PathBuf> {
         let cached_elf_path = self.cached_elf_path;
 
         println!("cargo::rerun-if-changed={cached_elf_path}");
@@ -149,7 +150,7 @@ impl ProgramBuilder {
     }
 
     /// Run with given mode or config.
-    pub fn run_mode(self, mode: Mode) -> anyhow::Result<Utf8PathBuf> {
+    pub fn run_mode(self, mode: Mode) -> eyre::Result<Utf8PathBuf> {
         match mode {
             Mode::Build => self.build_program(),
             Mode::Refresh => self.build_and_refresh(),
@@ -158,7 +159,7 @@ impl ProgramBuilder {
     }
 
     /// Run the zkvm ELF builder.
-    pub fn run(self) -> anyhow::Result<Utf8PathBuf> {
+    pub fn run(self) -> eyre::Result<Utf8PathBuf> {
         self.run_mode(Mode::from_env()?)
     }
 }
