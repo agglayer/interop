@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0] - 2025-08-28
+
+### 🚀 Features
+
+- Adding proto multisig definition (#83)
+
 ## [0.7.1] - 2025-06-04
 
 ### 🚀 Features

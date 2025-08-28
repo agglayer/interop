@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [agglayer-interop-v0.8.0] - 2025-07-03
+## [0.10.0] - 2025-08-28
+
+### 🚀 Features
+
+- [**breaking**] Move all dynamic error types to eyre (#88)
+
+## [0.8.0] - 2025-07-03
 
 ### 💼 Other
 
