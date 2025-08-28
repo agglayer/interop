@@ -36,9 +36,9 @@ message ECDSAMultisig {
   // Represents the key-value pair of a committee member signature entry.
   message ECDSAMultisigEntry {
     // The key is the place of the signer in the list of multisig signer on L1.
-    uint64 key = 1;
+    uint32 index = 1;
     // The value is the signature made by the commitee member.
-    FixedBytes65 value = 2;
+    FixedBytes65 signature = 2;
   }
   // Signatures from the committee members.
   repeated ECDSAMultisigEntry signatures = 3;

@@ -150,10 +150,10 @@ impl From<MultisigPayload> for v1::Multisig {
                     .0
                     .iter()
                     .enumerate()
-                    .map(|(key, sig)| v1::ecdsa_multisig::EcdsaMultisigEntry {
-                        key: key.try_into().unwrap_or(u64::MAX),
+                    .map(|(index, sig)| v1::ecdsa_multisig::EcdsaMultisigEntry {
+                        index: index.try_into().unwrap_or(u32::MAX),
 
-                        value: sig.map(|sig| v1::FixedBytes65 {
+                        signature: sig.map(|sig| v1::FixedBytes65 {
                             value: Bytes::copy_from_slice(&sig.as_bytes()),
                         }),
                     })

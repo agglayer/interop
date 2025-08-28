@@ -6,6 +6,9 @@ use bincode::Options as _;
 use super::{sp1v4_bincode_options, Error};
 use crate::v1::{self};
 
+/// Maximum number of signers allowed in a multisig payload.
+const MAX_SIGNERS: usize = 1024;
+
 impl TryFrom<v1::AggchainProof> for AggchainProof {
     type Error = Error;
 
@@ -135,18 +138,37 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
                 }
 
                 // Find the maximum key to determine the vector size
-                let max_key = signatures.iter().map(|entry| entry.key).max().unwrap_or(0);
+                let required_len = signatures
+                    .iter()
+                    .map(|entry| entry.index + 1)
+                    .max()
+                    .unwrap_or(0);
+
+                if required_len as usize > MAX_SIGNERS {
+                    return Err(Error::invalid_data(format!(
+                        "Multisig ECDSA has too many signers: {} (max {})",
+                        required_len, MAX_SIGNERS
+                    )));
+                }
 
                 // Create a vector filled with None, sized to accommodate the highest index
-                let mut result: Vec<Option<_>> = vec![None; (max_key + 1) as usize];
+                let mut result: Vec<Option<_>> = vec![None; required_len as usize];
 
                 // Fill in the signatures at their specified indices
                 for entry in signatures {
-                    let index = entry.key as usize;
-                    if let Some(fixed_bytes) = entry.value {
+                    let index = entry.index as usize;
+                    if let Some(fixed_bytes) = entry.signature {
                         let signature = (&*fixed_bytes.value)
                             .try_into()
                             .map_err(Error::parsing_signature)?;
+
+                        if result[index].is_some() {
+                            return Err(Error::invalid_data(format!(
+                                "Duplicate signature at index {}",
+                                index
+                            )));
+                        }
+
                         result[index] = Some(signature);
                     }
                 }

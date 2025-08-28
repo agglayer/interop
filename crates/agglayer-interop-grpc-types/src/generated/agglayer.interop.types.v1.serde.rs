@@ -955,20 +955,18 @@ impl serde::Serialize for ecdsa_multisig::EcdsaMultisigEntry {
     {
         use serde::ser::SerializeStruct;
         let mut len = 0;
-        if self.key != 0 {
+        if self.index != 0 {
             len += 1;
         }
-        if self.value.is_some() {
+        if self.signature.is_some() {
             len += 1;
         }
         let mut struct_ser = serializer.serialize_struct("agglayer.interop.types.v1.ECDSAMultisig.ECDSAMultisigEntry", len)?;
-        if self.key != 0 {
-            #[allow(clippy::needless_borrow)]
-            #[allow(clippy::needless_borrows_for_generic_args)]
-            struct_ser.serialize_field("key", ToString::to_string(&self.key).as_str())?;
+        if self.index != 0 {
+            struct_ser.serialize_field("index", &self.index)?;
         }
-        if let Some(v) = self.value.as_ref() {
-            struct_ser.serialize_field("value", v)?;
+        if let Some(v) = self.signature.as_ref() {
+            struct_ser.serialize_field("signature", v)?;
         }
         struct_ser.end()
     }
@@ -980,14 +978,14 @@ impl<'de> serde::Deserialize<'de> for ecdsa_multisig::EcdsaMultisigEntry {
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "key",
-            "value",
+            "index",
+            "signature",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Key,
-            Value,
+            Index,
+            Signature,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -1009,8 +1007,8 @@ impl<'de> serde::Deserialize<'de> for ecdsa_multisig::EcdsaMultisigEntry {
                         E: serde::de::Error,
                     {
                         match value {
-                            "key" => Ok(GeneratedField::Key),
-                            "value" => Ok(GeneratedField::Value),
+                            "index" => Ok(GeneratedField::Index),
+                            "signature" => Ok(GeneratedField::Signature),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -1030,29 +1028,29 @@ impl<'de> serde::Deserialize<'de> for ecdsa_multisig::EcdsaMultisigEntry {
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut key__ = None;
-                let mut value__ = None;
+                let mut index__ = None;
+                let mut signature__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
-                        GeneratedField::Key => {
-                            if key__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("key"));
+                        GeneratedField::Index => {
+                            if index__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("index"));
                             }
-                            key__ = 
+                            index__ = 
                                 Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
                             ;
                         }
-                        GeneratedField::Value => {
-                            if value__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("value"));
+                        GeneratedField::Signature => {
+                            if signature__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("signature"));
                             }
-                            value__ = map_.next_value()?;
+                            signature__ = map_.next_value()?;
                         }
                     }
                 }
                 Ok(ecdsa_multisig::EcdsaMultisigEntry {
-                    key: key__.unwrap_or_default(),
-                    value: value__,
+                    index: index__.unwrap_or_default(),
+                    signature: signature__,
                 })
             }
         }
