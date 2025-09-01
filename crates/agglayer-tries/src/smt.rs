@@ -238,8 +238,10 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         let mut hash = self.root;
         let bits = key.to_bits();
 
-        for bit in bits.iter().take(DEPTH) {
-            if Self::EMPTY_HASH_ARRAY_AT_HEIGHT.contains(&hash) {
+        for (depth, bit) in bits.iter().take(DEPTH).enumerate() {
+            if Self::empty_hash_at_depth_from_root(depth).map_err(|_| SmtError::DepthOutOfBounds)?
+                == hash
+            {
                 return Ok(SmtNonInclusionProof { siblings });
             }
             let Some(node) = self.tree.get(&hash) else {
@@ -260,6 +262,7 @@ impl<const DEPTH: usize> Smt<DEPTH> {
 mod tests {
     use std::hash::Hash;
 
+    use agglayer_primitives::keccak::keccak256_combine;
     use rand::{
         prelude::{IndexedRandom as _, SliceRandom as _},
         random, rng, Rng,
@@ -267,7 +270,7 @@ mod tests {
     use rs_merkle::{Hasher as MerkleHasher, MerkleTree};
     use tiny_keccak::{Hasher as _, Keccak};
 
-    use crate::{error::SmtError, smt::Smt};
+    use crate::{error::SmtError, smt::Smt, utils::empty_hash_at_height};
 
     const DEPTH: usize = 32;
 
@@ -393,6 +396,23 @@ mod tests {
         }
         let (key, _) = *kvs.choose(&mut rng).unwrap();
         let error = smt.get_non_inclusion_proof(key).unwrap_err();
+        assert_eq!(error, SmtError::KeyPresent);
+    }
+
+    #[test]
+    fn test_non_inclusion_proof_regression() {
+        let mut smt = Smt::<DEPTH>::new();
+        smt.insert(
+            0,
+            keccak256_combine([empty_hash_at_height::<1>(), empty_hash_at_height::<1>()]),
+        )
+        .unwrap();
+        smt.insert(
+            1 << (DEPTH - 1),
+            keccak256_combine([empty_hash_at_height::<1>(), empty_hash_at_height::<1>()]),
+        )
+        .unwrap();
+        let error = smt.get_non_inclusion_proof(0).unwrap_err();
         assert_eq!(error, SmtError::KeyPresent);
     }
 
