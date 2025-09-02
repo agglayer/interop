@@ -45,6 +45,8 @@ jobs:
       - extract-labels
     name: Publish protobuf to BSR
     uses: agglayer/reusable-workflows/.github/workflows/proto-publish.yml@main
+    permissions:
+      contents: read
     with:
       labels: ${{ needs.extract-labels.outputs.labels }}
     secrets: inherit
