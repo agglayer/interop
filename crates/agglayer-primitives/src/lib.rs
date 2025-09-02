@@ -9,6 +9,7 @@ mod digest;
 pub mod keccak;
 mod signature;
 mod utils;
+pub mod vkey_hash;
 
 pub use address::Address;
 pub use digest::Digest;

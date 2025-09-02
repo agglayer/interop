@@ -10,6 +10,7 @@ repository.workspace = true
 default = ["keccak"]
 keccak = ["dep:tiny-keccak"]
 testutils = ["alloy-primitives/arbitrary", "dep:arbitrary", "dep:rand"]
+sp1 = ["dep:sp1-sdk"]
 
 [lints]
 workspace = true
@@ -19,10 +20,11 @@ alloy-primitives.workspace = true
 arbitrary = { workspace = true, optional = true }
 byteorder.workspace = true
 derive_more.workspace = true
-k256.workspace = true
-serde.workspace = true
 hex.workspace = true
+k256.workspace = true
 rand = { workspace = true, optional = true }
+serde.workspace = true
+sp1-sdk = { workspace = true, optional = true }
 tiny-keccak = { workspace = true, optional = true }
 
 [dev-dependencies]
