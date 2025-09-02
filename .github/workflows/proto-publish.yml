@@ -15,6 +15,9 @@ on:
       - "proto/**"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   extract-labels:
     name: Extract labels
