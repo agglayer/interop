@@ -15,10 +15,16 @@ impl VKeyHash {
 
     pub const fn from_bytes(bytes: B256) -> Self {
         let bytes = bytes.0;
-        let mut hash_u32 = HashU32::default();
+        let mut hash_u32: HashU32 = [0; 8];
 
-        for (w, c) in bytes.chunks(4).enumerate() {
-            hash_u32[w] = u32::from_be_bytes(c.try_into().unwrap());
+        let mut w = 0_usize;
+        while w < 8 {
+            let b0 = bytes[4 * w];
+            let b1 = bytes[4 * w + 1];
+            let b2 = bytes[4 * w + 2];
+            let b3 = bytes[4 * w + 3];
+            hash_u32[w] = u32::from_be_bytes([b0, b1, b2, b3]);
+            w += 1;
         }
 
         Self(hash_u32)
@@ -32,8 +38,14 @@ impl VKeyHash {
     pub const fn to_bytes(&self) -> B256 {
         let mut bytes = [0_u8; 32];
 
-        for w in 0..8 {
-            bytes[4 * w..4 * w + 4].copy_from_slice(self.0[w].to_be_bytes());
+        let mut w = 0_usize;
+        while w < 8 {
+            let [b0, b1, b2, b3] = self.0[w].to_be_bytes();
+            bytes[4 * w] = b0;
+            bytes[4 * w + 1] = b1;
+            bytes[4 * w + 2] = b2;
+            bytes[4 * w + 3] = b3;
+            w += 1;
         }
 
         B256::new(bytes)
