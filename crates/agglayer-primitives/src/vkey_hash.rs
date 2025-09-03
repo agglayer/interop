@@ -15,7 +15,7 @@ impl VKeyHash {
 
     pub const fn from_bytes(bytes: B256) -> Self {
         let bytes = bytes.0;
-        let mut hash_u32: HashU32 = [0; 8];
+        let mut hash_u32: HashU32 = [0u32; 8];
 
         let mut w = 0_usize;
         while w < 8 {
@@ -28,11 +28,6 @@ impl VKeyHash {
         }
 
         Self(hash_u32)
-    }
-
-    #[cfg(feature = "sp1")]
-    pub fn from_vkey<K: sp1_sdk::HashableKey>(vkey: &K) -> Self {
-        Self::from_hash_u32(vkey.hash_u32())
     }
 
     pub const fn to_bytes(&self) -> B256 {
