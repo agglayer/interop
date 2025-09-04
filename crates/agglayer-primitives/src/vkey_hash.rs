@@ -3,16 +3,18 @@ use serde::{Deserialize, Serialize};
 
 pub type HashU32 = [u32; 8];
 
-/// SP1 verifying key hash.
+/// Verifying key hash.
 #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(from = "B256", into = "B256")]
 pub struct VKeyHash(HashU32);
 
 impl VKeyHash {
+    /// Create a [`VKeyHash`] from a [`HashU32`].
     pub const fn from_hash_u32(hash: HashU32) -> Self {
         Self(hash)
     }
 
+    /// Create a [`VKeyHash`] from a [`B256`]. Assumes the byte array is in big-endian order.
     pub const fn from_bytes(bytes: B256) -> Self {
         let bytes = bytes.0;
         let mut hash_u32: HashU32 = [0u32; 8];
@@ -30,6 +32,7 @@ impl VKeyHash {
         Self(hash_u32)
     }
 
+    /// Convert a [`VKeyHash`] to a [`B256`]. The resulting byte array is in big-endian order.
     pub const fn to_bytes(&self) -> B256 {
         let mut bytes = [0_u8; 32];
 
@@ -46,6 +49,7 @@ impl VKeyHash {
         B256::new(bytes)
     }
 
+    /// Convert a [`VKeyHash`] to a [`HashU32`].
     pub const fn to_hash_u32(&self) -> HashU32 {
         self.0
     }
