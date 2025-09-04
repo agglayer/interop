@@ -14,7 +14,8 @@ impl VKeyHash {
         Self(hash)
     }
 
-    /// Create a [`VKeyHash`] from a [`B256`]. Assumes the byte array is in big-endian order.
+    /// Create a [`VKeyHash`] from a [`B256`]. Assumes the byte array is in
+    /// big-endian order.
     pub const fn from_bytes(bytes: B256) -> Self {
         let bytes = bytes.0;
         let mut hash_u32: HashU32 = [0u32; 8];
@@ -32,7 +33,8 @@ impl VKeyHash {
         Self(hash_u32)
     }
 
-    /// Convert a [`VKeyHash`] to a [`B256`]. The resulting byte array is in big-endian order.
+    /// Convert a [`VKeyHash`] to a [`B256`]. The resulting byte array is in
+    /// big-endian order.
     pub const fn to_bytes(&self) -> B256 {
         let mut bytes = [0_u8; 32];
 
