@@ -1,6 +1,10 @@
 use alloy_primitives::B256;
 use serde::{Deserialize, Serialize};
 
+use crate::Digest;
+
+/// Type alias for a 256-bit hash. When using this alias, ensure that the
+/// array is in fact hashed.
 pub type HashU32 = [u32; 8];
 
 /// Verifying key hash.
@@ -14,7 +18,7 @@ impl VKeyHash {
         Self(hash)
     }
 
-    /// Create a [`VKeyHash`] from a [`B256`]. Assumes the byte array is in
+    /// Create a [`VKeyHash`] from a [`B256`]. Assumes the bytes are in
     /// big-endian order.
     pub const fn from_bytes(bytes: B256) -> Self {
         let bytes = bytes.0;
@@ -33,7 +37,7 @@ impl VKeyHash {
         Self(hash_u32)
     }
 
-    /// Convert a [`VKeyHash`] to a [`B256`]. The resulting byte array is in
+    /// Convert a [`VKeyHash`] to a [`B256`]. The resulting bytes are in
     /// big-endian order.
     pub const fn to_bytes(&self) -> B256 {
         let mut bytes = [0_u8; 32];
@@ -54,6 +58,18 @@ impl VKeyHash {
     /// Convert a [`VKeyHash`] to a [`HashU32`].
     pub const fn to_hash_u32(&self) -> HashU32 {
         self.0
+    }
+}
+
+impl From<Digest> for VKeyHash {
+    fn from(digest: Digest) -> Self {
+        Self::from_bytes(B256::from(digest))
+    }
+}
+
+impl From<VKeyHash> for Digest {
+    fn from(hash: VKeyHash) -> Self {
+        Self::from(hash.to_bytes())
     }
 }
 
