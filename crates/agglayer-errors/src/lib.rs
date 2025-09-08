@@ -53,34 +53,6 @@ where
     }
 }
 
-#[derive(Debug, thiserror::Error)]
-#[error("{msg}")]
-pub struct InternalError {
-    msg: String,
-}
-
-impl InternalError {
-    pub fn new() -> Self {
-        Self {
-            msg: String::from("Internal error"),
-        }
-    }
-
-    pub fn with_message(msg: String) -> Self {
-        Self {
-            msg: format!("Internal error: {msg}"),
-        }
-    }
-}
-
-impl TryFrom<eyre::Report> for InternalError {
-    type Error = eyre::Report;
-
-    fn try_from(value: eyre::Report) -> Result<Self, Self::Error> {
-        value.downcast()
-    }
-}
-
 #[macro_export]
 macro_rules! match_err {
     ($expr:expr $(, $ty:ty : $pat:pat => $handler:expr)* $(, @default : $default_pat:pat => $default_handler:expr)? $(,)?) => {
