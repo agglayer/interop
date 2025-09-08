@@ -79,8 +79,6 @@ macro_rules! match_err {
 
 #[cfg(test)]
 mod tests {
-    use crate::InternalError;
-
     #[derive(Debug, thiserror::Error)]
     #[error("Foo")]
     struct Foo;
@@ -99,7 +97,6 @@ mod tests {
             Foo: _ => "foo".to_string(),
             Bar: Bar("foo") => "bar/foo".to_string(),
             Bar: Bar(s) => format!("bar({s})"),
-            InternalError: _ => "internal".to_string(),
             @default: _ => "other".to_string(),
         )
     }
@@ -110,10 +107,6 @@ mod tests {
         assert_eq!(use_match_err_to_make_a_value(Foo), "foo");
         assert_eq!(use_match_err_to_make_a_value(Bar("baz")), "bar(baz)");
         assert_eq!(use_match_err_to_make_a_value(Bar("foo")), "bar/foo");
-        assert_eq!(
-            use_match_err_to_make_a_value(InternalError::new()),
-            "internal"
-        );
 
         // Default works
         assert_eq!(use_match_err_to_make_a_value(Quux), "other");
@@ -162,9 +155,6 @@ mod tests {
             Bar: Bar(s) => {
                 res = format!("bar({s})");
             },
-            InternalError: _ => {
-                res = "internal".to_string();
-            },
             // No @default branch, the result is () everywhere
         );
         res
@@ -176,7 +166,6 @@ mod tests {
         assert_eq!(use_match_err_to_run_code(Foo), "foo");
         assert_eq!(use_match_err_to_run_code(Bar("baz")), "bar(baz)");
         assert_eq!(use_match_err_to_run_code(Bar("foo")), "bar/foo");
-        assert_eq!(use_match_err_to_run_code(InternalError::new()), "internal");
 
         // Default works
         assert_eq!(use_match_err_to_run_code(Quux), "other");
