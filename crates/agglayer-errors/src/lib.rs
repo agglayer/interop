@@ -1,7 +1,11 @@
+#[doc(hidden)] // Used by the macro
+pub use eyre;
+
 pub mod prelude {
     pub use crate::ResultExt;
 }
 
+#[cfg(feature = "tracing")]
 pub trait ResultExt {
     fn log_err(self, msg: &str) -> Self;
     fn log_err_with<F>(self, f: F) -> Self
@@ -14,6 +18,7 @@ pub trait ResultExt {
         F: FnOnce() -> String;
 }
 
+#[cfg(feature = "tracing")]
 impl<T, E> ResultExt for Result<T, E>
 where
     E: std::fmt::Debug,
@@ -57,7 +62,7 @@ where
 macro_rules! match_err {
     ($expr:expr $(, $ty:ty : $pat:pat => $handler:expr)* $(, @default : $default_pat:pat => $default_handler:expr)? $(,)?) => {
         'result: {
-            let expr = $expr;
+            let expr: $crate::eyre::Report = $expr;
             $(
                 #[allow(unused_variables)] // Pattern variables are unused from this downcast_ref
                 if let Some($pat) = expr.downcast_ref::<$ty>() {

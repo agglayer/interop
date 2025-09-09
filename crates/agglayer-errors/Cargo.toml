@@ -5,10 +5,15 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 
-[dependencies]
-eyre.workspace = true
-thiserror.workspace = true
-tracing.workspace = true
+[features]
+default = ["tracing"]
 
 [lints]
 workspace = true
+
+[dependencies]
+eyre.workspace = true
+tracing = { workspace = true, optional = true }
+
+[dev-dependencies]
+thiserror.workspace = true
