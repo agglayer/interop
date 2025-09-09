@@ -2,6 +2,7 @@
 pub use eyre;
 
 pub mod prelude {
+    #[cfg(feature = "tracing")]
     pub use crate::ResultExt;
 }
 
