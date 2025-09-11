@@ -65,6 +65,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "agglayer-errors"
+version = "0.10.0"
+dependencies = [
+ "eyre",
+ "thiserror 2.0.16",
+ "tracing",
+]
+
+[[package]]
 name = "agglayer-evm-client"
 version = "0.10.0"
 dependencies = [
