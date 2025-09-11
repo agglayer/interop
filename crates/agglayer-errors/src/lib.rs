@@ -167,15 +167,13 @@ where
 /// #[error("Bar")]
 /// struct Bar(&'static str);
 ///
-/// fn main() {
-///     let err: eyre::Report = Foo.into();
-///     let s = match_err!(err,
-///         Foo: _ => "foo".to_string(),
-///         Bar: Bar("foo") => "bar/foo".to_string(),
-///         Bar: Bar(s) => format!("bar({s})"),
-///         @default: _ => "other".to_string(),
-///     );
-/// }
+/// let err: eyre::Report = Foo.into();
+/// let s = match_err!(err,
+///     Foo: _ => "foo".to_string(),
+///     Bar: Bar("foo") => "bar/foo".to_string(),
+///     Bar: Bar(s) => format!("bar({s})"),
+///     @default: _ => "other".to_string(),
+/// );
 /// ```
 #[macro_export]
 macro_rules! match_err {
