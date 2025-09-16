@@ -1,6 +1,6 @@
-use super::*;
-
 use agglayer_primitives::U256;
+
+use super::*;
 
 #[test]
 fn regression_sp1_serialization_roundtrip_fail() {
