@@ -98,7 +98,7 @@ fn fuzz_round_trip_aggchain_data() {
 
             // Check if input has empty multisig signatures
             let has_empty_multisig = match &input {
-                AggchainData::MultisigOnly(multisig) => multisig.0.is_empty(),
+                AggchainData::MultisigOnly { multisig } => multisig.0.is_empty(),
                 AggchainData::MultisigAndAggchainProof { multisig, .. } => multisig.0.is_empty(),
                 _ => false,
             };

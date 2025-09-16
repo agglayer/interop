@@ -125,7 +125,7 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                         .into(),
                     })),
                 }),
-                AggchainData::MultisigOnly(multisig) => {
+                AggchainData::MultisigOnly { multisig } => {
                     v1::aggchain_data::Data::Multisig(multisig.into())
                 }
                 AggchainData::MultisigAndAggchainProof {
