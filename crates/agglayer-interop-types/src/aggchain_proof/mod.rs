@@ -26,7 +26,9 @@ pub enum AggchainData {
         /// Optional aggchain proof public values.
         public_values: Option<Box<AggchainProofPublicValues>>,
     },
-    MultisigOnly(MultisigPayload),
+    MultisigOnly {
+        multisig: MultisigPayload,
+    },
     MultisigAndAggchainProof {
         multisig: MultisigPayload,
         aggchain_proof: AggchainProof,

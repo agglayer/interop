@@ -31,3 +31,6 @@ thiserror.workspace = true
 [dev-dependencies]
 agglayer-interop-types = { path = ".", features = ["testutils"] }
 
+insta.workspace = true
+rstest.workspace = true
+serde_json.workspace = true
