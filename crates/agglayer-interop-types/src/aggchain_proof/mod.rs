@@ -10,7 +10,7 @@ use crate::Digest;
 
 // Aggchain data submitted via the [`Certificate`].
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary, Eq, PartialEq))]
 #[serde(untagged)]
 pub enum AggchainData {
     ECDSA {
@@ -36,12 +36,12 @@ pub enum AggchainData {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary, Eq, PartialEq))]
 pub struct MultisigPayload(pub Vec<Option<Signature>>);
 
 // Aggchain proof data submitted via the Certificate.
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary, Eq, PartialEq))]
 pub struct AggchainProof {
     /// proof of the aggchain proof.
     pub proof: Proof,
