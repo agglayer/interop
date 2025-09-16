@@ -1,0 +1,11 @@
+---
+source: crates/agglayer-interop-types/src/aggchain_proof/test.rs
+expression: json_str
+---
+{
+  "signature": {
+    "r": "0x0",
+    "s": "0x0",
+    "odd_y_parity": false
+  }
+}

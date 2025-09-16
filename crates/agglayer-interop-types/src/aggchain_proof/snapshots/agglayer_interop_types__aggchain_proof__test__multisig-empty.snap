@@ -1,0 +1,7 @@
+---
+source: crates/agglayer-interop-types/src/aggchain_proof/test.rs
+expression: json_str
+---
+{
+  "multisig": []
+}

@@ -111,9 +111,9 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                     proof,
                 }
             }
-            Some(v1::aggchain_data::Data::Multisig(multisig)) => {
-                AggchainData::MultisigOnly(multisig.try_into()?)
-            }
+            Some(v1::aggchain_data::Data::Multisig(multisig)) => AggchainData::MultisigOnly {
+                multisig: multisig.try_into()?,
+            },
             Some(v1::aggchain_data::Data::MultisigAndAggchainProof(
                 multisig_and_aggchain_proof,
             )) => AggchainData::MultisigAndAggchainProof {
