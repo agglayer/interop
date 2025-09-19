@@ -67,88 +67,58 @@ where
     E: std::fmt::Debug,
 {
     fn log_err(self, msg: &str) -> Self {
-        if let Err(error) = &self {
-            tracing::error!(?error, "{msg}");
-        }
-        self
+        self.inspect_err(|error| tracing::error!(?error, "{msg}"))
     }
 
     fn log_err_with<F>(self, msg: F) -> Self
     where
         F: FnOnce() -> String,
     {
-        if let Err(error) = &self {
-            tracing::error!(?error, "{}", msg());
-        }
-        self
+        self.inspect_err(|error| tracing::error!(?error, "{}", msg()))
     }
 
     fn log_warn(self, msg: &str) -> Self {
-        if let Err(error) = &self {
-            tracing::warn!(?error, "{msg}");
-        }
-        self
+        self.inspect_err(|error| tracing::warn!(?error, "{msg}"))
     }
 
     fn log_warn_with<F>(self, msg: F) -> Self
     where
         F: FnOnce() -> String,
     {
-        if let Err(error) = &self {
-            tracing::warn!(?error, "{}", msg());
-        }
-        self
+        self.inspect_err(|error| tracing::warn!(?error, "{}", msg()))
     }
 
     fn log_info(self, msg: &str) -> Self {
-        if let Err(error) = &self {
-            tracing::info!(?error, "{msg}");
-        }
-        self
+        self.inspect_err(|error| tracing::info!(?error, "{msg}"))
     }
 
     fn log_info_with<F>(self, msg: F) -> Self
     where
         F: FnOnce() -> String,
     {
-        if let Err(error) = &self {
-            tracing::info!(?error, "{}", msg());
-        }
-        self
+        self.inspect_err(|error| tracing::info!(?error, "{}", msg()))
     }
 
     fn log_debug(self, msg: &str) -> Self {
-        if let Err(error) = &self {
-            tracing::debug!(?error, "{msg}");
-        }
-        self
+        self.inspect_err(|error| tracing::debug!(?error, "{msg}"))
     }
 
     fn log_debug_with<F>(self, msg: F) -> Self
     where
         F: FnOnce() -> String,
     {
-        if let Err(error) = &self {
-            tracing::debug!(?error, "{}", msg());
-        }
-        self
+        self.inspect_err(|error| tracing::debug!(?error, "{}", msg()))
     }
 
     fn log_trace(self, msg: &str) -> Self {
-        if let Err(error) = &self {
-            tracing::trace!(?error, "{msg}");
-        }
-        self
+        self.inspect_err(|error| tracing::trace!(?error, "{msg}"))
     }
 
     fn log_trace_with<F>(self, msg: F) -> Self
     where
         F: FnOnce() -> String,
     {
-        if let Err(error) = &self {
-            tracing::trace!(?error, "{}", msg());
-        }
-        self
+        self.inspect_err(|error| tracing::trace!(?error, "{}", msg()))
     }
 }
 
