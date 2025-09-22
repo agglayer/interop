@@ -12,8 +12,9 @@ pub use aggchain_proof::AggchainProofPublicValues;
 pub use bridge_exit::BridgeExit;
 pub use global_index::GlobalIndex;
 pub use imported_bridge_exit::{
-    Claim, ClaimFromMainnet, ClaimFromRollup, Error, GlobalIndexWithLeafHash, ImportedBridgeExit,
-    ImportedBridgeExitCommitmentValues, L1InfoTreeLeaf, L1InfoTreeLeafInner, MerkleProof,
+    Claim, ClaimFromMainnet, ClaimFromPreconf, ClaimFromRollup, Error, GlobalIndexWithLeafHash,
+    ImportedBridgeExit, ImportedBridgeExitCommitmentValues, L1InfoTreeLeaf, L1InfoTreeLeafInner,
+    MerkleProof,
 };
 pub use local_exit_tree::{proof::LETMerkleProof, LocalExitTree, LocalExitTreeError};
 pub use network_id::NetworkId;

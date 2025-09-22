@@ -30,6 +30,7 @@ impl Hashable for Claim {
         match self {
             Claim::Mainnet(claim_from_mainnet) => claim_from_mainnet.hash(),
             Claim::Rollup(claim_from_rollup) => claim_from_rollup.hash(),
+            Claim::Preconf(claim_from_preconf) => claim_from_preconf.hash(),
         }
     }
 }
@@ -56,6 +57,14 @@ impl Hashable for ClaimFromRollup {
         ])
     }
 }
+
+impl Hashable for ClaimFromPreconf {
+    #[inline]
+    fn hash(&self) -> Digest {
+        keccak256_combine([self.proof_leaf_ler.hash()])
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
 pub struct L1InfoTreeLeafInner {
@@ -169,6 +178,7 @@ impl MerkleProof {
 pub enum Claim {
     Mainnet(Box<ClaimFromMainnet>),
     Rollup(Box<ClaimFromRollup>),
+    Preconf(Box<ClaimFromPreconf>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -254,7 +264,7 @@ impl ClaimFromRollup {
         // Check the inclusion proof of the LER to the RER
         if !self
             .proof_ler_rer
-            .verify(self.proof_leaf_ler.root, rollup_index.to_u32())
+            .verify(self.proof_leaf_ler.root, rollup_index.to_u32() + 1)
         {
             return Err(Error::InvalidMerklePathLERToRER);
         }
@@ -265,6 +275,25 @@ impl ClaimFromRollup {
             .verify(self.l1_leaf.hash(), self.l1_leaf.l1_info_tree_index)
         {
             return Err(Error::InvalidMerklePathGERToL1Root);
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "testutils", derive(arbitrary::Arbitrary))]
+pub struct ClaimFromPreconf {
+    /// Proof from bridge exit leaf to the imported LER
+    pub proof_leaf_ler: MerkleProof,
+}
+
+impl ClaimFromPreconf {
+    #[inline]
+    pub fn verify(&self, leaf: Digest, leaf_index: u32) -> Result<(), Error> {
+        // Check the inclusion proof of the leaf to the pre-confirmed LER.
+        if !self.proof_leaf_ler.verify(leaf, leaf_index) {
+            return Err(Error::InvalidMerklePathLeafToLER);
         }
 
         Ok(())
@@ -290,6 +319,17 @@ pub struct ImportedBridgeExit {
 }
 
 impl ImportedBridgeExit {
+    /// Returns the pre-confirmed LER if claim from preconf
+    #[inline]
+    pub fn preconfirmed_ler(&self) -> Option<Digest> {
+        match &self.claim_data {
+            Claim::Preconf(claim) => Some(claim.proof_leaf_ler.root),
+            _ => None,
+        }
+    }
+}
+
+impl ImportedBridgeExit {
     /// Verifies that the provided inclusion path is valid and consistent with
     /// the provided LER
     #[inline]
@@ -312,6 +352,9 @@ impl ImportedBridgeExit {
                 self.global_index.rollup_index().unwrap(), // Checked just above
                 l1root,
             ),
+            Claim::Preconf(claim) => {
+                claim.verify(self.bridge_exit.hash(), self.global_index.leaf_index())
+            }
         }
     }
 }
@@ -327,12 +370,14 @@ impl ImportedBridgeExit {
             claim_data,
         }
     }
+
     /// Returns the considered L1 Info Root against which the claim is done.
     #[inline]
     pub fn l1_info_root(&self) -> Digest {
         match &self.claim_data {
             Claim::Mainnet(claim) => claim.proof_ger_l1root.root,
             Claim::Rollup(claim) => claim.proof_ger_l1root.root,
+            Claim::Preconf(_claim) => Digest::default(), //todo!(), // todo: return None
         }
     }
 
@@ -343,6 +388,7 @@ impl ImportedBridgeExit {
         match &self.claim_data {
             Claim::Mainnet(claim) => claim.l1_leaf.l1_info_tree_index,
             Claim::Rollup(claim) => claim.l1_leaf.l1_info_tree_index,
+            Claim::Preconf(_claim) => todo!(), // todo: return None
         }
     }
 
@@ -368,6 +414,7 @@ impl ImportedBridgeExit {
                 claim.l1_leaf.inner.global_exit_root
                     == keccak256_combine([claim.l1_leaf.mer, claim.l1_leaf.rer])
             }
+            Claim::Preconf(_claim_from_preconf) => true, // No L1 info root here
         }
     }
 

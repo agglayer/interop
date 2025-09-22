@@ -85,6 +85,7 @@ impl From<Claim> for v1::imported_bridge_exit::Claim {
             Claim::Rollup(claim_from_rollup) => {
                 v1::imported_bridge_exit::Claim::Rollup((*claim_from_rollup).into())
             }
+            Claim::Preconf(_claim_from_preconf) => todo!(), // todo: adapt protobuf
         }
     }
 }
