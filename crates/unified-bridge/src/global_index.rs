@@ -144,7 +144,7 @@ mod tests {
         let global_index_u256 = U256::from_str_radix(raw, 10).unwrap();
         assert_eq!(
             global_index_u256,
-            GlobalIndex::try_from(global_index_u256).unwrap().into()
+            Into::<U256>::into(GlobalIndex::try_from(global_index_u256).unwrap())
         );
         assert_eq!(expected, GlobalIndex::try_from(global_index_u256).unwrap());
     }
