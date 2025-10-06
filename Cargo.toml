@@ -32,7 +32,7 @@ sp1-prover = "=5.0.1"
 sp1-zkvm = { version = "=5.0.0", default-features = false }
 
 alloy = { version = "0.14.0", features = ["full"] }
-alloy-primitives = { version = "1.3", features = ["serde", "k256"] }
+alloy-primitives = { version = "1.4", features = ["serde", "k256"] }
 arbitrary = { version = "1.4", features = ["derive"] }
 arc-swap = "1.7"
 async-trait = "0.1.89"
@@ -67,7 +67,7 @@ jsonrpsee = { version = "0.24.7", features = ["full"] }
 k256 = "0.13.4"
 lazy_static = "1.5"
 mockall = "0.13.1"
-parking_lot = "0.12.4"
+parking_lot = "0.12.5"
 pbjson = "0.7.0"
 pin-project = "1.1"
 prost = "0.13.4"
@@ -76,7 +76,7 @@ rs_merkle = { version = "1.4", default-features = false }
 rstest = "0.25.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_with = "3.14"
+serde_with = "3.15"
 sha2 = "0.10.9"
 test-log = "0.2.16"
 thiserror = "2.0"
