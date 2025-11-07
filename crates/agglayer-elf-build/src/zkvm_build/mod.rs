@@ -79,7 +79,7 @@ mod mode;
 mod program_builder;
 
 pub const DEFAULT_DOCKER_TAG: &str =
-    "v5.0.0@sha256:52d9e522d1dcbc4062edee950391173aed752793c33361fb2cad44272027a68c";
+    "v5.2.2@sha256:8910f5c53f9f3685c87394bd56027636c09c6f9178557e656040e12730443fc2";
 
 /// Path to the cached zkvm ELF binary, relative to `build.rs`.
 pub const CACHED_ELF_PATH: &str = "elf/riscv32im-succinct-zkvm-elf";
