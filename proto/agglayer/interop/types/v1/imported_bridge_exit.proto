@@ -24,5 +24,7 @@ message ImportedBridgeExit {
     ClaimFromMainnet mainnet = 3;
     /// The claim originated from the rollup.
     ClaimFromRollup rollup = 4;
+    /// The claim originated from one preconfirmation.
+    ClaimFromPreconf rollup = 5;
   }
 }

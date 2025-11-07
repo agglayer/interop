@@ -7,7 +7,7 @@ use thiserror::Error;
 
 use crate::{
     bridge_exit::BridgeExit, global_index::GlobalIndex, local_exit_tree::proof::LETMerkleProof,
-    ImportedBridgeExitCommitmentVersion, RollupIndex,
+    ImportedBridgeExitCommitmentVersion, NetworkId, RollupIndex,
 };
 
 impl Hashable for MerkleProof {
@@ -321,9 +321,11 @@ pub struct ImportedBridgeExit {
 impl ImportedBridgeExit {
     /// Returns the pre-confirmed LER if claim from preconf
     #[inline]
-    pub fn preconfirmed_ler(&self) -> Option<Digest> {
+    pub fn preconfirmed_ler(&self) -> Option<(NetworkId, Digest)> {
         match &self.claim_data {
-            Claim::Preconf(claim) => Some(claim.proof_leaf_ler.root),
+            Claim::Preconf(claim) => {
+                Some((self.global_index.network_id(), claim.proof_leaf_ler.root))
+            }
             _ => None,
         }
     }

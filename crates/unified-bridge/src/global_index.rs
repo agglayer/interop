@@ -11,9 +11,9 @@ use crate::{InvalidRollupIndexError, NetworkId, RollupIndex};
 /// |    0     |  mainnet flag | rollup index |  leaf index  |
 #[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, PartialOrd, Ord, Eq)]
 pub struct GlobalIndex {
-    mainnet_flag: bool,
-    rollup_index: RollupIndex,
-    leaf_index: u32,
+    pub mainnet_flag: bool,
+    pub rollup_index: RollupIndex,
+    pub leaf_index: u32,
 }
 
 #[cfg(feature = "testutils")]
