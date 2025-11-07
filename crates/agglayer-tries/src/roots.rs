@@ -122,3 +122,5 @@ macro_rules! define_digest_type {
 define_digest_type!(LocalBalanceRoot);
 define_digest_type!(LocalNullifierRoot);
 define_digest_type!(LocalExitRoot);
+define_digest_type!(PessimisticRoot);
+define_digest_type!(L1InfoRoot);
