@@ -87,7 +87,6 @@ impl GlobalIndex {
 
     pub fn into_u256(self) -> U256 {
         Into::<U256>::into(self)
-        //self.into()
     }
 
     pub fn from_u256(value: U256) -> Result<Self, InvalidGlobalIndexError> {
