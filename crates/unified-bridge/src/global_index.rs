@@ -84,6 +84,14 @@ impl GlobalIndex {
         let global_index: U256 = (*self).into();
         keccak256(global_index.as_le_slice())
     }
+
+    pub fn into_u256(self) -> U256 {
+        Into::<U256>::into(self)
+    }
+
+    pub fn from_u256(value: U256) -> Result<Self, InvalidGlobalIndexError> {
+        TryFrom::<U256>::try_from(value)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
@@ -144,7 +152,9 @@ mod tests {
         let global_index_u256 = U256::from_str_radix(raw, 10).unwrap();
         assert_eq!(
             global_index_u256,
-            GlobalIndex::try_from(global_index_u256).unwrap().into()
+            GlobalIndex::try_from(global_index_u256)
+                .unwrap()
+                .into_u256()
         );
         assert_eq!(expected, GlobalIndex::try_from(global_index_u256).unwrap());
     }
