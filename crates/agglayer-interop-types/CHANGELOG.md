@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.12.0] - 2025-11-12
+
+### 🚀 Features
+
+- Add strong digest types for PessimisticRoot and L1InfoRoot (#136)
+
 ## [0.11.0] - 2025-09-16
 
 ### 🐛 Bug Fixes
