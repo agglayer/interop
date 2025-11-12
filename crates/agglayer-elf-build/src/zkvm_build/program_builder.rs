@@ -135,17 +135,7 @@ impl ProgramBuilder {
         let cached_elf_path = self.cached_elf_path.clone();
 
         let elf_path = self.build_program()?;
-
-        // Check if the built ELF actually exists (it may not if build was skipped,
-        // e.g., during clippy)
-        if elf_path.exists() {
-            Self::copy_elf(elf_path.as_path(), cached_elf_path)
-                .context("Copying zkvm ELF to cache")?;
-        } else {
-            // If the build was skipped (e.g., clippy invocation), just use the cached
-            // version
-            eprintln!("Built ELF does not exist (build was likely skipped), using cached version");
-        }
+        Self::copy_elf(elf_path.as_path(), cached_elf_path).context("Copying zkvm ELF to cache")?;
 
         Ok(elf_path)
     }
