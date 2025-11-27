@@ -66,7 +66,7 @@ insta = { version = "1.43", features = ["toml", "yaml", "json"] }
 jsonrpsee = { version = "0.24.7", features = ["full"] }
 k256 = "0.13.4"
 lazy_static = "1.5"
-mockall = "0.13.1"
+mockall = "0.14.0"
 parking_lot = "0.12.5"
 pbjson = "0.7.0"
 pin-project = "1.1"
