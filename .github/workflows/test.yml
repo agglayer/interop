@@ -23,14 +23,14 @@ jobs:
     runs-on: ubuntu-latest-16-cores
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: ./.github/actions/unit-test
 
   isolated-feature-checks:
     name: "Isolated feature checks"
     runs-on: ubuntu-latest-16-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
