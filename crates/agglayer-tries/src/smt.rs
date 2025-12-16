@@ -110,6 +110,51 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         Ok(new_hash)
     }
 
+    /// Returns all the key value pairs contained in the SMT
+    pub fn entries(&self) -> Result<Vec<([bool; DEPTH], Digest)>, SmtError> {
+        let mut entries = Vec::new();
+        let mut current_path = [false; DEPTH];
+
+        self.entries_helper(self.root, 0, &mut current_path, &mut entries)?;
+
+        Ok(entries)
+    }
+
+    /// Accumulates all the keypairs through dfs
+    fn entries_helper(
+        &self,
+        hash: Digest,
+        depth: usize,
+        path: &mut [bool; DEPTH],
+        acc: &mut Vec<([bool; DEPTH], Digest)>,
+    ) -> Result<(), SmtError> {
+        // Reached a leaf, adds it only if non-null
+        if depth == DEPTH {
+            if hash != Digest::ZERO {
+                acc.push((*path, hash));
+            }
+            return Ok(());
+        }
+
+        // Reached an empty sub-tree
+        if hash == Self::empty_hash_at_depth_from_root(depth)? {
+            return Ok(());
+        }
+
+        // Reached an intermediary node
+        if let Some(node) = self.tree.get(&hash) {
+            // traverse left
+            path[depth] = false;
+            self.entries_helper(node.left, depth + 1, path, acc)?;
+
+            // traverse right
+            path[depth] = true;
+            self.entries_helper(node.right, depth + 1, path, acc)?;
+        }
+
+        Ok(())
+    }
+
     #[inline]
     pub fn insert<K>(&mut self, key: K, value: Digest) -> Result<(), SmtError>
     where
@@ -260,9 +305,9 @@ impl<const DEPTH: usize> Smt<DEPTH> {
 
 #[cfg(test)]
 mod tests {
-    use std::hash::Hash;
+    use std::{collections::BTreeMap, hash::Hash};
 
-    use agglayer_primitives::keccak::keccak256_combine;
+    use agglayer_primitives::{keccak::keccak256_combine, Digest};
     use rand::{
         prelude::{IndexedRandom as _, SliceRandom as _},
         random, rng, Rng,
@@ -270,7 +315,7 @@ mod tests {
     use rs_merkle::{Hasher as MerkleHasher, MerkleTree};
     use tiny_keccak::{Hasher as _, Keccak};
 
-    use crate::{error::SmtError, smt::Smt, utils::empty_hash_at_height};
+    use crate::{error::SmtError, proof::ToBits, smt::Smt, utils::empty_hash_at_height};
 
     const DEPTH: usize = 32;
 
@@ -514,5 +559,82 @@ mod tests {
 
         assert_eq!(smt0.root, smt1.root);
         assert_eq!(smt0.tree, smt1.tree);
+    }
+
+    #[test]
+    fn test_entries_simple() {
+        let mut smt = Smt::<DEPTH>::new();
+
+        let key = 42u32;
+        let value = Digest([0xa; 32]);
+        smt.insert(key, value).unwrap();
+
+        let entries = smt.entries().unwrap();
+        assert_eq!(entries.len(), 1);
+
+        let (retrieved_path, retrieved_val) = entries[0];
+        assert_eq!(retrieved_val, value);
+        assert_eq!(retrieved_path, key.to_bits());
+    }
+
+    #[test]
+    fn test_entries_empty() {
+        let smt = Smt::<DEPTH>::new();
+        let entries = smt.entries().unwrap();
+        assert!(entries.is_empty());
+    }
+
+    #[test]
+    fn test_entries_multiple() {
+        let mut smt = Smt::<DEPTH>::new();
+
+        let leaves = vec![
+            (1u32, Digest([0xa; 32])),
+            (2u32, Digest([0xb; 32])),
+            (100u32, Digest([0xc; 32])),
+        ];
+
+        for (k, v) in &leaves {
+            smt.insert(*k, *v).unwrap();
+        }
+
+        let got: BTreeMap<_, _> = smt.entries().unwrap().into_iter().collect();
+        let expected: BTreeMap<_, _> = leaves.into_iter().map(|(k, v)| (k.to_bits(), v)).collect();
+
+        assert_eq!(got, expected);
+    }
+
+    #[test]
+    fn test_entries_update_existing() {
+        let mut smt = Smt::<DEPTH>::new();
+        let key = 42u32;
+        let val1 = Digest([0xa; 32]);
+        let val2 = Digest([0xb; 32]);
+
+        smt.insert(key, val1).unwrap();
+        assert_eq!(1, smt.entries().unwrap().len());
+
+        smt.update(key, val2).unwrap();
+        let entries = smt.entries().unwrap();
+        // update one balance shouldnt add new entry
+        assert_eq!(1, entries.len());
+
+        let (path, val) = entries[0];
+        assert_eq!(path, key.to_bits());
+        assert_eq!(val, val2);
+    }
+
+    #[test]
+    fn test_entries_non_zero_values() {
+        let mut smt = Smt::<DEPTH>::new();
+        let key = 42u32;
+        let val = Digest([0xa; 32]);
+
+        smt.insert(key, val).unwrap();
+        assert_eq!(1, smt.entries().unwrap().len());
+
+        smt.update(key, Digest::ZERO).unwrap();
+        // nothing returned because the balance is zero now
+        assert_eq!(0, smt.entries().unwrap().len());
     }
 }

@@ -60,3 +60,41 @@ impl ToBits<192> for TokenInfo {
         })
     }
 }
+
+impl TokenInfo {
+    /// Reconstructs a [`TokenInfo`] from its bit representation (the SMT path)
+    pub fn from_bits(bits: &[bool; 192]) -> Self {
+        // reconstruct the NetworkId from the bits 0..32
+        let mut network_id_u32 = 0u32;
+        for (i, &bit) in bits.iter().enumerate().take(32) {
+            if bit {
+                network_id_u32 |= 1 << i;
+            }
+        }
+
+        // reconstruct the Address from the bits 32..192
+        let mut address_bytes = [0u8; 20];
+        for (i, &bit) in bits.iter().enumerate().take(192).skip(32) {
+            if bit {
+                let byte_index = (i - 32) / 8;
+                let bit_offset = (i - 32) % 8;
+                address_bytes[byte_index] |= 1 << bit_offset;
+            }
+        }
+
+        TokenInfo {
+            origin_network: NetworkId::from(network_id_u32),
+            origin_token_address: Address::from(address_bytes),
+        }
+    }
+}
+
+#[test]
+fn test_token_info_round_trip() {
+    let initial = TokenInfo {
+        origin_network: NetworkId::from(1234),
+        origin_token_address: Address::from([0xab; 20]),
+    };
+
+    assert_eq!(initial, TokenInfo::from_bits(&initial.to_bits()));
+}

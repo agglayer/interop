@@ -70,6 +70,11 @@ impl Digest {
     pub fn as_bytes(&self) -> &[u8; 32] {
         &self.0
     }
+
+    #[inline]
+    pub fn as_token_amount(&self) -> U256 {
+        U256::from_be_bytes(self.0)
+    }
 }
 
 impl From<[u8; 32]> for Digest {

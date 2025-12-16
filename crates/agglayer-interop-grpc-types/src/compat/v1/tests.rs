@@ -127,12 +127,11 @@ fn fuzz_round_trip_aggchain_data() {
                         let err_msg = err.to_string();
                         assert!(
                             err_msg.contains("Multisig ECDSA doesn't have any signature"),
-                            "Expected empty multisig error, got: {}",
-                            err
+                            "Expected empty multisig error, got: {err}",
                         );
                     } else {
                         // Any other error should cause the test to fail
-                        panic!("Unexpected conversion error: {}", err);
+                        panic!("Unexpected conversion error: {err}");
                     }
                 }
             }
