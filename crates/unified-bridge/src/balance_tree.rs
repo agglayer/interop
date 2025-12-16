@@ -1,6 +1,6 @@
 use agglayer_primitives::{Address, Digest, U256};
 use agglayer_tries::{error::SmtError, smt::Smt};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 
 use crate::{NetworkId, TokenInfo};
@@ -36,7 +36,7 @@ impl BalanceTree {
 
 /// Token balance entry structure in order to display the balance tree values.
 #[serde_as]
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TokenBalanceEntry {
     pub origin_network: NetworkId,

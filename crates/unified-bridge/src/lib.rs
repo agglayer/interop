@@ -10,7 +10,7 @@ mod rollup_index;
 mod token_info;
 
 pub use aggchain_proof::AggchainProofPublicValues;
-pub use balance_tree::BalanceTree;
+pub use balance_tree::{BalanceTree, TokenBalanceEntry};
 pub use bridge_exit::BridgeExit;
 pub use global_index::GlobalIndex;
 pub use imported_bridge_exit::{
