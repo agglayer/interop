@@ -66,7 +66,7 @@ impl TokenInfo {
     pub fn from_bits(bits: &[bool; 192]) -> Self {
         // reconstruct the NetworkId from the bits 0..32
         let mut network_id_u32 = 0u32;
-        for (i, &bit) in bits.iter().enumerate().take(32) {
+        for (i, &bit) in bits[0..32].iter().enumerate() {
             if bit {
                 network_id_u32 |= 1 << i;
             }
@@ -74,10 +74,10 @@ impl TokenInfo {
 
         // reconstruct the Address from the bits 32..192
         let mut address_bytes = [0u8; 20];
-        for (i, &bit) in bits.iter().enumerate().take(192).skip(32) {
+        for (i, &bit) in bits[32..192].iter().enumerate() {
             if bit {
-                let byte_index = (i - 32) / 8;
-                let bit_offset = (i - 32) % 8;
+                let byte_index = i / 8;
+                let bit_offset = i % 8;
                 address_bytes[byte_index] |= 1 << bit_offset;
             }
         }

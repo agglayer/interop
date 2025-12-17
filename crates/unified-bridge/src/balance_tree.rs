@@ -46,16 +46,16 @@ pub struct TokenBalanceEntry {
 }
 
 impl From<([bool; 192], Digest)> for TokenBalanceEntry {
-    fn from(v: ([bool; 192], Digest)) -> Self {
+    fn from((path, leaf_value): ([bool; 192], Digest)) -> Self {
         let TokenInfo {
             origin_network,
             origin_token_address,
-        } = TokenInfo::from_bits(&v.0);
+        } = TokenInfo::from_bits(&path);
 
         Self {
             origin_network,
             origin_token_address,
-            amount: U256::from_be_bytes(*v.1.as_bytes()),
+            amount: U256::from_be_bytes(*leaf_value.as_bytes()),
         }
     }
 }
