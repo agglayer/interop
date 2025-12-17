@@ -29,6 +29,27 @@ impl<const DEPTH: usize> Default for Smt<DEPTH> {
     }
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct SmtPath<const DEPTH: usize>([bool; DEPTH]);
+
+impl<const DEPTH: usize> Default for SmtPath<DEPTH> {
+    fn default() -> Self {
+        Self([false; DEPTH])
+    }
+}
+
+impl<const DEPTH: usize> SmtPath<DEPTH> {
+    #[inline]
+    pub fn set_branch_at_depth(&mut self, depth: usize, dir: bool) {
+        self.0[depth] = dir;
+    }
+
+    #[inline]
+    pub fn as_bits(&self) -> [bool; DEPTH] {
+        self.0
+    }
+}
+
 impl<const DEPTH: usize> Smt<DEPTH> {
     pub(crate) const EMPTY_HASH_ARRAY_AT_HEIGHT: &[Digest; DEPTH] =
         empty_hash_array_at_height::<DEPTH>();
@@ -112,9 +133,9 @@ impl<const DEPTH: usize> Smt<DEPTH> {
     }
 
     /// Returns all the key value pairs contained in the SMT
-    pub fn entries(&self) -> Result<Vec<([bool; DEPTH], Digest)>, SmtError> {
+    pub fn entries(&self) -> Result<Vec<(SmtPath<DEPTH>, Digest)>, SmtError> {
         let mut entries = Vec::new();
-        let mut current_path = [false; DEPTH];
+        let mut current_path = SmtPath::default();
 
         self.entries_helper(self.root, 0, &mut current_path, &mut entries)?;
 
@@ -126,8 +147,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         &self,
         hash: Digest,
         depth: usize,
-        path: &mut [bool; DEPTH],
-        acc: &mut Vec<([bool; DEPTH], Digest)>,
+        path: &mut SmtPath<DEPTH>,
+        acc: &mut Vec<(SmtPath<DEPTH>, Digest)>,
     ) -> Result<(), SmtError> {
         // Reached a leaf, adds it only if non-null
         if depth == DEPTH {
@@ -145,11 +166,11 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         // Reached an intermediary node
         if let Some(node) = self.tree.get(&hash) {
             // traverse left
-            path[depth] = false;
+            path.set_branch_at_depth(depth, false);
             self.entries_helper(node.left, depth + 1, path, acc)?;
 
             // traverse right
-            path[depth] = true;
+            path.set_branch_at_depth(depth, true);
             self.entries_helper(node.right, depth + 1, path, acc)?;
         }
 

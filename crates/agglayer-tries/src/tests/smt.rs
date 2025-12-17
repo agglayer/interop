@@ -267,7 +267,7 @@ fn test_entries_simple() {
 
     let (retrieved_path, retrieved_val) = entries[0];
     assert_eq!(retrieved_val, value);
-    assert_eq!(retrieved_path, key.to_bits());
+    assert_eq!(retrieved_path.as_bits(), key.to_bits());
 }
 
 #[test]
@@ -291,7 +291,12 @@ fn test_entries_multiple() {
         smt.insert(*k, *v).unwrap();
     }
 
-    let got: BTreeMap<_, _> = smt.entries().unwrap().into_iter().collect();
+    let got: BTreeMap<_, _> = smt
+        .entries()
+        .unwrap()
+        .into_iter()
+        .map(|(k, v)| (k.as_bits(), v))
+        .collect();
     let expected: BTreeMap<_, _> = leaves.into_iter().map(|(k, v)| (k.to_bits(), v)).collect();
 
     assert_eq!(got, expected);
@@ -313,7 +318,7 @@ fn test_entries_update_existing() {
     assert_eq!(1, entries.len());
 
     let (path, val) = entries[0];
-    assert_eq!(path, key.to_bits());
+    assert_eq!(path.as_bits(), key.to_bits());
     assert_eq!(val, val2);
 }
 
