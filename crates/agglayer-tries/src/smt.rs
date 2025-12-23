@@ -29,8 +29,30 @@ impl<const DEPTH: usize> Default for Smt<DEPTH> {
     }
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct SmtPath<const DEPTH: usize>([bool; DEPTH]);
+
+impl<const DEPTH: usize> Default for SmtPath<DEPTH> {
+    fn default() -> Self {
+        Self([false; DEPTH])
+    }
+}
+
+impl<const DEPTH: usize> SmtPath<DEPTH> {
+    #[inline]
+    pub fn set_branch_at_depth(&mut self, depth: usize, dir: bool) {
+        self.0[depth] = dir;
+    }
+
+    #[inline]
+    pub fn as_bits(&self) -> [bool; DEPTH] {
+        self.0
+    }
+}
+
 impl<const DEPTH: usize> Smt<DEPTH> {
-    const EMPTY_HASH_ARRAY_AT_HEIGHT: &[Digest; DEPTH] = empty_hash_array_at_height::<DEPTH>();
+    pub(crate) const EMPTY_HASH_ARRAY_AT_HEIGHT: &[Digest; DEPTH] =
+        empty_hash_array_at_height::<DEPTH>();
 
     #[inline]
     pub fn new() -> Self {
@@ -108,6 +130,51 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         self.tree.insert(new_hash, node);
 
         Ok(new_hash)
+    }
+
+    /// Returns all the key value pairs contained in the SMT
+    pub fn entries(&self) -> Result<Vec<(SmtPath<DEPTH>, Digest)>, SmtError> {
+        let mut entries = Vec::new();
+        let mut current_path = SmtPath::default();
+
+        self.entries_helper(self.root, 0, &mut current_path, &mut entries)?;
+
+        Ok(entries)
+    }
+
+    /// Accumulates all the keypairs through dfs
+    fn entries_helper(
+        &self,
+        hash: Digest,
+        depth: usize,
+        path: &mut SmtPath<DEPTH>,
+        acc: &mut Vec<(SmtPath<DEPTH>, Digest)>,
+    ) -> Result<(), SmtError> {
+        // Reached a leaf, adds it only if non-null
+        if depth == DEPTH {
+            if hash != Digest::ZERO {
+                acc.push((*path, hash));
+            }
+            return Ok(());
+        }
+
+        // Reached an empty sub-tree
+        if hash == Self::empty_hash_at_depth_from_root(depth)? {
+            return Ok(());
+        }
+
+        // Reached an intermediary node
+        if let Some(node) = self.tree.get(&hash) {
+            // traverse left
+            path.set_branch_at_depth(depth, false);
+            self.entries_helper(node.left, depth + 1, path, acc)?;
+
+            // traverse right
+            path.set_branch_at_depth(depth, true);
+            self.entries_helper(node.right, depth + 1, path, acc)?;
+        }
+
+        Ok(())
     }
 
     #[inline]
@@ -255,264 +322,5 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         }
 
         Ok(SmtNonInclusionProof { siblings })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::hash::Hash;
-
-    use agglayer_primitives::keccak::keccak256_combine;
-    use rand::{
-        prelude::{IndexedRandom as _, SliceRandom as _},
-        random, rng, Rng,
-    };
-    use rs_merkle::{Hasher as MerkleHasher, MerkleTree};
-    use tiny_keccak::{Hasher as _, Keccak};
-
-    use crate::{error::SmtError, smt::Smt, utils::empty_hash_at_height};
-
-    const DEPTH: usize = 32;
-
-    #[derive(Clone, Debug)]
-    pub struct TestKeccak256;
-
-    impl MerkleHasher for TestKeccak256 {
-        type Hash = [u8; 32];
-
-        fn hash(data: &[u8]) -> [u8; 32] {
-            let mut keccak256 = Keccak::v256();
-            keccak256.update(data);
-            let mut output = [0u8; 32];
-            keccak256.finalize(&mut output);
-            output
-        }
-    }
-
-    fn check_no_duplicates<A: Eq + Hash, B>(v: &[(A, B)]) {
-        let mut seen = std::collections::HashSet::new();
-        for (a, _) in v {
-            assert!(seen.insert(a), "Duplicate key. Check your rng.");
-        }
-    }
-
-    #[test]
-    fn test_compare_with_other_impl() {
-        const DEPTH: usize = 8;
-        let mut rng = rng();
-        let num_keys = rng.random_range(0..=1 << DEPTH);
-        let mut smt = Smt::<DEPTH>::new();
-        let mut kvs: Vec<_> = (0..=u8::MAX).map(|i| (i, random())).collect();
-        kvs.shuffle(&mut rng);
-        for (key, value) in &kvs[..num_keys] {
-            smt.insert(*key, *value).unwrap();
-        }
-
-        let mut leaves = vec![[0_u8; 32]; 1 << DEPTH];
-        for (key, value) in &kvs[..num_keys] {
-            leaves[key.reverse_bits() as usize] = **value;
-        }
-        let mt: MerkleTree<TestKeccak256> = MerkleTree::from_leaves(&leaves);
-
-        assert_eq!(smt.root, mt.root().unwrap().into());
-    }
-
-    #[test]
-    fn test_order_consistency() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(0..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let mut kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let mut shuffled_smt = Smt::<DEPTH>::new();
-        kvs.shuffle(&mut rng);
-        for (key, value) in kvs.iter() {
-            shuffled_smt.insert(*key, *value).unwrap();
-        }
-
-        assert_eq!(smt.root, shuffled_smt.root);
-    }
-
-    #[test]
-    fn test_inclusion_proof() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let (key, value) = *kvs.choose(&mut rng).unwrap();
-        let proof = smt.get_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, value, smt.root));
-    }
-
-    #[test]
-    fn test_inclusion_proof_wrong_value() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let (key, real_value) = *kvs.choose(&mut rng).unwrap();
-        let proof = smt.get_inclusion_proof(key).unwrap();
-        let fake_value = random();
-        assert_ne!(real_value, fake_value, "Check your rng");
-        assert!(!proof.verify(key, fake_value, smt.root));
-    }
-
-    #[test]
-    fn test_non_inclusion_proof() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(0..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let key: u32 = random();
-        assert!(!kvs.iter().any(|(k, _)| k == &key), "Check your rng");
-        let proof = smt.get_non_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, smt.root));
-    }
-
-    #[test]
-    fn test_non_inclusion_proof_failing() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(1..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let (key, _) = *kvs.choose(&mut rng).unwrap();
-        let error = smt.get_non_inclusion_proof(key).unwrap_err();
-        assert_eq!(error, SmtError::KeyPresent);
-    }
-
-    #[test]
-    fn test_non_inclusion_proof_regression() {
-        let mut smt = Smt::<DEPTH>::new();
-        smt.insert(
-            0,
-            keccak256_combine([empty_hash_at_height::<1>(), empty_hash_at_height::<1>()]),
-        )
-        .unwrap();
-        smt.insert(
-            1 << (DEPTH - 1),
-            keccak256_combine([empty_hash_at_height::<1>(), empty_hash_at_height::<1>()]),
-        )
-        .unwrap();
-        let error = smt.get_non_inclusion_proof(0).unwrap_err();
-        assert_eq!(error, SmtError::KeyPresent);
-    }
-
-    fn test_non_inclusion_proof_and_update(num_keys: usize) {
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let key: u32 = random();
-        assert!(!kvs.iter().any(|(k, _)| k == &key), "Check your rng");
-        let proof = smt.get_non_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, smt.root));
-        let value = random();
-        let new_root = proof.verify_and_update(key, value, smt.root).unwrap();
-        smt.insert(key, value).unwrap();
-        assert_eq!(smt.root, new_root);
-    }
-
-    #[test]
-    fn test_non_inclusion_proof_and_update_empty() {
-        test_non_inclusion_proof_and_update(0)
-    }
-
-    #[test]
-    fn test_non_inclusion_proof_and_update_nonempty() {
-        let num_keys = rng().random_range(1..100);
-        test_non_inclusion_proof_and_update(num_keys)
-    }
-
-    #[test]
-    fn test_inclusion_proof_and_update() {
-        let num_keys = rng().random_range(1..100);
-        let mut smt = Smt::<DEPTH>::new();
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let (key, value) = kvs[rng().random_range(0..num_keys)];
-        let proof = smt.get_inclusion_proof(key).unwrap();
-        assert!(proof.verify(key, value, smt.root));
-        let new_value = random();
-        let new_root = proof
-            .verify_and_update(key, value, new_value, smt.root)
-            .unwrap();
-        smt.update(key, new_value).unwrap();
-        assert_eq!(smt.root, new_root);
-    }
-
-    #[test]
-    fn test_inclusion_proof_zero_doesnt_update() {
-        let mut smt = Smt::<DEPTH>::new();
-        let num_keys = rng().random_range(1..100);
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-        for (key, value) in kvs.iter() {
-            smt.insert(*key, *value).unwrap();
-        }
-        let (key, value) = kvs[rng().random_range(0..num_keys)];
-        assert_ne!(
-            value,
-            Smt::<DEPTH>::EMPTY_HASH_ARRAY_AT_HEIGHT[0],
-            "Check your rng"
-        );
-        let root = smt.root;
-        let proof = smt.get_inclusion_proof_zero(key);
-        assert!(proof.is_err(), "The key is in the SMT");
-        assert_eq!(root, smt.root, "The SMT should not be updated");
-    }
-
-    #[test]
-    fn test_traverse_and_prune() {
-        let mut rng = rng();
-        let num_keys = rng.random_range(0..100);
-        let kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&kvs);
-
-        let mut smt0 = Smt::<DEPTH>::new();
-        let mut smt1 = Smt::<DEPTH>::new();
-        for (key, value) in kvs {
-            smt0.insert(key, value).unwrap();
-            smt1.insert(key, value).unwrap();
-        }
-
-        smt0.traverse_and_prune().unwrap();
-
-        let other_kvs: Vec<(u32, _)> = (0..num_keys).map(|_| (random(), random())).collect();
-        check_no_duplicates(&other_kvs);
-
-        for (key, value) in other_kvs {
-            smt0.insert(key, value).unwrap();
-            smt1.insert(key, value).unwrap();
-        }
-
-        smt0.traverse_and_prune().unwrap();
-        smt1.traverse_and_prune().unwrap();
-
-        assert_eq!(smt0.root, smt1.root);
-        assert_eq!(smt0.tree, smt1.tree);
     }
 }

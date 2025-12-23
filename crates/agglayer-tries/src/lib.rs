@@ -4,3 +4,6 @@ pub mod proof;
 pub mod roots;
 pub mod smt;
 pub mod utils;
+
+#[cfg(test)]
+mod tests;

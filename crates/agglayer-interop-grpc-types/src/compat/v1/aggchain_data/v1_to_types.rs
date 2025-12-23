@@ -146,8 +146,7 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
 
                 if required_len as usize > MAX_SIGNERS {
                     return Err(Error::invalid_data(format!(
-                        "Multisig ECDSA has too many signers: {} (max {})",
-                        required_len, MAX_SIGNERS
+                        "Multisig ECDSA has too many signers: {required_len} (max {MAX_SIGNERS})",
                     )));
                 }
 
@@ -164,8 +163,7 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
 
                         if result[index].is_some() {
                             return Err(Error::invalid_data(format!(
-                                "Duplicate signature at index {}",
-                                index
+                                "Duplicate signature at index {index}",
                             )));
                         }
 
