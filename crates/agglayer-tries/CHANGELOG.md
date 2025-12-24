@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.12.0] - 2025-11-12
+## [0.13.0] - 2025-12-24
+
+### 🚀 Features
+
+- Expose the SMT leaf values (#155)
+
+## [0.12.0] - 2025-11-13
 
 ### 🚀 Features
 

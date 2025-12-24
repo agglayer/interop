@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.0] - 2025-12-24
+
+### 🚀 Features
+
+- Expose the SMT leaf values (#155)
+
+### 💼 Other
+
+- *(deps)* Bump the external group across 1 directory with 6 updates (#152)
+
 ## [0.11.0] - 2025-09-16
 
 ### 🐛 Bug Fixes
