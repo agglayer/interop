@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/*", "crates/agglayer-elf-build/sample-program/*"]
 
 [workspace.package]
-version = "0.13.0"
+version = "0.14.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/agglayer/interop"
@@ -15,14 +15,14 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 ] }
 
 [workspace.dependencies]
-agglayer-bincode = { path = "crates/agglayer-bincode", version = "0.13.0" }
-agglayer-elf-build = { path = "crates/agglayer-elf-build", version = "0.13.0" }
-agglayer-evm-client = { path = "crates/agglayer-evm-client", version = "0.13.0" }
-agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.13.0" }
-agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.13.0" }
-agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.13.0" }
-agglayer-tries = { path = "crates/agglayer-tries", version = "0.13.0" }
-unified-bridge = { path = "crates/unified-bridge", version = "0.13.0" }
+agglayer-bincode = { path = "crates/agglayer-bincode", version = "0.14.0" }
+agglayer-elf-build = { path = "crates/agglayer-elf-build", version = "0.14.0" }
+agglayer-evm-client = { path = "crates/agglayer-evm-client", version = "0.14.0" }
+agglayer-interop-types = { path = "crates/agglayer-interop-types", version = "0.14.0" }
+agglayer-interop-grpc-types = { path = "crates/agglayer-interop-grpc-types", version = "0.14.0" }
+agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.14.0" }
+agglayer-tries = { path = "crates/agglayer-tries", version = "0.14.0" }
+unified-bridge = { path = "crates/unified-bridge", version = "0.14.0" }
 
 sp1-build = "=5.2.2"
 sp1-core-machine = "=5.2.4"
