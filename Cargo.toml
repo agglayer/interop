@@ -24,9 +24,9 @@ agglayer-primitives = { path = "crates/agglayer-primitives", version = "0.13.0" 
 agglayer-tries = { path = "crates/agglayer-tries", version = "0.13.0" }
 unified-bridge = { path = "crates/unified-bridge", version = "0.13.0" }
 
-sp1-build = "=5.2.2"
+sp1-build = "=5.2.4"
 sp1-core-machine = "=5.2.4"
-sp1-sdk = "=5.2.2"
+sp1-sdk = "=5.2.4"
 sp1-primitives = "=5.2.2"
 sp1-prover = "=5.2.4"
 sp1-zkvm = { version = "=5.2.4", default-features = false }
