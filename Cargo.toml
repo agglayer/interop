@@ -31,7 +31,7 @@ sp1-primitives = "=5.2.2"
 sp1-prover = "=5.2.4"
 sp1-zkvm = { version = "=5.2.4", default-features = false }
 
-alloy = { version = "1.1.3", features = ["full"] }
+alloy = { version = "1.2.1", features = ["full"] }
 alloy-primitives = { version = "1.5.2", features = ["serde", "k256"] }
 arbitrary = { version = "1.4.2", features = ["derive"] }
 arc-swap = "1.7"
@@ -43,7 +43,7 @@ bolero = { version = "0.13.4", features = ["arbitrary"] }
 buildstructor = "0.5.4"
 byteorder = "1.5"
 cargo_metadata = "0.18"
-clap = { version = "4.5.53", features = ["derive", "env"] }
+clap = { version = "4.5.54", features = ["derive", "env"] }
 color-eyre = "0.6.5"
 derive_more = { version = "2.1", features = [
     "from",
@@ -81,9 +81,9 @@ sha2 = "0.10.9"
 test-log = "0.2.16"
 thiserror = "2.0"
 tiny-keccak = { version = "2.0", features = ["keccak"] }
-tokio = { version = "1.48", features = ["full"] }
-tokio-stream = { version = "0.1.17", features = ["sync"] }
-tokio-util = "0.7.17"
+tokio = { version = "1.49", features = ["full"] }
+tokio-stream = { version = "0.1.18", features = ["sync"] }
+tokio-util = "0.7.18"
 toml = "0.8.20"
 tonic = { version = "0.13.1", default-features = false }
 tonic-types = "0.13.1"
