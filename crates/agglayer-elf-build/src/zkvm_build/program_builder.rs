@@ -41,7 +41,7 @@ impl ProgramBuilder {
         );
 
         let manifest_dir = env::var("CARGO_MANIFEST_DIR").context("Cannot obtain manifest dir")?;
-        let cached_elf_path = Utf8Path::new(&manifest_dir).join("elf/riscv32im-succinct-zkvm-elf");
+        let cached_elf_path = Utf8Path::new(&manifest_dir).join(super::CACHED_ELF_PATH);
 
         let program_metadata = MetadataCommand::new()
             .no_deps()

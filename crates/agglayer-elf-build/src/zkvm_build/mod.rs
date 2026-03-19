@@ -79,10 +79,10 @@ mod mode;
 mod program_builder;
 
 pub const DEFAULT_DOCKER_TAG: &str =
-    "v5.2.2@sha256:8910f5c53f9f3685c87394bd56027636c09c6f9178557e656040e12730443fc2";
+    "v6.0.2@sha256:61bbcdb0cd096004303f25f042813f4b947571c454fb5247197a1bd9c91e01ad";
 
 /// Path to the cached zkvm ELF binary, relative to `build.rs`.
-pub const CACHED_ELF_PATH: &str = "elf/riscv32im-succinct-zkvm-elf";
+pub const CACHED_ELF_PATH: &str = "elf/riscv64im-succinct-zkvm-elf";
 
 /// Convenience function to build the zkvm ELF if no customization is needed.
 pub fn build_program(program_dir: impl AsRef<Utf8Path>) -> eyre::Result<Utf8PathBuf> {
