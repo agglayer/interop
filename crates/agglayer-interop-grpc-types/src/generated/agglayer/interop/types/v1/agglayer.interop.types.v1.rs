@@ -4,28 +4,28 @@
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct FixedBytes65 {
     /// bytes representation of the bytearray.
-    #[prost(bytes="bytes", tag="1")]
+    #[prost(bytes = "bytes", tag = "1")]
     pub value: ::prost::bytes::Bytes,
 }
 /// FixedBytes32 type.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct FixedBytes32 {
     /// bytes representation of the bytearray.
-    #[prost(bytes="bytes", tag="1")]
+    #[prost(bytes = "bytes", tag = "1")]
     pub value: ::prost::bytes::Bytes,
 }
 /// FixedBytes20 type.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct FixedBytes20 {
     /// bytes representation of the bytearray.
-    #[prost(bytes="bytes", tag="1")]
+    #[prost(bytes = "bytes", tag = "1")]
     pub value: ::prost::bytes::Bytes,
 }
 /// Aggchaindata is the data sent by the aggchain.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AggchainData {
     /// The data of the aggchain.
-    #[prost(oneof="aggchain_data::Data", tags="1, 2, 3, 4")]
+    #[prost(oneof = "aggchain_data::Data", tags = "1, 2, 3, 4")]
     pub data: ::core::option::Option<aggchain_data::Data>,
 }
 /// Nested message and enum types in `AggchainData`.
@@ -34,16 +34,16 @@ pub mod aggchain_data {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Data {
         /// Legacy ECDSA signature on a commitment to the state transition.
-        #[prost(message, tag="1")]
+        #[prost(message, tag = "1")]
         Signature(super::FixedBytes65),
         /// Aggchain proof with the single ECDSA verified by the agglayer only.
-        #[prost(message, tag="2")]
+        #[prost(message, tag = "2")]
         Generic(super::AggchainProof),
         /// Only multisig performed by the chain's committee.
-        #[prost(message, tag="3")]
+        #[prost(message, tag = "3")]
         Multisig(super::Multisig),
         /// Multisig combined with an aggchain proof.
-        #[prost(message, tag="4")]
+        #[prost(message, tag = "4")]
         MultisigAndAggchainProof(super::AggchainProofWithMultisig),
     }
 }
@@ -51,7 +51,7 @@ pub mod aggchain_data {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Multisig {
     /// Multisig scheme.
-    #[prost(oneof="multisig::Data", tags="1")]
+    #[prost(oneof = "multisig::Data", tags = "1")]
     pub data: ::core::option::Option<multisig::Data>,
 }
 /// Nested message and enum types in `Multisig`.
@@ -60,7 +60,7 @@ pub mod multisig {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Data {
         /// ECDSA multisig scheme.
-        #[prost(message, tag="1")]
+        #[prost(message, tag = "1")]
         Ecdsa(super::EcdsaMultisig),
     }
 }
@@ -68,7 +68,7 @@ pub mod multisig {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct EcdsaMultisig {
     /// Signatures from the committee members.
-    #[prost(message, repeated, tag="3")]
+    #[prost(message, repeated, tag = "3")]
     pub signatures: ::prost::alloc::vec::Vec<ecdsa_multisig::EcdsaMultisigEntry>,
 }
 /// Nested message and enum types in `ECDSAMultisig`.
@@ -77,10 +77,10 @@ pub mod ecdsa_multisig {
     #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
     pub struct EcdsaMultisigEntry {
         /// The key is the place of the signer in the list of multisig signer on L1.
-        #[prost(uint32, tag="1")]
+        #[prost(uint32, tag = "1")]
         pub index: u32,
         /// The value is the signature made by the commitee member.
-        #[prost(message, optional, tag="2")]
+        #[prost(message, optional, tag = "2")]
         pub signature: ::core::option::Option<super::FixedBytes65>,
     }
 }
@@ -88,17 +88,17 @@ pub mod ecdsa_multisig {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AggchainProofWithMultisig {
     /// Multisig
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub multisig: ::core::option::Option<Multisig>,
     /// AggchainProof
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub aggchain_proof: ::core::option::Option<AggchainProof>,
 }
 /// Aggchain proof.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AggchainProof {
     /// Aggchain params.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub aggchain_params: ::core::option::Option<FixedBytes32>,
     /// Important: The signature is ignored if the aggchain proof is part of a AggchainProofWithMultisig.
     /// The signature linked to the aggchain-proof.
@@ -108,13 +108,13 @@ pub struct AggchainProof {
     /// - `ClaimHash` (which is the hash of all the claims's global index + bridge exit hash)
     /// - `Height` of the certificate associated to this aggchain-proof
     /// - `AggchainParams` of the aggchain-proof
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub signature: ::core::option::Option<FixedBytes65>,
     /// Aggchain proof context to share non-sensitive data.
-    #[prost(map="string, bytes", tag="3")]
+    #[prost(map = "string, bytes", tag = "3")]
     pub context: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::bytes::Bytes>,
     /// The proof for the aggchain.
-    #[prost(oneof="aggchain_proof::Proof", tags="4")]
+    #[prost(oneof = "aggchain_proof::Proof", tags = "4")]
     pub proof: ::core::option::Option<aggchain_proof::Proof>,
 }
 /// Nested message and enum types in `AggchainProof`.
@@ -123,7 +123,7 @@ pub mod aggchain_proof {
     #[derive(Clone, PartialEq, Eq, Hash, ::prost::Oneof)]
     pub enum Proof {
         /// SP1 stark proof.
-        #[prost(message, tag="4")]
+        #[prost(message, tag = "4")]
         Sp1Stark(super::Sp1StarkProof),
     }
 }
@@ -131,35 +131,35 @@ pub mod aggchain_proof {
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Sp1StarkProof {
     /// SP1 Version
-    #[prost(string, tag="1")]
+    #[prost(string, tag = "1")]
     pub version: ::prost::alloc::string::String,
     /// SP1 stark proof.
-    #[prost(bytes="bytes", tag="2")]
+    #[prost(bytes = "bytes", tag = "2")]
     pub proof: ::prost::bytes::Bytes,
     /// SP1 stark proof verification key.
-    #[prost(bytes="bytes", tag="3")]
+    #[prost(bytes = "bytes", tag = "3")]
     pub vkey: ::prost::bytes::Bytes,
 }
 /// Represents a token bridge exit from the network.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BridgeExit {
     /// The type of the leaf.
-    #[prost(enumeration="LeafType", tag="1")]
+    #[prost(enumeration = "LeafType", tag = "1")]
     pub leaf_type: i32,
     /// Unique ID for the token being transferred.
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub token_info: ::core::option::Option<TokenInfo>,
     /// Network which the token is transferred to
-    #[prost(uint32, tag="3")]
+    #[prost(uint32, tag = "3")]
     pub dest_network: u32,
     /// Address which will own the received token
-    #[prost(message, optional, tag="4")]
+    #[prost(message, optional, tag = "4")]
     pub dest_address: ::core::option::Option<FixedBytes20>,
     /// Token amount sent, stored big-endian
-    #[prost(message, optional, tag="5")]
+    #[prost(message, optional, tag = "5")]
     pub amount: ::core::option::Option<FixedBytes32>,
     /// Metadata for the bridge exit
-    #[prost(message, optional, tag="6")]
+    #[prost(message, optional, tag = "6")]
     pub metadata: ::core::option::Option<FixedBytes32>,
 }
 /// Encapsulates the information to uniquely identify a token on the origin
@@ -167,10 +167,10 @@ pub struct BridgeExit {
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TokenInfo {
     /// Network which the token originates from
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub origin_network: u32,
     /// The address of the token on the origin network
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub origin_token_address: ::core::option::Option<FixedBytes20>,
 }
 /// The type of the leaf.
@@ -210,68 +210,68 @@ impl LeafType {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MerkleProof {
     /// The root of the Merkle tree.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub root: ::core::option::Option<FixedBytes32>,
     /// The path from the leaf to the root.
-    #[prost(message, repeated, tag="2")]
+    #[prost(message, repeated, tag = "2")]
     pub siblings: ::prost::alloc::vec::Vec<FixedBytes32>,
 }
 /// Represents a claim from the mainnet.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ClaimFromMainnet {
     /// Proof from bridge exit leaf to MER
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub proof_leaf_mer: ::core::option::Option<MerkleProof>,
     /// Proof from GER to L1Root
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub proof_ger_l1root: ::core::option::Option<MerkleProof>,
     /// L1InfoTree leaf
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub l1_leaf: ::core::option::Option<L1InfoTreeLeafWithContext>,
 }
 /// Represents a leaf in the L1InfoTree with its context.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct L1InfoTreeLeafWithContext {
     /// l1 info tree leaf index
-    #[prost(uint32, tag="1")]
+    #[prost(uint32, tag = "1")]
     pub l1_info_tree_index: u32,
     /// Rollup exit root
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub rer: ::core::option::Option<FixedBytes32>,
     /// Mainnet exit root
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub mer: ::core::option::Option<FixedBytes32>,
     /// Inner leaf
-    #[prost(message, optional, tag="4")]
+    #[prost(message, optional, tag = "4")]
     pub inner: ::core::option::Option<L1InfoTreeLeaf>,
 }
 /// Represents the leaf in the L1InfoTree.
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct L1InfoTreeLeaf {
     /// The global exit root.
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub global_exit_root: ::core::option::Option<FixedBytes32>,
     /// Block hash.
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub block_hash: ::core::option::Option<FixedBytes32>,
     /// Timestamp.
-    #[prost(uint64, tag="3")]
+    #[prost(uint64, tag = "3")]
     pub timestamp: u64,
 }
 /// Represents a claim from the rollup.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ClaimFromRollup {
     /// Proof from bridge exit leaf to LER
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub proof_leaf_ler: ::core::option::Option<MerkleProof>,
     /// Proof from LER to RER
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub proof_ler_rer: ::core::option::Option<MerkleProof>,
     /// Proof from GER to L1Root
-    #[prost(message, optional, tag="3")]
+    #[prost(message, optional, tag = "3")]
     pub proof_ger_l1root: ::core::option::Option<MerkleProof>,
     /// L1InfoTree leaf
-    #[prost(message, optional, tag="4")]
+    #[prost(message, optional, tag = "4")]
     pub l1_leaf: ::core::option::Option<L1InfoTreeLeafWithContext>,
 }
 /// Represents a token bridge exit originating on another network but claimed on
@@ -282,13 +282,13 @@ pub struct ImportedBridgeExit {
     /// / network. Need to verify that the destination network matches the
     /// / current network, and that the bridge exit is included in an imported
     /// / LER
-    #[prost(message, optional, tag="1")]
+    #[prost(message, optional, tag = "1")]
     pub bridge_exit: ::core::option::Option<BridgeExit>,
     /// / The global index of the imported bridge exit.
-    #[prost(message, optional, tag="2")]
+    #[prost(message, optional, tag = "2")]
     pub global_index: ::core::option::Option<FixedBytes32>,
     /// Which type of claim the imported bridge exit is from.
-    #[prost(oneof="imported_bridge_exit::Claim", tags="3, 4")]
+    #[prost(oneof = "imported_bridge_exit::Claim", tags = "3, 4")]
     pub claim: ::core::option::Option<imported_bridge_exit::Claim>,
 }
 /// Nested message and enum types in `ImportedBridgeExit`.
@@ -297,10 +297,10 @@ pub mod imported_bridge_exit {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Claim {
         /// / The claim originated from the mainnet.
-        #[prost(message, tag="3")]
+        #[prost(message, tag = "3")]
         Mainnet(super::ClaimFromMainnet),
         /// / The claim originated from the rollup.
-        #[prost(message, tag="4")]
+        #[prost(message, tag = "4")]
         Rollup(super::ClaimFromRollup),
     }
 }
