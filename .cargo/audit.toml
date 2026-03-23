@@ -5,5 +5,19 @@ ignore = [
     # https://rustsec.org/advisories/RUSTSEC-2024-0437.html
     "RUSTSEC-2024-0437",
     # https://rustsec.org/advisories/RUSTSEC-2025-0009.html
-    "RUSTSEC-2025-0009"
+    "RUSTSEC-2025-0009",
+    # ansi_term is a transitive dependency from tracing-forest through sp1.
+    "RUSTSEC-2021-0139",
+    # bincode 1.x is required by the current sp1/agglayer dependency graph.
+    "RUSTSEC-2025-0141",
+    # derivative is pulled in transitively by ark-ff/ruint.
+    "RUSTSEC-2024-0388",
+    # number_prefix is pulled in transitively by indicatif through sp1.
+    "RUSTSEC-2025-0119",
+    # paste is pulled in transitively by alloy and sp1 dependencies.
+    "RUSTSEC-2024-0436",
+    # rustls-pemfile is pulled in transitively by reqwest and tonic.
+    "RUSTSEC-2025-0134",
+    # lru is pulled in transitively by alloy-provider and sp1-prover.
+    "RUSTSEC-2026-0002"
 ]
