@@ -17,8 +17,9 @@ agglayer-tries.workspace = true
 unified-bridge.workspace = true
 
 sp1-sdk.workspace = true
-sp1-core-machine.workspace = true
-sp1-prover.workspace = true
+sp1-core-executor.workspace = true
+sp1-hypercube.workspace = true
+sp1-primitives.workspace = true
 
 arbitrary = { workspace = true, optional = true }
 bincode.workspace = true
