@@ -47,6 +47,8 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - uses: taiki-e/install-action@protoc
+
       - name: Run release-plz
         uses: release-plz/action@v0.5
         with:
@@ -73,6 +75,8 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - uses: taiki-e/install-action@protoc
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
