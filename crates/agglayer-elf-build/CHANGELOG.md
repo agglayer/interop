@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.0] - 2026-03-23
+
+### 🚀 Features
+
+- Migrate interop to SP1 v6 and RV64 zkVM artifacts (#186)
+
 ## [0.12.0] - 2025-11-13
 
 ### 🚀 Features

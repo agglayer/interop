@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.13.0] - 2025-12-24
+## [0.14.0] - 2026-03-23
+
+### 💼 Other
+
+- *(deps)* Refresh Cargo.lock dependency versions (#187)
+
+## [0.13.0] - 2025-12-25
 
 ### 🚀 Features
 
