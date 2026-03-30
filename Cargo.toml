@@ -33,7 +33,7 @@ sp1-primitives = "=6.0.2"
 sp1-prover = "=6.0.2"
 sp1-zkvm = { version = "=6.0.2", default-features = false }
 
-alloy = { version = "1.7.3", features = ["full"] }
+alloy = { version = "1.8.3", features = ["full"] }
 alloy-primitives = { version = "1.5.7", features = ["serde", "k256"] }
 arbitrary = { version = "1.4.2", features = ["derive"] }
 arc-swap = "1.7"
