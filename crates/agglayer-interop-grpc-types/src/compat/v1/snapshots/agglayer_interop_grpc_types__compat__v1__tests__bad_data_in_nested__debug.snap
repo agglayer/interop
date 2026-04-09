@@ -5,4 +5,4 @@ expression: "format!(\"{:?}\", eyre::Error::from(error))"
 data.value: invalid value
 
 Location:
-    crates/agglayer-interop-grpc-types/src/compat/v1/tests.rs:25:25
+    crates/agglayer-interop-grpc-types/src/compat/v1/tests.rs:26:25

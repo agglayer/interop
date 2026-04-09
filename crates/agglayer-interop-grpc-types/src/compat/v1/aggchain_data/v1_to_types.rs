@@ -1,9 +1,8 @@
 use agglayer_interop_types::aggchain_proof::{
     AggchainData, AggchainProof, MultisigPayload, Proof, SP1StarkWithContext,
 };
-use bincode::Options as _;
 
-use super::{sp1v4_bincode_options, Error};
+use super::Error;
 use crate::v1::{self};
 
 /// Maximum number of signers allowed in a multisig payload.
@@ -55,22 +54,8 @@ impl TryFrom<v1::Sp1StarkProof> for Proof {
         } = value;
 
         Ok(Proof::SP1Stark(SP1StarkWithContext {
-            proof: Box::new(
-                std::panic::catch_unwind(|| sp1v4_bincode_options().deserialize(&proof))
-                    .map_err(|_| {
-                        Error::deserializing_proof(Box::new(bincode::ErrorKind::Custom(
-                            String::from("panic"),
-                        )))
-                    })?
-                    .map_err(Error::deserializing_proof)?,
-            ),
-            vkey: std::panic::catch_unwind(|| sp1v4_bincode_options().deserialize(&vkey))
-                .map_err(|_| {
-                    Error::deserializing_vkey(Box::new(bincode::ErrorKind::Custom(String::from(
-                        "panic",
-                    ))))
-                })?
-                .map_err(Error::deserializing_vkey)?,
+            proof: proof.to_vec(),
+            vkey: vkey.to_vec(),
             version,
         }))
     }

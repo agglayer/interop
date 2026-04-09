@@ -3,10 +3,9 @@ use std::collections::HashMap;
 use agglayer_interop_types::aggchain_proof::{
     AggchainData, AggchainProof, MultisigPayload, Proof, SP1StarkWithContext,
 };
-use bincode::Options as _;
 use prost::bytes::Bytes;
 
-use super::{sp1v4_bincode_options, Error};
+use super::Error;
 use crate::v1::{self};
 
 impl TryFrom<AggchainProof> for v1::AggchainProof {
@@ -46,22 +45,8 @@ impl TryFrom<Proof> for v1::aggchain_proof::Proof {
                 vkey,
                 version,
             }) => Ok(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
-                proof: std::panic::catch_unwind(|| sp1v4_bincode_options().serialize(&proof))
-                    .map_err(|_| {
-                        Error::serializing_proof(Box::new(bincode::ErrorKind::Custom(
-                            String::from("panic"),
-                        )))
-                    })?
-                    .map_err(Error::serializing_context)?
-                    .into(),
-                vkey: std::panic::catch_unwind(|| sp1v4_bincode_options().serialize(&vkey))
-                    .map_err(|_| {
-                        Error::serializing_vkey(Box::new(bincode::ErrorKind::Custom(String::from(
-                            "panic",
-                        ))))
-                    })?
-                    .map_err(Error::serializing_context)?
-                    .into(),
+                proof: proof.into(),
+                vkey: vkey.into(),
                 version,
             })),
         }
@@ -85,44 +70,29 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                     aggchain_params,
                     public_values,
                 } => v1::aggchain_data::Data::Generic(v1::AggchainProof {
-                    context: HashMap::from([(
-                        "public_values".to_owned(),
-                        Bytes::from(
-                            std::panic::catch_unwind(|| bincode::serialize(&public_values))
-                                .map_err(|_| {
-                                    Error::serializing_aggchain_proof_public_values(Box::new(
-                                        bincode::ErrorKind::Custom(String::from("panic")),
-                                    ))
-                                })?
-                                .map_err(Error::serializing_context)?,
-                        ),
-                    )]),
+                    context: match public_values {
+                        Some(public_values) => HashMap::from([(
+                            "public_values".to_owned(),
+                            Bytes::from(
+                                std::panic::catch_unwind(|| bincode::serialize(&*public_values))
+                                    .map_err(|_| {
+                                        Error::serializing_aggchain_proof_public_values(Box::new(
+                                            bincode::ErrorKind::Custom(String::from("panic")),
+                                        ))
+                                    })?
+                                    .map_err(Error::serializing_context)?,
+                            ),
+                        )]),
+                        None => HashMap::new(),
+                    },
                     aggchain_params: Some(aggchain_params.into()),
                     signature: signature.map(|signature| v1::FixedBytes65 {
                         value: Bytes::copy_from_slice(&signature.as_bytes()),
                     }),
                     proof: Some(v1::aggchain_proof::Proof::Sp1Stark(v1::Sp1StarkProof {
                         version: proof.version,
-                        proof: std::panic::catch_unwind(|| {
-                            sp1v4_bincode_options().serialize(&proof.proof)
-                        })
-                        .map_err(|_| {
-                            Error::serializing_proof(Box::new(bincode::ErrorKind::Custom(
-                                String::from("panic"),
-                            )))
-                        })?
-                        .map_err(Error::serializing_proof)?
-                        .into(),
-                        vkey: std::panic::catch_unwind(|| {
-                            sp1v4_bincode_options().serialize(&proof.vkey)
-                        })
-                        .map_err(|_| {
-                            Error::serializing_vkey(Box::new(bincode::ErrorKind::Custom(
-                                String::from("panic"),
-                            )))
-                        })?
-                        .map_err(Error::serializing_vkey)?
-                        .into(),
+                        proof: proof.proof.into(),
+                        vkey: proof.vkey.into(),
                     })),
                 }),
                 AggchainData::MultisigOnly { multisig } => {

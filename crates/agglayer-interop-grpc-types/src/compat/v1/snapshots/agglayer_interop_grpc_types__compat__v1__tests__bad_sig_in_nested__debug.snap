@@ -8,4 +8,4 @@ Caused by:
     invalid parity: 5
 
 Location:
-    crates/agglayer-interop-grpc-types/src/compat/v1/tests.rs:25:25
+    crates/agglayer-interop-grpc-types/src/compat/v1/tests.rs:26:25

@@ -1,7 +1,8 @@
 use agglayer_interop_types::{
-    aggchain_proof::AggchainData, primitives::SignatureError, Address, BridgeExit,
-    ClaimFromMainnet, ClaimFromRollup, Digest, GlobalIndex, ImportedBridgeExit, L1InfoTreeLeaf,
-    L1InfoTreeLeafInner, MerkleProof, TokenInfo, U256,
+    aggchain_proof::{AggchainData, Proof},
+    primitives::SignatureError,
+    Address, BridgeExit, ClaimFromMainnet, ClaimFromRollup, Digest, GlobalIndex,
+    ImportedBridgeExit, L1InfoTreeLeaf, L1InfoTreeLeafInner, MerkleProof, TokenInfo, U256,
 };
 use prost::Message;
 
@@ -89,6 +90,30 @@ macro_rules! make_round_trip_fuzzers {
 }
 
 make_round_trip_fuzzers!(fuzz_round_trip_address, v1::FixedBytes20, Address);
+
+#[rstest::rstest]
+#[case("v4.0.0-rc.3", vec![0x04, 0x00, 0x03], vec![0xa4, 0x03])]
+#[case("v6.0.0", vec![0x06, 0x00, 0x00, 0x01], vec![0xb6, 0x00, 0x02])]
+fn sp1_stark_proof_round_trip_preserves_opaque_payload(
+    #[case] version: &str,
+    #[case] proof_bytes: Vec<u8>,
+    #[case] vkey_bytes: Vec<u8>,
+) {
+    let proto = v1::Sp1StarkProof {
+        version: version.to_owned(),
+        proof: proof_bytes.clone().into(),
+        vkey: vkey_bytes.clone().into(),
+    };
+
+    let proof = Proof::try_from(proto.clone()).unwrap();
+    let v1::aggchain_proof::Proof::Sp1Stark(round_trip) =
+        v1::aggchain_proof::Proof::try_from(proof).unwrap();
+
+    assert_eq!(round_trip.version, proto.version);
+    assert_eq!(round_trip.proof, proto.proof);
+    assert_eq!(round_trip.vkey, proto.vkey);
+}
+
 #[test]
 fn fuzz_round_trip_aggchain_data() {
     bolero::check!()
@@ -105,32 +130,21 @@ fn fuzz_round_trip_aggchain_data() {
 
             match AggchainData::try_from(proto) {
                 Ok(output) => {
-                    // If we had empty multisig, this should not have succeeded
                     assert!(
                         !has_empty_multisig,
                         "Expected error for empty multisig signatures, but conversion succeeded"
                     );
 
-                    // For most cases, we can't check equality due to stark proofs,
-                    // but we can at least verify the conversion succeeded
-                    if let (
-                        AggchainData::ECDSA { signature: sig1 },
-                        AggchainData::ECDSA { signature: sig2 },
-                    ) = (&input, &output)
-                    {
-                        assert_eq!(sig1, sig2);
-                    }
+                    assert_eq!(input, &output);
                 }
                 Err(err) => {
                     if has_empty_multisig {
-                        // This error is expected for empty multisig cases
                         let err_msg = err.to_string();
                         assert!(
                             err_msg.contains("Multisig ECDSA doesn't have any signature"),
                             "Expected empty multisig error, got: {err}",
                         );
                     } else {
-                        // Any other error should cause the test to fail
                         panic!("Unexpected conversion error: {err}");
                     }
                 }
