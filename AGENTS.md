@@ -1,5 +1,27 @@
 # AGENTS.md
 
+## Pre-flight gate (MANDATORY — check before ANY action)
+
+**STOP. Before reading any file, exploring the codebase, answering questions,
+or performing any task in this repository, verify the following:**
+
+1. Read `skills-lock.json` at the repository root. It lists every skill
+   (and its source plugin) that must be loadable in the current session.
+2. Verify that all skills declared in the lock file are available.
+   If any skill is missing or its source plugin is not installed,
+   **stop immediately** and ask the user to install or enable it.
+3. Do not proceed with clarification, planning, or repository exploration
+   until this gate passes.
+
+**If the gate fails, your entire response must be the list of missing skills
+and a request to install them. Do not answer the user's question, even
+partially. Do not perform any read-only task. There are no exceptions --
+the task type, complexity, or perceived safety does not matter.**
+
+This gate takes precedence over every other section in this file.
+
+---
+
 ## Documentation and skills index
 
 Key references for navigating this project:
@@ -66,10 +88,8 @@ Key references for navigating this project:
 - Repo-local skills, if introduced, live in `.agents/skills/`.
 - Express skill dependencies explicitly in prose; do not assume automatic
   dependency loading.
-- `agglayer-ai-skills` must be installed and enabled so its required task skills can be loaded in the current session before doing any work in this repository.
-- If the plugin or the skills required for the current task are unavailable, stop immediately and ask the user to install or enable them before any further clarification, planning, or repository exploration.
-- This availability gate takes precedence over the `Clarification Before Action` section. Do not proceed until the plugin and task-required skills are available.
 - Do not reference required docs or directories in `AGENTS.md` until they
   exist.
 - Precedence: when rules conflict,
-  favor the Clarification Before Action section, except for the `agglayer-ai-skills` availability gate above.
+  favor the Clarification Before Action section, except for the
+  Pre-flight gate above.
