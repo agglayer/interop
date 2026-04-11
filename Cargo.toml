@@ -25,12 +25,7 @@ agglayer-tries = { path = "crates/agglayer-tries", version = "0.14.0" }
 unified-bridge = { path = "crates/unified-bridge", version = "0.14.0" }
 
 sp1-build = "=6.0.2"
-sp1-core-executor = "=6.0.2"
-sp1-core-machine = "=6.0.2"
-sp1-hypercube = "=6.0.2"
 sp1-sdk = "=6.0.2"
-sp1-primitives = "=6.0.2"
-sp1-prover = "=6.0.2"
 sp1-zkvm = { version = "=6.0.2", default-features = false }
 
 alloy = { version = "1.8.3", features = ["full"] }
