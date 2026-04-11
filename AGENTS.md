@@ -66,11 +66,10 @@ Key references for navigating this project:
 - Repo-local skills, if introduced, live in `.agents/skills/`.
 - Express skill dependencies explicitly in prose; do not assume automatic
   dependency loading.
-- `agglayer-ai-skills` must be installed for work in this repository.
-- If the plugin or its required skills are unavailable, stop and ask the user
-  to install or enable it before proceeding.
-- Do not continue with fallback behavior when the required plugin is missing.
+- `agglayer-ai-skills` must be installed and enabled so its required task skills can be loaded in the current session before doing any work in this repository.
+- If the plugin or the skills required for the current task are unavailable, stop immediately and ask the user to install or enable them before any further clarification, planning, or repository exploration.
+- This availability gate takes precedence over the `Clarification Before Action` section. Do not proceed until the plugin and task-required skills are available.
 - Do not reference required docs or directories in `AGENTS.md` until they
   exist.
 - Precedence: when rules conflict,
-  favor the Clarification Before Action section.
+  favor the Clarification Before Action section, except for the `agglayer-ai-skills` availability gate above.
