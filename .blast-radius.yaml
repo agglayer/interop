@@ -1,0 +1,41 @@
+# Blast-radius configuration for agglayer/interop.
+#
+# Used by the verify skill to determine which crates are
+# high-impact, what risk areas to flag, and which commands
+# to run during verification.
+
+# Crates whose changes always trigger workspace-wide testing.
+core_crates:
+  - agglayer-primitives
+  - agglayer-tries
+  - agglayer-bincode
+
+# Risk areas: named groups of path patterns.
+risk_areas:
+  - name: protobuf schema changes
+    patterns:
+      - "proto/"
+      - "buf.yaml"
+      - "buf.rust.gen.yaml"
+    scope: proto
+    propagates_to:
+      - agglayer-interop-grpc-types
+    commands:
+      - "cargo make generate-proto"
+
+  - name: proof/zkVM pipeline changes
+    patterns:
+      - "crates/agglayer-elf-build"
+    scope: proof
+
+  - name: bridge safety changes
+    patterns:
+      - "crates/unified-bridge"
+
+# Commands to run when only docs/prose files changed.
+docs_commands:
+  - "mdbook build docs/knowledge-base/"
+
+# Commands to run in the "code" scope before tests.
+code_commands:
+  - "cargo make ci-all"
