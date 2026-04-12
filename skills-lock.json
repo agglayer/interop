@@ -89,7 +89,7 @@
     "verify": {
       "source": "agglayer/agglayer-ai-skills",
       "sourceType": "github",
-      "computedHash": "fab68d1c7038890964c487e6ec31dfda4dccf663aebf33c619e057e991012835"
+      "computedHash": "06d1fca37a1dfbeb59f96e7cc6279e63da6250da340f1ed381e6075c8712dd82"
     },
     "writing-plans": {
       "source": "obra/superpowers",

@@ -20,20 +20,28 @@ Before selecting test commands,
 run the blast-radius detector script:
 
 ```bash
-cargo make blast-radius
+python3 "$SKILL_DIR/scripts/blast_radius.py"
 ```
+
+The script reads `.blast-radius.yaml` from the repo root
+for project-specific configuration (core crates, risk areas, commands).
+Without that file it still works using built-in Rust workspace defaults.
+
+See `blast-radius.example.yaml` in this skill's directory
+for the full config schema with comments.
 
 The script returns JSON with these fields:
 
 - `changed_files`
-- `affected_crates`
+- `affected_modules`
 - `risk_flags`
 - `docs_only`
 - `recommended_scopes`
 - `recommended_commands`
+- `broad_impact`
 
-Use this output as the source of truth for scope selection
-and command execution order.
+Use `recommended_commands` as the source of truth.
+Run them in the order listed.
 
 If the script is unavailable or fails,
 use this fallback procedure:
@@ -43,43 +51,16 @@ use this fallback procedure:
    compare against `main` if available.
 2. Map changed paths to affected areas:
    - `proto/`
-   - `crates/pessimistic-proof*`
    - `crates/<crate-name>/`
    - docs-only changes (`docs/`, `README.md`, markdown/adoc/rst/txt prose)
-3. Determine `affected_crates`.
-   Use `docs/knowledge-base/src/architecture.md` as the ownership map.
-4. Detect `risk_flags`:
-   - proof pipeline changes
-   - protobuf schema changes
-   - storage schema/migration changes
-   - settlement/signer/contract changes
-   - configuration schema changes
-5. Derive `docs_only`:
-   - `true` only when all changed files are documentation/prose and
-     no runtime code/config/proto files changed
-   - `false` otherwise
-6. Derive `recommended_scopes`:
-   - `minimal` always
-   - `code` when runtime behavior may change
-   - `proof` when proof crates changed
-   - `proto` when protobuf schema changed
-7. Derive `recommended_commands` as exact commands in execution order.
-
-If `$ARGUMENTS` explicitly requests additional scopes,
-append the missing scope commands.
-`minimal` always remains required.
+3. Run `cargo check --workspace --tests --all-features` (always).
+4. If runtime code changed, run `cargo nextest run --workspace`.
 
 ## Docs-only branch
 
 If blast-radius reports `docs_only: true`:
 
-- Always run `recommended_commands` from blast-radius.
-- Ensure this command is included:
-
-  ```bash
-  mdbook build docs/knowledge-base/
-  ```
-
+- Run `recommended_commands` from blast-radius output.
 - Skip runtime-heavy scopes (`code`, `proof`, `proto`)
   unless the user explicitly requested them via `$ARGUMENTS`.
 
@@ -89,64 +70,19 @@ Run **all** matching scopes (scopes are cumulative).
 `minimal` always runs.
 Additional scopes come from blast-radius output,
 optionally constrained by `$ARGUMENTS`.
-When available,
-run `recommended_commands` directly in the provided order.
 
-### Minimal (always runs)
+The exact commands for each scope are determined by blast-radius
+based on the project's `.blast-radius.yaml` configuration.
+Always prefer `recommended_commands` from the JSON output
+over manually constructing commands.
 
-```bash
-cargo check --workspace --tests --all-features
-```
+If `$ARGUMENTS` explicitly requests additional scopes
+beyond what blast-radius recommended,
+run the standard Rust verification for those scopes:
 
-`cargo check` only type-checks; it does **not** execute tests.
-Never treat a passing `cargo check` as proof that changes work.
-When any scope below matches the changed files, it must also run.
-
-### Code behavior (features, bug fixes, refactors)
-
-```bash
-cargo make ci-all
-cargo nextest run --workspace
-```
-
-`cargo make ci-all` runs: format check, clippy, typos,
-and clippy on the PP program.
-
-Test selection rules for `cargo nextest run` (fallback only,
-when blast-radius did not provide `recommended_commands`):
-
-- If blast-radius reports broad impact
-  (core types/storage/rpc/proto boundaries or many crates),
-  run:
-
-  ```bash
-  cargo nextest run --workspace
-  ```
-
-- Otherwise run package-targeted nextest for affected crates first.
-- If package-targeted tests fail in a way that suggests transitive impact,
-  escalate to `cargo nextest run --workspace`.
-
-### Pessimistic proof (`crates/pessimistic-proof*`)
-
-```bash
-cargo make pp-check-vkey-change
-```
-
-If the vkey changed, **ask the user for explicit confirmation**
-before running:
-
-```bash
-cargo make pp-accept-vkey-change
-```
-
-### Protobuf (`proto/`)
-
-```bash
-cargo make generate-proto
-```
-
-Then verify no uncommitted diffs in generated code.
+- **minimal**: `cargo check --workspace --tests --all-features`
+- **code**: `cargo nextest run --workspace`
+- **full**: all of the above plus any scope-specific commands from blast-radius
 
 ## Fix-and-rerun protocol
 
