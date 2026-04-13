@@ -21,12 +21,6 @@ where
         .map_err(Error::deserializing_aggchain_proof_public_values)
 }
 
-fn deserialize_aggchain_proof_public_values(
-    bytes: &[u8],
-) -> Result<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>, Error> {
-    deserialize_public_values(bytes).map(Box::new)
-}
-
 fn deserialize_generic_public_values(
     bytes: &[u8],
 ) -> Result<Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>, Error> {
@@ -43,7 +37,7 @@ impl TryFrom<v1::AggchainProof> for AggchainProof {
             public_values: value
                 .context
                 .get("public_values")
-                .map(|b| deserialize_aggchain_proof_public_values(b))
+                .map(|b| deserialize_public_values(b).map(Box::new))
                 .transpose()?,
         })
     }
