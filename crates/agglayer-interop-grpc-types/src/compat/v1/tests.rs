@@ -1,8 +1,12 @@
 use agglayer_interop_types::{
-    aggchain_proof::{AggchainData, Proof},
+    aggchain_proof::{
+        AggchainData, AggchainProof, AggchainProofPublicValues, MultisigPayload, Proof,
+        SP1StarkWithContext,
+    },
     primitives::SignatureError,
     Address, BridgeExit, ClaimFromMainnet, ClaimFromRollup, Digest, GlobalIndex,
-    ImportedBridgeExit, L1InfoTreeLeaf, L1InfoTreeLeafInner, MerkleProof, TokenInfo, U256,
+    ImportedBridgeExit, L1InfoTreeLeaf, L1InfoTreeLeafInner, MerkleProof, NetworkId, Signature,
+    TokenInfo, U256,
 };
 use prost::Message;
 
@@ -90,6 +94,136 @@ macro_rules! make_round_trip_fuzzers {
 }
 
 make_round_trip_fuzzers!(fuzz_round_trip_address, v1::FixedBytes20, Address);
+
+fn sample_public_values() -> AggchainProofPublicValues {
+    AggchainProofPublicValues {
+        prev_local_exit_root: Digest([0x11; 32]),
+        new_local_exit_root: Digest([0x22; 32]),
+        l1_info_root: Digest([0x33; 32]),
+        origin_network: NetworkId::new(9),
+        commit_imported_bridge_exits: Digest([0x44; 32]),
+        aggchain_params: Digest([0x55; 32]),
+    }
+}
+
+fn sample_proof() -> Proof {
+    Proof::SP1Stark(SP1StarkWithContext {
+        version: "v6.0.0".to_owned(),
+        proof: vec![0x06, 0x00, 0x00, 0x01],
+        vkey: vec![0xb6, 0x00, 0x02],
+    })
+}
+
+fn sample_signature() -> Signature {
+    Signature::new(U256::from(1_u64), U256::from(2_u64), true)
+}
+
+fn sample_generic(public_values: Option<Box<AggchainProofPublicValues>>) -> AggchainData {
+    AggchainData::Generic {
+        proof: sample_proof(),
+        aggchain_params: Digest([0x77; 32]),
+        signature: None,
+        public_values,
+    }
+}
+
+fn sample_aggchain_proof(public_values: Option<Box<AggchainProofPublicValues>>) -> AggchainProof {
+    AggchainProof {
+        proof: sample_proof(),
+        aggchain_params: Digest([0x88; 32]),
+        public_values,
+    }
+}
+
+fn sample_multisig_and_aggchain_proof(
+    public_values: Option<Box<AggchainProofPublicValues>>,
+) -> AggchainData {
+    AggchainData::MultisigAndAggchainProof {
+        multisig: MultisigPayload(vec![Some(sample_signature())]),
+        aggchain_proof: sample_aggchain_proof(public_values),
+    }
+}
+
+#[rstest::rstest]
+#[case::none(None)]
+#[case::some(Some(Box::new(sample_public_values())))]
+fn generic_v1_wire_preserves_legacy_public_values_shape(
+    #[case] public_values: Option<Box<AggchainProofPublicValues>>,
+) {
+    let input = sample_generic(public_values.clone());
+
+    let proto: v1::AggchainData = input.clone().try_into().unwrap();
+    let v1::aggchain_data::Data::Generic(proto_generic) = proto.data.as_ref().unwrap() else {
+        panic!("expected Generic aggchain data");
+    };
+
+    let encoded = proto_generic
+        .context
+        .get("public_values")
+        .expect("Generic v1 wire format always includes public_values");
+    let decoded: Option<Box<AggchainProofPublicValues>> = bincode::deserialize(encoded).unwrap();
+
+    assert_eq!(decoded, public_values);
+    assert_eq!(AggchainData::try_from(proto).unwrap(), input);
+}
+
+#[rstest::rstest]
+#[case::none(None)]
+#[case::some(Some(Box::new(sample_public_values())))]
+fn aggchain_proof_v1_wire_preserves_bare_public_values_shape(
+    #[case] public_values: Option<Box<AggchainProofPublicValues>>,
+) {
+    let input = sample_aggchain_proof(public_values.clone());
+
+    let proto: v1::AggchainProof = input.clone().try_into().unwrap();
+
+    match public_values.clone() {
+        Some(public_values) => {
+            let encoded = proto
+                .context
+                .get("public_values")
+                .expect("AggchainProof v1 wire format includes public_values only when Some");
+            let decoded: AggchainProofPublicValues = bincode::deserialize(encoded).unwrap();
+
+            assert_eq!(decoded, *public_values);
+        }
+        None => assert!(!proto.context.contains_key("public_values")),
+    }
+
+    assert_eq!(AggchainProof::try_from(proto).unwrap(), input);
+}
+
+#[rstest::rstest]
+#[case::none(None)]
+#[case::some(Some(Box::new(sample_public_values())))]
+fn multisig_and_aggchain_proof_v1_wire_preserves_bare_public_values_shape(
+    #[case] public_values: Option<Box<AggchainProofPublicValues>>,
+) {
+    let input = sample_multisig_and_aggchain_proof(public_values.clone());
+
+    let proto: v1::AggchainData = input.clone().try_into().unwrap();
+    let v1::aggchain_data::Data::MultisigAndAggchainProof(proto_with_multisig) =
+        proto.data.as_ref().unwrap()
+    else {
+        panic!("expected MultisigAndAggchainProof aggchain data");
+    };
+    let proto_aggchain_proof = proto_with_multisig.aggchain_proof.as_ref().unwrap();
+
+    match public_values.clone() {
+        Some(public_values) => {
+            let encoded = proto_aggchain_proof
+                .context
+                .get("public_values")
+                .expect("MultisigAndAggchainProof uses bare AggchainProof encoding when Some");
+            let decoded: AggchainProofPublicValues = bincode::deserialize(encoded).unwrap();
+
+            assert_eq!(decoded, *public_values);
+        }
+        None => assert!(!proto_aggchain_proof.context.contains_key("public_values")),
+    }
+
+    assert_eq!(AggchainData::try_from(proto).unwrap(), input);
+}
 
 #[rstest::rstest]
 #[case("v4.0.0-rc.3", vec![0x04, 0x00, 0x03], vec![0xa4, 0x03])]

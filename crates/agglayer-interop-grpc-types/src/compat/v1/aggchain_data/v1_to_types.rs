@@ -8,6 +8,31 @@ use crate::v1::{self};
 /// Maximum number of signers allowed in a multisig payload.
 const MAX_SIGNERS: usize = 1024;
 
+fn deserialize_public_values<T>(bytes: &[u8]) -> Result<T, Error>
+where
+    T: serde::de::DeserializeOwned,
+{
+    std::panic::catch_unwind(|| bincode::deserialize(bytes))
+        .map_err(|_| {
+            Error::deserializing_aggchain_proof_public_values(Box::new(bincode::ErrorKind::Custom(
+                String::from("panic"),
+            )))
+        })?
+        .map_err(Error::deserializing_aggchain_proof_public_values)
+}
+
+fn deserialize_aggchain_proof_public_values(
+    bytes: &[u8],
+) -> Result<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>, Error> {
+    deserialize_public_values(bytes).map(Box::new)
+}
+
+fn deserialize_generic_public_values(
+    bytes: &[u8],
+) -> Result<Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>, Error> {
+    deserialize_public_values(bytes)
+}
+
 impl TryFrom<v1::AggchainProof> for AggchainProof {
     type Error = Error;
 
@@ -18,16 +43,7 @@ impl TryFrom<v1::AggchainProof> for AggchainProof {
             public_values: value
                 .context
                 .get("public_values")
-                .map(|b| {
-                    std::panic::catch_unwind(|| bincode::deserialize(b))
-                        .map_err(|_| {
-                            Error::deserializing_aggchain_proof_public_values(Box::new(
-                                bincode::ErrorKind::Custom(String::from("panic")),
-                            ))
-                        })?
-                        .map_err(Error::deserializing_aggchain_proof_public_values)
-                        .map(Box::new)
-                })
+                .map(|b| deserialize_aggchain_proof_public_values(b))
                 .transpose()?,
         })
     }
@@ -83,11 +99,15 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                     .transpose()?
                     .map(Box::new);
 
-                let AggchainProof {
-                    public_values,
-                    aggchain_params,
-                    proof,
-                } = aggchain_proof.try_into()?;
+                let public_values = aggchain_proof
+                    .context
+                    .get("public_values")
+                    .map(|b| deserialize_generic_public_values(b))
+                    .transpose()?
+                    .unwrap_or(None);
+
+                let proof = required_field!(aggchain_proof, proof);
+                let aggchain_params = required_field!(aggchain_proof, aggchain_params);
 
                 AggchainData::Generic {
                     public_values,

@@ -8,6 +8,33 @@ use prost::bytes::Bytes;
 use super::Error;
 use crate::v1::{self};
 
+fn serialize_public_values<T>(public_values: &T) -> Result<Bytes, Error>
+where
+    T: serde::Serialize + std::panic::RefUnwindSafe,
+{
+    Ok(Bytes::from(
+        std::panic::catch_unwind(|| bincode::serialize(public_values))
+            .map_err(|_| {
+                Error::serializing_aggchain_proof_public_values(Box::new(
+                    bincode::ErrorKind::Custom(String::from("panic")),
+                ))
+            })?
+            .map_err(Error::serializing_context)?,
+    ))
+}
+
+fn serialize_aggchain_proof_public_values(
+    public_values: &agglayer_interop_types::aggchain_proof::AggchainProofPublicValues,
+) -> Result<Bytes, Error> {
+    serialize_public_values(public_values)
+}
+
+fn serialize_generic_public_values(
+    public_values: &Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>,
+) -> Result<Bytes, Error> {
+    serialize_public_values(public_values)
+}
+
 impl TryFrom<AggchainProof> for v1::AggchainProof {
     type Error = Error;
 
@@ -19,15 +46,7 @@ impl TryFrom<AggchainProof> for v1::AggchainProof {
             context: match value.public_values {
                 Some(public_values) => HashMap::from([(
                     "public_values".to_owned(),
-                    Bytes::from(
-                        std::panic::catch_unwind(|| bincode::serialize(&*public_values))
-                            .map_err(|_| {
-                                Error::serializing_aggchain_proof_public_values(Box::new(
-                                    bincode::ErrorKind::Custom(String::from("panic")),
-                                ))
-                            })?
-                            .map_err(Error::serializing_context)?,
-                    ),
+                    serialize_aggchain_proof_public_values(&public_values)?,
                 )]),
                 None => HashMap::new(),
             },
@@ -70,21 +89,10 @@ impl TryFrom<AggchainData> for v1::AggchainData {
                     aggchain_params,
                     public_values,
                 } => v1::aggchain_data::Data::Generic(v1::AggchainProof {
-                    context: match public_values {
-                        Some(public_values) => HashMap::from([(
-                            "public_values".to_owned(),
-                            Bytes::from(
-                                std::panic::catch_unwind(|| bincode::serialize(&*public_values))
-                                    .map_err(|_| {
-                                        Error::serializing_aggchain_proof_public_values(Box::new(
-                                            bincode::ErrorKind::Custom(String::from("panic")),
-                                        ))
-                                    })?
-                                    .map_err(Error::serializing_context)?,
-                            ),
-                        )]),
-                        None => HashMap::new(),
-                    },
+                    context: HashMap::from([(
+                        "public_values".to_owned(),
+                        serialize_generic_public_values(&public_values)?,
+                    )]),
                     aggchain_params: Some(aggchain_params.into()),
                     signature: signature.map(|signature| v1::FixedBytes65 {
                         value: Bytes::copy_from_slice(&signature.as_bytes()),
