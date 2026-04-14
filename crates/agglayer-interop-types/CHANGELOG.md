@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.14.0] - 2026-03-23
+## [0.15.0] - 2026-04-14
+
+### 🚀 Features
+
+- Preserve opaque SP1 proof payloads in interop (#202)
+
+## [0.14.0] - 2026-03-24
 
 ### 🚀 Features
 
