@@ -26,6 +26,26 @@ fn error_messages(#[case] name: &str, #[case] error: Error) {
     );
 }
 
+#[test]
+fn multisig_decode_rejects_signer_index_overflow() {
+    let multisig = v1::Multisig {
+        data: Some(v1::multisig::Data::Ecdsa(v1::EcdsaMultisig {
+            signatures: vec![v1::ecdsa_multisig::EcdsaMultisigEntry {
+                index: u32::MAX,
+                signature: None,
+            }],
+        })),
+    };
+
+    let err = agglayer_interop_types::aggchain_proof::MultisigPayload::try_from(multisig)
+        .expect_err(
+            "u32::MAX signer index should return a typed invalid-data error instead of panicking",
+        );
+
+    assert!(matches!(err.kind(), super::ErrorKind::InvalidData));
+    assert_eq!(err.to_string(), "Multisig ECDSA signer index overflow");
+}
+
 macro_rules! make_parser_fuzzers {
     ($test:ident, $proto:ty, $type:ty) => {
         #[test]
