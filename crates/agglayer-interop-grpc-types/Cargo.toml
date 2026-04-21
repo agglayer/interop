@@ -8,12 +8,18 @@ repository.workspace = true
 
 [features]
 default = ["compat"]
-compat = ["dep:agglayer-interop-types", "dep:bincode", "dep:thiserror"]
+compat = [
+    "dep:agglayer-bincode",
+    "dep:agglayer-interop-types",
+    "dep:bincode",
+    "dep:thiserror",
+]
 
 [lints]
 workspace = true
 
 [dependencies]
+agglayer-bincode = { workspace = true, optional = true }
 agglayer-interop-types = { workspace = true, optional = true }
 
 bincode = { workspace = true, optional = true }

@@ -161,7 +161,9 @@ fn generic_v1_wire_preserves_legacy_public_values_shape(
         .context
         .get("public_values")
         .expect("Generic v1 wire format always includes public_values");
-    let decoded: Option<Box<AggchainProofPublicValues>> = bincode::deserialize(encoded).unwrap();
+    let decoded: Option<Box<AggchainProofPublicValues>> = agglayer_bincode::sp1_compatible()
+        .deserialize(encoded)
+        .unwrap();
 
     assert_eq!(decoded, public_values);
     assert_eq!(AggchainData::try_from(proto).unwrap(), input);
@@ -183,7 +185,9 @@ fn aggchain_proof_v1_wire_preserves_bare_public_values_shape(
                 .context
                 .get("public_values")
                 .expect("AggchainProof v1 wire format includes public_values only when Some");
-            let decoded: AggchainProofPublicValues = bincode::deserialize(encoded).unwrap();
+            let decoded: AggchainProofPublicValues = agglayer_bincode::sp1_compatible()
+                .deserialize(encoded)
+                .unwrap();
 
             assert_eq!(decoded, *public_values);
         }
@@ -215,7 +219,9 @@ fn multisig_and_aggchain_proof_v1_wire_preserves_bare_public_values_shape(
                 .context
                 .get("public_values")
                 .expect("MultisigAndAggchainProof uses bare AggchainProof encoding when Some");
-            let decoded: AggchainProofPublicValues = bincode::deserialize(encoded).unwrap();
+            let decoded: AggchainProofPublicValues = agglayer_bincode::sp1_compatible()
+                .deserialize(encoded)
+                .unwrap();
 
             assert_eq!(decoded, *public_values);
         }

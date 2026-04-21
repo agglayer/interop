@@ -1,3 +1,4 @@
+use agglayer_bincode as bincode_codec;
 use agglayer_interop_types::aggchain_proof::{
     AggchainData, AggchainProof, MultisigPayload, Proof, SP1StarkWithContext,
 };
@@ -8,11 +9,11 @@ use crate::v1::{self};
 /// Maximum number of signers allowed in a multisig payload.
 const MAX_SIGNERS: usize = 1024;
 
-fn deserialize_public_values<T>(bytes: &[u8]) -> Result<T, Error>
+fn deserialize_aggchain_public_values<T>(bytes: &[u8]) -> Result<T, Error>
 where
     T: serde::de::DeserializeOwned,
 {
-    std::panic::catch_unwind(|| bincode::deserialize(bytes))
+    std::panic::catch_unwind(|| bincode_codec::sp1_compatible().deserialize(bytes))
         .map_err(|_| {
             Error::deserializing_aggchain_proof_public_values(Box::new(bincode::ErrorKind::Custom(
                 String::from("panic"),
@@ -24,7 +25,7 @@ where
 fn deserialize_generic_public_values(
     bytes: &[u8],
 ) -> Result<Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>, Error> {
-    deserialize_public_values(bytes)
+    deserialize_aggchain_public_values(bytes)
 }
 
 impl TryFrom<v1::AggchainProof> for AggchainProof {
@@ -37,7 +38,7 @@ impl TryFrom<v1::AggchainProof> for AggchainProof {
             public_values: value
                 .context
                 .get("public_values")
-                .map(|b| deserialize_public_values(b).map(Box::new))
+                .map(|b| deserialize_aggchain_public_values(b).map(Box::new))
                 .transpose()?,
         })
     }
