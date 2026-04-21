@@ -100,6 +100,7 @@ fn sample_public_values() -> AggchainProofPublicValues {
         prev_local_exit_root: Digest([0x11; 32]),
         new_local_exit_root: Digest([0x22; 32]),
         l1_info_root: Digest([0x33; 32]),
+        // Use a non-symmetric value so endian regressions are visible in pinned bytes.
         origin_network: NetworkId::new(0x00112233),
         commit_imported_bridge_exits: Digest([0x44; 32]),
         aggchain_params: Digest([0x55; 32]),
@@ -217,9 +218,17 @@ fn generic_v1_wire_uses_sp1_compatible_public_values_bytes(
     assert_eq!(encoded.as_ref(), expected_bytes.as_slice());
 }
 
-#[test]
-fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes() {
-    let input = sample_multisig_and_aggchain_proof(Some(Box::new(sample_public_values())));
+#[rstest::rstest]
+#[case::some(
+    Some(Box::new(sample_public_values())),
+    Some(bare_public_values_expected_bytes())
+)]
+#[case::none(None, None)]
+fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes(
+    #[case] public_values: Option<Box<AggchainProofPublicValues>>,
+    #[case] expected_bytes: Option<Vec<u8>>,
+) {
+    let input = sample_multisig_and_aggchain_proof(public_values);
 
     let proto: v1::AggchainData = input.try_into().unwrap();
     let v1::aggchain_data::Data::MultisigAndAggchainProof(proto_with_multisig) =
@@ -228,18 +237,18 @@ fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes()
         panic!("expected MultisigAndAggchainProof aggchain data");
     };
 
-    let encoded = proto_with_multisig
-        .aggchain_proof
-        .as_ref()
-        .unwrap()
-        .context
-        .get("public_values")
-        .expect("MultisigAndAggchainProof uses bare AggchainProof encoding when Some");
+    let context = &proto_with_multisig.aggchain_proof.as_ref().unwrap().context;
 
-    assert_eq!(
-        encoded.as_ref(),
-        bare_public_values_expected_bytes().as_slice()
-    );
+    match expected_bytes {
+        Some(expected_bytes) => {
+            let encoded = context
+                .get("public_values")
+                .expect("MultisigAndAggchainProof uses bare AggchainProof encoding when Some");
+
+            assert_eq!(encoded.as_ref(), expected_bytes.as_slice());
+        }
+        None => assert!(!context.contains_key("public_values")),
+    }
 }
 
 #[test]
@@ -284,6 +293,41 @@ fn generic_v1_decode_accepts_sp1_compatible_public_values_bytes() {
         decoded,
         sample_generic(Some(Box::new(sample_public_values())))
     );
+}
+
+#[test]
+fn generic_v1_decode_accepts_sp1_compatible_none_public_values_bytes() {
+    use std::collections::HashMap;
+
+    let proto = v1::AggchainData {
+        data: Some(v1::aggchain_data::Data::Generic(v1::AggchainProof {
+            proof: Some(sample_proof().try_into().unwrap()),
+            aggchain_params: Some(Digest([0x77; 32]).into()),
+            signature: None,
+            context: HashMap::from([(
+                "public_values".to_owned(),
+                generic_none_public_values_expected_bytes().into(),
+            )]),
+        })),
+    };
+
+    let decoded = AggchainData::try_from(proto).unwrap();
+
+    assert_eq!(decoded, sample_generic(None));
+}
+
+#[test]
+fn aggchain_proof_v1_decode_accepts_absent_public_values() {
+    let proto = v1::AggchainProof {
+        proof: Some(sample_proof().try_into().unwrap()),
+        aggchain_params: Some(Digest([0x88; 32]).into()),
+        signature: None,
+        context: std::collections::HashMap::new(),
+    };
+
+    let decoded = AggchainProof::try_from(proto).unwrap();
+
+    assert_eq!(decoded, sample_aggchain_proof(None));
 }
 
 #[rstest::rstest]
