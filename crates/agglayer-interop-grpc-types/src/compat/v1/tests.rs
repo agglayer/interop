@@ -165,8 +165,7 @@ fn sample_multisig_and_aggchain_proof(
     }
 }
 
-const BARE_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
-    include_bytes!("testdata/bare_public_values.bin");
+const BARE_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] = include_bytes!("testdata/bare_public_values.bin");
 const GENERIC_SOME_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
     include_bytes!("testdata/generic_some_public_values.bin");
 const GENERIC_NONE_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
