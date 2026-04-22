@@ -9,7 +9,7 @@ use crate::v1::{self};
 /// Maximum number of signers allowed in a multisig payload.
 const MAX_SIGNERS: usize = 1024;
 
-fn deserialize_aggchain_public_values<T>(bytes: &[u8]) -> Result<T, Error>
+fn deserialize_public_values<T>(bytes: &[u8]) -> Result<T, Error>
 where
     T: serde::de::DeserializeOwned,
 {
@@ -22,12 +22,6 @@ where
         .map_err(Error::deserializing_aggchain_proof_public_values)
 }
 
-fn deserialize_generic_public_values(
-    bytes: &[u8],
-) -> Result<Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>, Error> {
-    deserialize_aggchain_public_values(bytes)
-}
-
 impl TryFrom<v1::AggchainProof> for AggchainProof {
     type Error = Error;
 
@@ -38,7 +32,7 @@ impl TryFrom<v1::AggchainProof> for AggchainProof {
             public_values: value
                 .context
                 .get("public_values")
-                .map(|b| deserialize_aggchain_public_values(b).map(Box::new))
+                .map(|b| deserialize_public_values(b).map(Box::new))
                 .transpose()?,
         })
     }
@@ -97,7 +91,7 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                 let public_values = aggchain_proof
                     .context
                     .get("public_values")
-                    .map(|b| deserialize_generic_public_values(b))
+                    .map(|b| deserialize_public_values(b))
                     .transpose()?
                     .unwrap_or(None);
 
