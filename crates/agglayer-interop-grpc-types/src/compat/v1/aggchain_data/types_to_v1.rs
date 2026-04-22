@@ -14,6 +14,7 @@ where
     T: serde::Serialize + std::panic::RefUnwindSafe,
 {
     Ok(Bytes::from(
+        // Match the SP1/prover wire bytes used for aggchain public values.
         std::panic::catch_unwind(|| bincode_codec::sp1_compatible().serialize(public_values))
             .map_err(|_| {
                 Error::serializing_aggchain_proof_public_values(Box::new(

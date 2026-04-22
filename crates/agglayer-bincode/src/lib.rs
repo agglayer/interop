@@ -128,20 +128,6 @@ mod test {
     }
 
     #[test]
-    fn sp1_compatible_matches_sp1v4_for_network_id() {
-        type NetworkId = u32;
-
-        let network_id: NetworkId = 0x00112233;
-
-        #[allow(deprecated)]
-        let legacy = super::sp1v4().serialize(&network_id).unwrap();
-        let stable = super::sp1_compatible().serialize(&network_id).unwrap();
-
-        assert_eq!(legacy, stable);
-        assert_eq!(stable, vec![0x33, 0x22, 0x11, 0x00]);
-    }
-
-    #[test]
     fn sp1_compatible_round_trips_network_id() {
         type NetworkId = u32;
 

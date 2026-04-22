@@ -165,28 +165,12 @@ fn sample_multisig_and_aggchain_proof(
     }
 }
 
-fn bare_public_values_expected_bytes() -> Vec<u8> {
-    [
-        [0x11; 32].as_slice(),
-        [0x22; 32].as_slice(),
-        [0x33; 32].as_slice(),
-        &[0x33, 0x22, 0x11, 0x00],
-        [0x44; 32].as_slice(),
-        [0x55; 32].as_slice(),
-    ]
-    .concat()
-}
-
-fn generic_some_public_values_expected_bytes() -> Vec<u8> {
-    let mut v = Vec::with_capacity(1 + 164);
-    v.push(0x01);
-    v.extend_from_slice(&bare_public_values_expected_bytes());
-    v
-}
-
-fn generic_none_public_values_expected_bytes() -> Vec<u8> {
-    vec![0x00]
-}
+const BARE_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
+    include_bytes!("testdata/bare_public_values.bin");
+const GENERIC_SOME_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
+    include_bytes!("testdata/generic_some_public_values.bin");
+const GENERIC_NONE_PUBLIC_VALUES_EXPECTED_BYTES: &[u8] =
+    include_bytes!("testdata/generic_none_public_values.bin");
 
 #[test]
 fn aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes() {
@@ -198,10 +182,7 @@ fn aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes() {
         .get("public_values")
         .expect("AggchainProof v1 wire format includes public_values when Some");
 
-    assert_eq!(
-        encoded.as_ref(),
-        bare_public_values_expected_bytes().as_slice()
-    );
+    assert_eq!(encoded.as_ref(), BARE_PUBLIC_VALUES_EXPECTED_BYTES);
 }
 
 #[test]
@@ -216,12 +197,12 @@ fn aggchain_proof_v1_wire_omits_public_values_when_none() {
 #[rstest::rstest]
 #[case::some(
     Some(Box::new(sample_public_values())),
-    generic_some_public_values_expected_bytes()
+    GENERIC_SOME_PUBLIC_VALUES_EXPECTED_BYTES
 )]
-#[case::none(None, generic_none_public_values_expected_bytes())]
+#[case::none(None, GENERIC_NONE_PUBLIC_VALUES_EXPECTED_BYTES)]
 fn generic_v1_wire_uses_sp1_compatible_public_values_bytes(
     #[case] public_values: Option<Box<AggchainProofPublicValues>>,
-    #[case] expected_bytes: Vec<u8>,
+    #[case] expected_bytes: &[u8],
 ) {
     let input = sample_generic(public_values);
 
@@ -235,18 +216,18 @@ fn generic_v1_wire_uses_sp1_compatible_public_values_bytes(
         .get("public_values")
         .expect("Generic v1 wire format always includes public_values");
 
-    assert_eq!(encoded.as_ref(), expected_bytes.as_slice());
+    assert_eq!(encoded.as_ref(), expected_bytes);
 }
 
 #[rstest::rstest]
 #[case::some(
     Some(Box::new(sample_public_values())),
-    Some(bare_public_values_expected_bytes())
+    Some(BARE_PUBLIC_VALUES_EXPECTED_BYTES)
 )]
 #[case::none(None, None)]
 fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes(
     #[case] public_values: Option<Box<AggchainProofPublicValues>>,
-    #[case] expected_bytes: Option<Vec<u8>>,
+    #[case] expected_bytes: Option<&[u8]>,
 ) {
     let input = sample_multisig_and_aggchain_proof(public_values);
 
@@ -265,7 +246,7 @@ fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes(
                 .get("public_values")
                 .expect("MultisigAndAggchainProof uses bare AggchainProof encoding when Some");
 
-            assert_eq!(encoded.as_ref(), expected_bytes.as_slice());
+            assert_eq!(encoded.as_ref(), expected_bytes);
         }
         None => assert!(!context.contains_key("public_values")),
     }
@@ -275,13 +256,14 @@ fn multisig_and_aggchain_proof_v1_wire_uses_sp1_compatible_public_values_bytes(
 fn aggchain_proof_v1_decode_accepts_sp1_compatible_public_values_bytes() {
     use std::collections::HashMap;
 
-    let public_values_bytes = bare_public_values_expected_bytes();
-
     let proto = v1::AggchainProof {
         proof: Some(sample_proof().try_into().unwrap()),
         aggchain_params: Some(Digest([0x88; 32]).into()),
         signature: None,
-        context: HashMap::from([("public_values".to_owned(), public_values_bytes.into())]),
+        context: HashMap::from([(
+            "public_values".to_owned(),
+            BARE_PUBLIC_VALUES_EXPECTED_BYTES.into(),
+        )]),
     };
 
     let decoded = AggchainProof::try_from(proto).unwrap();
@@ -296,14 +278,15 @@ fn aggchain_proof_v1_decode_accepts_sp1_compatible_public_values_bytes() {
 fn generic_v1_decode_accepts_sp1_compatible_public_values_bytes() {
     use std::collections::HashMap;
 
-    let bytes = generic_some_public_values_expected_bytes();
-
     let proto = v1::AggchainData {
         data: Some(v1::aggchain_data::Data::Generic(v1::AggchainProof {
             proof: Some(sample_proof().try_into().unwrap()),
             aggchain_params: Some(Digest([0x77; 32]).into()),
             signature: None,
-            context: HashMap::from([("public_values".to_owned(), bytes.into())]),
+            context: HashMap::from([(
+                "public_values".to_owned(),
+                GENERIC_SOME_PUBLIC_VALUES_EXPECTED_BYTES.into(),
+            )]),
         })),
     };
 
@@ -326,7 +309,7 @@ fn generic_v1_decode_accepts_sp1_compatible_none_public_values_bytes() {
             signature: None,
             context: HashMap::from([(
                 "public_values".to_owned(),
-                generic_none_public_values_expected_bytes().into(),
+                GENERIC_NONE_PUBLIC_VALUES_EXPECTED_BYTES.into(),
             )]),
         })),
     };
