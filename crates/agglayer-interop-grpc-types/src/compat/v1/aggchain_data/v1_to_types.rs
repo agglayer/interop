@@ -137,12 +137,14 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
                     ));
                 }
 
-                // Find the maximum key to determine the vector size
-                let required_len = signatures
-                    .iter()
-                    .map(|entry| entry.index + 1)
-                    .max()
-                    .unwrap_or(0);
+                // Find the maximum key to determine the vector size.
+                let mut required_len = 0u32;
+                for entry in &signatures {
+                    let signer_len = entry.index.checked_add(1).ok_or_else(|| {
+                        Error::invalid_data("Multisig ECDSA signer index overflow".to_string())
+                    })?;
+                    required_len = required_len.max(signer_len);
+                }
 
                 if required_len as usize > MAX_SIGNERS {
                     return Err(Error::invalid_data(format!(
