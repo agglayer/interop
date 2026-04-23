@@ -15,13 +15,13 @@ mod options {
         bincode::options().with_big_endian().with_fixint_encoding()
     }
 
-    pub type SP1v4 = WithOtherTrailing<
+    pub type SP1Compatible = WithOtherTrailing<
         WithOtherIntEncoding<BincodeDefaultOptions, FixintEncoding>,
         AllowTrailing,
     >;
 
     #[inline]
-    pub fn sp1v4() -> SP1v4 {
+    pub fn sp1_compatible() -> SP1Compatible {
         bincode::options()
             .with_fixint_encoding()
             .allow_trailing_bytes()
@@ -40,10 +40,17 @@ pub fn default() -> Codec<options::Default> {
     Codec(options::default())
 }
 
-/// Create a bincode codec with settings used by `sp1`.
+/// Create a bincode codec with settings compatible with SP1 payload encoding.
 #[inline]
-pub fn sp1v4() -> Codec<options::SP1v4> {
-    Codec(options::sp1v4())
+pub fn sp1_compatible() -> Codec<options::SP1Compatible> {
+    Codec(options::sp1_compatible())
+}
+
+/// Create a bincode codec with settings used by `sp1`.
+#[deprecated(note = "use sp1_compatible()")]
+#[inline]
+pub fn sp1v4() -> Codec<options::SP1Compatible> {
+    sp1_compatible()
 }
 
 /// Create a bincode coded with settings used by smart contract verifiers.
@@ -107,7 +114,7 @@ mod test {
         type NetworkId = u32;
 
         let network_id: NetworkId = 0x00112233;
-        let network_id_enc = super::sp1v4().serialize(&network_id).unwrap();
+        let network_id_enc = super::sp1_compatible().serialize(&network_id).unwrap();
 
         let mut stdin0 = sp1_sdk::SP1Stdin::new();
         stdin0.write_slice(&network_id_enc);
@@ -118,5 +125,16 @@ mod test {
         assert_eq!(&stdin1.buffer[0], &[0x33, 0x22, 0x11, 0x00]);
         assert_eq!(stdin0.buffer, stdin1.buffer);
         assert_eq!(stdin0.read::<NetworkId>(), stdin1.read::<NetworkId>());
+    }
+
+    #[test]
+    fn sp1_compatible_round_trips_network_id() {
+        type NetworkId = u32;
+
+        let bytes = vec![0x33, 0x22, 0x11, 0x00];
+
+        let decoded: NetworkId = super::sp1_compatible().deserialize(&bytes).unwrap();
+
+        assert_eq!(decoded, 0x00112233);
     }
 }

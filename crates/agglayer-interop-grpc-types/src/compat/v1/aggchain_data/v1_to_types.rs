@@ -1,3 +1,4 @@
+use agglayer_bincode as bincode_codec;
 use agglayer_interop_types::aggchain_proof::{
     AggchainData, AggchainProof, MultisigPayload, Proof, SP1StarkWithContext,
 };
@@ -12,19 +13,13 @@ fn deserialize_public_values<T>(bytes: &[u8]) -> Result<T, Error>
 where
     T: serde::de::DeserializeOwned,
 {
-    std::panic::catch_unwind(|| bincode::deserialize(bytes))
+    std::panic::catch_unwind(|| bincode_codec::sp1_compatible().deserialize(bytes))
         .map_err(|_| {
             Error::deserializing_aggchain_proof_public_values(Box::new(bincode::ErrorKind::Custom(
                 String::from("panic"),
             )))
         })?
         .map_err(Error::deserializing_aggchain_proof_public_values)
-}
-
-fn deserialize_generic_public_values(
-    bytes: &[u8],
-) -> Result<Option<Box<agglayer_interop_types::aggchain_proof::AggchainProofPublicValues>>, Error> {
-    deserialize_public_values(bytes)
 }
 
 impl TryFrom<v1::AggchainProof> for AggchainProof {
@@ -96,7 +91,7 @@ impl TryFrom<v1::AggchainData> for AggchainData {
                 let public_values = aggchain_proof
                     .context
                     .get("public_values")
-                    .map(|b| deserialize_generic_public_values(b))
+                    .map(|b| deserialize_public_values(b))
                     .transpose()?
                     .unwrap_or(None);
 
