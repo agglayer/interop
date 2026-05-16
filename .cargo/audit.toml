@@ -19,5 +19,7 @@ ignore = [
     # rustls-pemfile is pulled in transitively by reqwest and tonic.
     "RUSTSEC-2025-0134",
     # lru is pulled in transitively by alloy-provider and sp1-prover.
-    "RUSTSEC-2026-0002"
+    "RUSTSEC-2026-0002",
+    # rand is required by the current sp1/alloy/agglayer dependency graph.
+    "RUSTSEC-2026-0097"
 ]
