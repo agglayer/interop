@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, hash::Hash};
 use agglayer_primitives::{keccak::keccak256_combine, Digest};
 use rand::{
     prelude::{IndexedRandom as _, SliceRandom as _},
-    random, rng, Rng,
+    random, rng, RngExt as _,
 };
 use rs_merkle::{Hasher as MerkleHasher, MerkleTree};
 use tiny_keccak::{Hasher as _, Keccak};

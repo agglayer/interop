@@ -201,6 +201,8 @@ impl From<Digest> for Vec<u8> {
 impl rand::distr::Distribution<Digest> for rand::distr::StandardUniform {
     #[inline]
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> Digest {
+        use rand::RngExt as _;
+
         let raw: [u8; 32] = rng.random();
         Digest(raw)
     }
