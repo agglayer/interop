@@ -79,7 +79,7 @@ mod mode;
 mod program_builder;
 
 pub const DEFAULT_DOCKER_TAG: &str =
-    "v6.0.2@sha256:61bbcdb0cd096004303f25f042813f4b947571c454fb5247197a1bd9c91e01ad";
+    "v6.2.1@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f";
 
 /// Path to the cached zkvm ELF binary, relative to `build.rs`.
 pub const CACHED_ELF_PATH: &str = "elf/riscv64im-succinct-zkvm-elf";
@@ -94,4 +94,33 @@ macro_rules! elf_bytes {
     () => {
         ::std::include_bytes!(::std::env!("AGGLAYER_ELF_PATH"))
     };
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn default_docker_tag_matches_workspace_sp1_version() {
+        let metadata = cargo_metadata::MetadataCommand::new()
+            .no_deps()
+            .exec()
+            .expect("workspace metadata should be available");
+        let package = metadata
+            .workspace_packages()
+            .into_iter()
+            .find(|package| package.name == "agglayer-elf-build")
+            .expect("agglayer-elf-build should be a workspace package");
+        let sp1_build = package
+            .dependencies
+            .iter()
+            .find(|dependency| dependency.name == "sp1-build")
+            .expect("agglayer-elf-build should depend on sp1-build");
+
+        assert_eq!(
+            super::DEFAULT_DOCKER_TAG,
+            format!(
+                "v{}@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f",
+                sp1_build.req.to_string().trim_start_matches('=')
+            ),
+        );
+    }
 }
