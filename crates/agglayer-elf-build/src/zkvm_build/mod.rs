@@ -100,9 +100,27 @@ macro_rules! elf_bytes {
 mod tests {
     #[test]
     fn default_docker_tag_matches_workspace_sp1_version() {
+        let metadata = cargo_metadata::MetadataCommand::new()
+            .no_deps()
+            .exec()
+            .expect("workspace metadata should be available");
+        let package = metadata
+            .workspace_packages()
+            .into_iter()
+            .find(|package| package.name == "agglayer-elf-build")
+            .expect("agglayer-elf-build should be a workspace package");
+        let sp1_build = package
+            .dependencies
+            .iter()
+            .find(|dependency| dependency.name == "sp1-build")
+            .expect("agglayer-elf-build should depend on sp1-build");
+
         assert_eq!(
             super::DEFAULT_DOCKER_TAG,
-            "v6.2.1@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f",
+            format!(
+                "v{}@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f",
+                sp1_build.req.to_string().trim_start_matches('=')
+            ),
         );
     }
 }
