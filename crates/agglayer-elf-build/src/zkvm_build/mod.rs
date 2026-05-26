@@ -79,7 +79,7 @@ mod mode;
 mod program_builder;
 
 pub const DEFAULT_DOCKER_TAG: &str =
-    "v6.2.1@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f";
+    "v6.2.2@sha256:af8c2f46bb5e417c1c2fb939cd4397c75aa4f2439a9fd7c1f9ce2e0a693f6f6b";
 
 /// Path to the cached zkvm ELF binary, relative to `build.rs`.
 pub const CACHED_ELF_PATH: &str = "elf/riscv64im-succinct-zkvm-elf";
@@ -118,7 +118,7 @@ mod tests {
         assert_eq!(
             super::DEFAULT_DOCKER_TAG,
             format!(
-                "v{}@sha256:14d3c46eff7492f87e429bfbf618e3d33499ba7515b15c36eeb1bcaebc9f7b7f",
+                "v{}@sha256:af8c2f46bb5e417c1c2fb939cd4397c75aa4f2439a9fd7c1f9ce2e0a693f6f6b",
                 sp1_build.req.to_string().trim_start_matches('=')
             ),
         );
