@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.18.0] - 2026-05-26
+
+### 💼 Other
+
+- *(deps)* Upgrade SP1 to 6.2.2 (#241)
+
 ## [0.14.0] - 2026-03-24
 
 ### 🚀 Features
