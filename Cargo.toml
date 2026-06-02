@@ -58,7 +58,7 @@ futures = "0.3.31"
 hex = "0.4.3"
 hex-literal = "1.1"
 http = "1.4"
-hyper = "1.9"
+hyper = "1.10"
 insta = { version = "1.44", features = ["toml", "yaml", "json"] }
 jsonrpsee = { version = "0.26.0", features = ["full"] }
 k256 = "0.13.4"
