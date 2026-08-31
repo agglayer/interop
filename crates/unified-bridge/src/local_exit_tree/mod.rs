@@ -122,7 +122,8 @@ impl<const TREE_DEPTH: usize> LocalExitTree<TREE_DEPTH> {
     #[inline]
     pub fn get_root(&self) -> Digest {
         // `root` is the hash of the node we’re going to fill next.
-        // Here, we compute the root, starting from the next (yet unfilled) leaf hash.
+        // Here, we compute the root, starting from the next (yet unfilled) leaf
+        // hash.
         let mut root = Digest::default();
 
         for (height, empty_hash_at_height) in empty_hash_array_at_height::<TREE_DEPTH>()

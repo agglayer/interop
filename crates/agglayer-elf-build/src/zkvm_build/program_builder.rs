@@ -110,8 +110,8 @@ impl ProgramBuilder {
                 .context("Failed to create directory for zkvm ELF")?;
         }
 
-        // Copy to a temporary and move so it's less sensitive to partial writes when
-        // the build is interrupted.
+        // Copy to a temporary and move so it's less sensitive to partial writes
+        // when the build is interrupted.
         let source_tmp = Path::new(&env::var("OUT_DIR").context("Getting build OUT_DIR")?)
             .join(source.as_ref().file_name().unwrap_or("zkvm-elf".as_ref()))
             .with_extension(".temporary");

@@ -110,8 +110,8 @@ impl TryFrom<U256> for GlobalIndex {
         let mainnet_flag = value.bit(Self::MAINNET_FLAG_LSB_OFFSET);
         // Security: This uses the slice to fixed array TryFrom impl in the std
         // library that is technically fallible. However, our range length in
-        // both cases is equal to u32::len() so it is safe to disregard the Result
-        // and treat this as an infallible conversion.
+        // both cases is equal to u32::len() so it is safe to disregard the
+        // Result and treat this as an infallible conversion.
         let rollup_index = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
         let leaf_index = u32::from_le_bytes(bytes[0..4].try_into().unwrap());
 
