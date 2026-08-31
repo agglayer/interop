@@ -20,6 +20,10 @@ ignore = [
     "RUSTSEC-2025-0134",
     # lru is pulled in transitively by alloy-provider and sp1-prover.
     "RUSTSEC-2026-0002",
+    # lru 0.12 is pinned by sp1-prover (via sp1-sdk =6.2.2, dev-dependencies
+    # only); the patched lru >= 0.18.2 is already used on the alloy-provider
+    # path.
+    "RUSTSEC-2026-0253",
     # rand is required by the current sp1/alloy/agglayer dependency graph.
     "RUSTSEC-2026-0097"
 ]
