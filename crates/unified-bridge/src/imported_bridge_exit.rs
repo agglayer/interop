@@ -197,7 +197,8 @@ impl ClaimFromMainnet {
             return Err(Error::MismatchMER);
         }
 
-        // Check the inclusion proof of the leaf to the LER (here LER is the MER)
+        // Check the inclusion proof of the leaf to the LER (here LER is the
+        // MER)
         if !self.proof_leaf_mer.verify(leaf, leaf_index) {
             return Err(Error::InvalidMerklePathLeafToLER);
         }
@@ -294,8 +295,8 @@ impl ImportedBridgeExit {
     /// the provided LER
     #[inline]
     pub fn verify_path(&self, l1root: Digest) -> Result<(), Error> {
-        // Check that the inclusion proof and the global index both refer to mainnet or
-        // rollup
+        // Check that the inclusion proof and the global index both refer to
+        // mainnet or rollup
         if self.global_index.is_mainnet() != matches!(self.claim_data, Claim::Mainnet(_)) {
             return Err(Error::MismatchGlobalIndexInclusionProof);
         }
@@ -410,8 +411,9 @@ impl ImportedBridgeExitCommitmentValues {
     pub fn commitment(&self, version: ImportedBridgeExitCommitmentVersion) -> Digest {
         match version {
             ImportedBridgeExitCommitmentVersion::V2 => {
-                // Commits solely to the global index of each imported bridge exit. Designed
-                // prior to having any notion of aggchain proof.
+                // Commits solely to the global index of each imported bridge
+                // exit. Designed prior to having any notion of
+                // aggchain proof.
                 keccak256_combine(
                     self.claims
                         .iter()
@@ -419,8 +421,9 @@ impl ImportedBridgeExitCommitmentValues {
                 )
             }
             ImportedBridgeExitCommitmentVersion::V3 => {
-                // Adds the bridge exit hashes in the commitment to ensure that the aggchain
-                // proof and PP talk about the exact same set of imported bridge exits.
+                // Adds the bridge exit hashes in the commitment to ensure that
+                // the aggchain proof and PP talk about the
+                // exact same set of imported bridge exits.
                 keccak256_combine(self.claims.iter().map(|ibe| {
                     [
                         ibe.global_index.as_le_slice(),

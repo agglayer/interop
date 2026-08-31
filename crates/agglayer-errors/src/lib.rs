@@ -296,9 +296,10 @@ mod tests {
             "foo"
         );
 
-        // Wrapping with another match-able error shows the first match among the
-        // match_err branches.
-        // Not necessarily the best choice, but it should be good enough for now.
+        // Wrapping with another match-able error shows the first match among
+        // the match_err branches.
+        // Not necessarily the best choice, but it should be good enough for
+        // now.
         assert_eq!(
             use_match_err_to_make_a_value(eyre::Report::from(Foo).wrap_err(Bar("baz"))),
             "foo"
@@ -308,8 +309,8 @@ mod tests {
             "foo"
         );
 
-        // Wrapping an unknown error with a match-able error does show the match-able
-        // error
+        // Wrapping an unknown error with a match-able error does show the
+        // match-able error
         assert_eq!(
             use_match_err_to_make_a_value(eyre::Report::from(Quux).wrap_err(Foo)),
             "foo"
@@ -355,9 +356,10 @@ mod tests {
             "foo"
         );
 
-        // Wrapping with another match-able error shows the first match among the
-        // match_err branches.
-        // Not necessarily the best choice, but it should be good enough for now.
+        // Wrapping with another match-able error shows the first match among
+        // the match_err branches.
+        // Not necessarily the best choice, but it should be good enough for
+        // now.
         assert_eq!(
             use_match_err_to_run_code(eyre::Report::from(Foo).wrap_err(Bar("baz"))),
             "foo"
@@ -367,8 +369,8 @@ mod tests {
             "foo"
         );
 
-        // Wrapping an unknown error with a match-able error does show the match-able
-        // error
+        // Wrapping an unknown error with a match-able error does show the
+        // match-able error
         assert_eq!(
             use_match_err_to_run_code(eyre::Report::from(Quux).wrap_err(Foo)),
             "foo"

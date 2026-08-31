@@ -146,7 +146,8 @@ impl TryFrom<v1::Multisig> for MultisigPayload {
                     )));
                 }
 
-                // Create a vector filled with None, sized to accommodate the highest index
+                // Create a vector filled with None, sized to accommodate the
+                // highest index
                 let mut result: Vec<Option<_>> = vec![None; required_len as usize];
 
                 // Fill in the signatures at their specified indices
