@@ -1,13 +1,6 @@
 name: Protobuf publish
 
 on:
-  workflow_run:
-    workflows:
-      - "Test"
-    types:
-      - completed
-    branches:
-      - main
   push:
     branches:
       - main
