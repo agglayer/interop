@@ -120,7 +120,8 @@ fn sample_public_values() -> AggchainProofPublicValues {
         prev_local_exit_root: Digest([0x11; 32]),
         new_local_exit_root: Digest([0x22; 32]),
         l1_info_root: Digest([0x33; 32]),
-        // Use a non-symmetric value so endian regressions are visible in pinned bytes.
+        // Use a non-symmetric value so endian regressions are visible in pinned
+        // bytes.
         origin_network: NetworkId::new(0x00112233),
         commit_imported_bridge_exits: Digest([0x44; 32]),
         aggchain_params: Digest([0x55; 32]),
