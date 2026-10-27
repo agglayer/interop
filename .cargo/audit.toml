@@ -25,5 +25,17 @@ ignore = [
     # path.
     "RUSTSEC-2026-0253",
     # rand is required by the current sp1/alloy/agglayer dependency graph.
-    "RUSTSEC-2026-0097"
+    "RUSTSEC-2026-0097",
+    # https://rustsec.org/advisories/RUSTSEC-2026-0344.html
+    # ruzstd decompression bomb, fixed in ruzstd >= 0.9.1. ruzstd comes only
+    # from object 0.37, whose consumers (backtrace 0.3.76, sp1-core-executor
+    # 6.9.0) require ^0.37. object uses it only for compressed ELF sections,
+    # and the only ELFs parsed are our own SP1 programs and the running
+    # binary.
+    "RUSTSEC-2026-0344",
+    # https://rustsec.org/advisories/RUSTSEC-2026-0387.html
+    # crypto-bigint timing leaks, fixed in 0.7.6. We use 0.5, through
+    # elliptic-curve 0.13 (alloy 2.x, sp1). These crates never handle
+    # secret keys, and 0.5 has no subtraction branch (it came in 0.7).
+    "RUSTSEC-2026-0387"
 ]

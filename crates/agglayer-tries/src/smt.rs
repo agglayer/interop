@@ -100,7 +100,8 @@ impl<const DEPTH: usize> Smt<DEPTH> {
         bits: &[bool; DEPTH],
         value: Digest,
         // If true, update the value at the key.
-        // If false, insert the value at the key and error if the key is present.
+        // If false, insert the value at the key and error if the key is
+        // present.
         update: bool,
     ) -> Result<Digest, SmtError> {
         if depth == DEPTH {
