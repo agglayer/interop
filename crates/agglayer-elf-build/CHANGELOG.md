@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.0] - 2026-10-27
+
+### 🐛 Bug Fixes
+
+- *(deps)* Update alloy, h2 and ruint to fix cargo audit (#269)
+
+### 💼 Other
+
+- *(deps)* Upgrade SP1 to 6.9.0 and fix CI (#291)
+
 ## [0.18.0] - 2026-05-26
 
 ### 💼 Other

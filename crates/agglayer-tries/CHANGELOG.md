@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.19.0] - 2026-10-27
+
+### 💼 Other
+
+- *(deps)* Upgrade SP1 to 6.9.0 and fix CI (#291)
+
 ## [0.13.0] - 2025-12-25
 
 ### 🚀 Features
