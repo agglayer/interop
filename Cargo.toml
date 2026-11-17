@@ -67,7 +67,7 @@ mockall = "0.14.0"
 parking_lot = "0.12.5"
 pbjson = "0.9.0"
 pin-project = "1.1"
-prost = "0.13.4"
+prost = "0.14.3"
 rand = "0.10.1"
 rs_merkle = { version = "1.4", default-features = false }
 rstest = "0.26.1"
@@ -82,7 +82,6 @@ tokio = { version = "1.50", features = ["full"] }
 tokio-stream = { version = "0.1.18", features = ["sync"] }
 tokio-util = "0.7.18"
 toml = "0.8.20"
-tonic = { version = "0.13.1", default-features = false }
 tonic-types = "0.14.6"
 tower = "0.5.3"
 tracing = "0.1.44"
