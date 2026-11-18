@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.19.0] - 2026-10-27
+## [0.20.0] - 2026-11-18
 
 ### 🐛 Bug Fixes
 
@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### 💼 Other
 
 - *(deps)* Upgrade SP1 to 6.9.0 and fix CI (#291)
+- *(deps)* [**breaking**] Upgrade prost to 0.14 (#296)
 
 ## [0.16.0] - 2026-05-19
 
